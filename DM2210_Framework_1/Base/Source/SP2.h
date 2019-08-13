@@ -11,6 +11,11 @@
 #include "Particle.h"
 #include "DepthFBO.h"
 
+
+#include <thread>
+#include "../CNetworking.h"
+
+
 class SP2 : public Scene
 {
 	enum UNIFORM_TYPE
@@ -98,10 +103,14 @@ class SP2 : public Scene
 		RENDER_PASS_PRE,
 		RENDER_PASS_MAIN,
 	};
+
 public:
 	SP2();
 	~SP2();
 
+	std::thread Thread;
+	CNetworking network;
+ 
 	virtual void Init();
 	virtual void Update(double dt);
 	virtual void Render();
@@ -158,6 +167,8 @@ private:
 	Mtx44 m_lightDepthProj;
 	Mtx44 m_lightDepthView;
 	RENDER_PASS m_renderPass;
+
+
 };
 
 #endif

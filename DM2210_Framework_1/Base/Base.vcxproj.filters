@@ -22,6 +22,9 @@
     <Filter Include="SoundEngine">
       <UniqueIdentifier>{91015baa-47be-490a-ad4e-5a958f290b41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Networking">
+      <UniqueIdentifier>{4f50ba73-6299-415d-a908-1ce504c1c3f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -77,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="Source\SoundEngine.cpp">
       <Filter>SoundEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="CNetworking.cpp">
+      <Filter>Networking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="Source\SoundEngine.h">
       <Filter>SoundEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="CNetworking.h">
+      <Filter>Networking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

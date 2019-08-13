@@ -213,6 +213,12 @@ void SP2::Init()
 	rotateAngle = 0;
 	bLightEnabled = true;
 	translate_tex_coord = 0;
+
+
+	
+	Thread = std::thread([this] { network.ListenForPackets(); });
+	Thread.detach();
+
 }
 
 void SP2::Update(double dt)
@@ -231,6 +237,29 @@ void SP2::Update(double dt)
 	camera.position.y = 20;
 	camera.target = camera.position + viewVector;
 	//
+
+
+	if (Application::IsKeyPressed('W')) {
+		std::cout << "W is Being pressed " << std::endl;
+		network.TalktoServer("W");
+	}
+	if (Application::IsKeyPressed('S')) {
+		std::cout << "S is Being pressed " << std::endl;
+		network.TalktoServer("S");
+
+	}
+	if (Application::IsKeyPressed('A')) {
+		std::cout << "A is Being pressed " << std::endl;
+		network.TalktoServer("A");
+
+
+	}
+	if (Application::IsKeyPressed('D')) {
+		std::cout << "D is Being pressed " << std::endl;
+		network.TalktoServer("D");
+
+	}
+
 
 	if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
@@ -757,6 +786,8 @@ void SP2::Render()
 
 void SP2::Exit()
 {
+
+
 	// Cleanup VBO
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
