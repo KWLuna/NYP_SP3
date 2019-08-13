@@ -33,6 +33,9 @@ public:
 	int iUDPServerLen = sizeof(UDPServer);
 	int iCloseSocket;
 
+
+	int playerPosX;
+	int playerPosY;
 	
 };
 

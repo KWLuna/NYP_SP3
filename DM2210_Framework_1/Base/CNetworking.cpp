@@ -16,7 +16,7 @@ void CNetworking::TalktoServer(std::string input)
 
 	iWsaStartup = WSAStartup(MAKEWORD(2, 2), &WinSockData); // NEW
 	UDPServer.sin_family = AF_INET;// NEW
-	UDPServer.sin_addr.s_addr = inet_addr("127.0.0.1");// the other computer ip(computer)
+	UDPServer.sin_addr.s_addr = inet_addr("172.27.184.100");// the other computer ip(computer)
 	UDPServer.sin_port = htons(8001);// NEW
 	UDPSocketClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 

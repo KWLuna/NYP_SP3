@@ -46,7 +46,7 @@ void CNetworking::ListenForPackets()
 	{
 		iWsaStartup = WSAStartup(MAKEWORD(2, 2), &WinSockData); // NEW
 		UDPServer.sin_family = AF_INET;// NEW
-		UDPServer.sin_addr.s_addr = inet_addr("127.0.0.1");// your own ip (laptop)
+		UDPServer.sin_addr.s_addr = inet_addr("172.27.184.100");// your own ip (laptop)
 		UDPServer.sin_port = htons(8001);// NEW
 		UDPSocketClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
@@ -73,15 +73,7 @@ void CNetworking::ListenForPackets()
 
 		std::cout << "Receve the message : " << Buffer << std::endl;
 
-		//std::string user_info = Buffer;
-		///*
-		//
-		//	Ones u get the information do what u need to do with it here 
-
-		//*/
-
-
-		//std::cout << "Recive Message " << user_info << std::endl;
+		
 		iCloseSocket = closesocket(UDPSocketClient);
 		iWsaCleanup = WSACleanup();
 	}

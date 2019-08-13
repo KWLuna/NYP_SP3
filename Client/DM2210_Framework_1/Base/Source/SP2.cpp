@@ -228,6 +228,15 @@ void SP2::Init()
 
 void SP2::Update(double dt)
 {
+
+
+
+
+
+	PlayerPos.Set(0,0,0);
+
+
+
 	UpdateParticles(dt);
 	//Sprite Animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -244,27 +253,7 @@ void SP2::Update(double dt)
 	//
 
 
-	if (Application::IsKeyPressed('W')) {
-		PlayerPos.z -= 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
-
-	}
-	if (Application::IsKeyPressed('S')) {
-		PlayerPos.z += 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
-
-	}
-	if (Application::IsKeyPressed('A') ) {
-		PlayerPos.x -= 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
-
-	}
-	if (Application::IsKeyPressed('D')) {
-		PlayerPos.x += 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
-
-	}
-
+	
 
 
 

@@ -1,15 +1,19 @@
-﻿  SP2.cpp
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(381): warning C4018: '<': signed/unsigned mismatch
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(629): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(630): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(653): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(654): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(661): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(662): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(675): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(676): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+﻿  CNetworking.cpp
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\cnetworking.cpp(25): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\string.h(132): note: see declaration of 'strcpy'
+  Application.cpp
+  SP2.cpp
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(379): warning C4018: '<': signed/unsigned mismatch
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(627): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(628): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(651): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(652): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(659): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(660): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(673): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(674): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Generating code
-  1 of 1208 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  2 of 1208 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
