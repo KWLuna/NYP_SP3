@@ -108,8 +108,7 @@ public:
 	SP2();
 	~SP2();
 
-	std::thread Thread;
-	CNetworking network;
+
  
 	virtual void Init();
 	virtual void Update(double dt);
@@ -128,6 +127,11 @@ public:
 	void RenderPassMain();
 	void RenderWorld();
 private:
+
+	std::thread Thread;
+	CNetworking network;
+	Vector3 PlayerPos;
+
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
 	unsigned m_programID;

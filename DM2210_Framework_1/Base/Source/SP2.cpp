@@ -173,6 +173,8 @@ void SP2::Init()
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
 	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("player", Color(1, 1, 1), 1.f);
+
 
 	//
 	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
@@ -219,6 +221,9 @@ void SP2::Init()
 	Thread = std::thread([this] { network.ListenForPackets(); });
 	Thread.detach();
 
+	// Set Player Position
+	PlayerPos.Set(0,0,500);
+
 }
 
 void SP2::Update(double dt)
@@ -240,25 +245,27 @@ void SP2::Update(double dt)
 
 
 	if (Application::IsKeyPressed('W')) {
-		std::cout << "W is Being pressed " << std::endl;
-		network.TalktoServer("W");
+		PlayerPos.z -= 1;
+		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
+
 	}
 	if (Application::IsKeyPressed('S')) {
-		std::cout << "S is Being pressed " << std::endl;
-		network.TalktoServer("S");
+		PlayerPos.z += 1;
+		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
 
 	}
-	if (Application::IsKeyPressed('A')) {
-		std::cout << "A is Being pressed " << std::endl;
-		network.TalktoServer("A");
-
+	if (Application::IsKeyPressed('A') ) {
+		PlayerPos.x -= 1;
+		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
 
 	}
 	if (Application::IsKeyPressed('D')) {
-		std::cout << "D is Being pressed " << std::endl;
-		network.TalktoServer("D");
+		PlayerPos.x += 1;
+		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
 
 	}
+
+
 
 
 	if (Application::IsKeyPressed('1'))
@@ -685,7 +692,11 @@ void SP2::RenderTerrain()
 }
 void SP2::RenderWorld()
 {
-
+	modelStack.PushMatrix();
+	modelStack.Translate(PlayerPos.x , PlayerPos.y, PlayerPos.z );
+	modelStack.Scale(10, 10, 10);
+	RenderMesh(meshList[GEO_CUBE], false);
+	modelStack.PopMatrix();
 }
 void SP2::RenderPassMain()
 {
@@ -747,6 +758,9 @@ void SP2::RenderPassMain()
 	//modelStack.Scale(100, 100, 100);
 	RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
 	modelStack.PopMatrix();
+
+
+
 
 	RenderTerrain();
 
