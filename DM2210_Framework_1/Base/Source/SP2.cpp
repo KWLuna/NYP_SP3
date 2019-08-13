@@ -19,6 +19,9 @@ SP2::~SP2()
 
 void SP2::Init()
 {
+
+	network.getIPv4();
+	
 	int x = 500, z = 500;
 	for (int i = 0; i < x; ++i)
 	{
