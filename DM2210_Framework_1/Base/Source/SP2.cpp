@@ -247,6 +247,8 @@ void SP2::Update(double dt)
 	//
 
 
+	
+
 	if (Application::IsKeyPressed('W')) {
 		PlayerPos.z -= 1;
 		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
@@ -698,6 +700,7 @@ void SP2::RenderWorld()
 	modelStack.PushMatrix();
 	modelStack.Translate(PlayerPos.x , PlayerPos.y, PlayerPos.z );
 	modelStack.Scale(10, 10, 10);
+	modelStack.Rotate(90, 0, 0, 1);
 	RenderMesh(meshList[GEO_CUBE], false);
 	modelStack.PopMatrix();
 }

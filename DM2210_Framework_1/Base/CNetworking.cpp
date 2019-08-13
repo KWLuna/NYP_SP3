@@ -70,7 +70,6 @@ void CNetworking::ListenForPackets()
 		{
 			return;
 		}
-
 		//std::cout << "Receve the message : " << Buffer << std::endl;
 
 		//std::string user_info = Buffer;

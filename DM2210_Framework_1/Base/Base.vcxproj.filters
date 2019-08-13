@@ -25,6 +25,9 @@
     <Filter Include="Networking">
       <UniqueIdentifier>{4f50ba73-6299-415d-a908-1ce504c1c3f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{5e99372f-8271-4693-b57c-2d7625fce422}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -83,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="CNetworking.cpp">
       <Filter>Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="CNetworking.h">
       <Filter>Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

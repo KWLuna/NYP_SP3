@@ -20,7 +20,6 @@ public:
 
 	void TalktoServer(std::string input);
 	void ListenForPackets();
-	bool getMyIP(IPv4 & myIP);
 	void getIPv4();
 
 	WSADATA WinSockData;

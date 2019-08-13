@@ -14,6 +14,7 @@
 
 #include <thread>
 #include "../CNetworking.h"
+#include "../../Base/Player.h"
 
 
 class SP2 : public Scene
@@ -130,7 +131,13 @@ private:
 
 	std::thread Thread;
 	CNetworking network;
+
+
+	// how to turn a object with the camera 
 	Vector3 PlayerPos;
+
+
+
 
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
