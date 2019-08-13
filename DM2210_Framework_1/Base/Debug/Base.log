@@ -1,1 +1,2 @@
-﻿  Base.vcxproj -> C:\Users\Gary Quah\Downloads\DM2210_Framework_1\DM2210_Framework_1\Debug\Base.exe
+﻿  SoundEngine.cpp
+LINK : fatal error LNK1181: cannot open input file 'irrKlang.lib'

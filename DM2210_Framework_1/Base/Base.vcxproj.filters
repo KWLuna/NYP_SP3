@@ -16,11 +16,17 @@
     <Filter Include="PlayerInformation">
       <UniqueIdentifier>{b77eebc2-7f6b-414b-82a7-81a73b44857c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SoundEngine">
+      <UniqueIdentifier>{91015baa-47be-490a-ad4e-5a958f290b41}</UniqueIdentifier>
+    </Filter>
     <Filter Include="SP2">
       <UniqueIdentifier>{a90bb4aa-4d9a-44f7-99ac-0b9faa372c26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SoundEngine">
-      <UniqueIdentifier>{91015baa-47be-490a-ad4e-5a958f290b41}</UniqueIdentifier>
+    <Filter Include="World">
+      <UniqueIdentifier>{d5c517ed-cc9b-4633-9e36-68bb7009c1d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObjects">
+      <UniqueIdentifier>{9e6c3b9c-adb6-4a76-8477-c57748dc59a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="Source\SoundEngine.cpp">
       <Filter>SoundEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\World.cpp">
+      <Filter>World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +154,12 @@
     </ClInclude>
     <ClInclude Include="Source\SoundEngine.h">
       <Filter>SoundEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\World.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjects.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

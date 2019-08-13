@@ -10,6 +10,7 @@
 #include "LoadHmap.h"
 #include "Particle.h"
 #include "DepthFBO.h"
+#include "PlayerInformation.h"
 
 class SP2 : public Scene
 {
@@ -82,10 +83,15 @@ class SP2 : public Scene
 		GEO_CONE,
 		GEO_TEXT,
 
-		GEO_ORE,
-		GEO_TREE,
-		GEO_GRASS,
-
+		//World
+			//Ground textures
+			GEO_GRASS,
+			GEO_WATER,
+			//Ground Objects
+			GEO_BERRY,
+			GEO_ORE,
+			GEO_TREE,
+		//
 		//TSL
 		GEO_SPRITE_ANIMATION,
 		GEO_PARTICLE, //Water & snow Particle
@@ -107,13 +113,21 @@ public:
 	virtual void Render();
 	virtual void Exit();
 
+	void InitGround();
+
 	void RenderText(Mesh* mesh, std::string text, Color color);
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size = 1.0f, float x = 0.0f, float y = 0.0f);
 	void RenderMesh(Mesh *mesh, bool enableLight);
-	void RenderTerrain();
 	void RenderAnimation();
 
+	//Gary
+	void RenderGroundObjects();
+	void RenderGround();
+
+	
+
+	//
 	//Shadow
 	void RenderPassGPass();
 	void RenderPassMain();
@@ -125,6 +139,8 @@ private:
 	unsigned m_parameters[U_TOTAL];
 
 	Camera3 camera;
+
+	PlayerInformation * player;
 
 	char world[500][500];
 

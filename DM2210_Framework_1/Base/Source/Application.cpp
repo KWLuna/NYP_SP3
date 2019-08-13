@@ -21,6 +21,7 @@ double Application::mouse_last_x = 0.0, Application::mouse_last_y = 0.0,
 	   Application::mouse_diff_x = 0.0, Application::mouse_diff_y = 0.0;
 double Application::camera_yaw = 0.0, Application::camera_pitch = 0.0;
 
+
 //Define an error callback
 static void error_callback(int error, const char* description)
 {
@@ -33,6 +34,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+bool Application::IsMousePressed(unsigned short key) //0 - Left, 1 - Right, 2 - Middle
+{
+	return glfwGetMouseButton(m_window, key) != 0;
+}
+
+int Application::GetWindowWidth()
+{
+	return m_window_width;
+}
+
+int Application::GetWindowHeight()
+{
+	return m_window_height;
 }
 
 void resize_callback(GLFWwindow* window, int w, int h)

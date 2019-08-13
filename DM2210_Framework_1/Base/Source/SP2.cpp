@@ -1,7 +1,6 @@
 #include "SP2.h"
 #include "GL\glew.h"
 
-
 #include "shader.hpp"
 #include "MeshBuilder.h"
 #include "Application.h"
@@ -17,7 +16,7 @@ SP2::~SP2()
 {
 }
 
-void SP2::Init()
+void SP2::InitGround()
 {
 	int x = 500, z = 500;
 	for (int i = 0; i < x; ++i)
@@ -30,14 +29,30 @@ void SP2::Init()
 			{
 				world[i][j] = 'T'; // Tree generation
 			}
-			else if (randVal < 0.2)
+			else if (randVal < 0.15)
 			{
 				world[i][j] = 'O'; // Ore generation
+			}
+			else if (randVal < 0.25)
+			{
+				if (i > 1 && i < 499 && j > 1 && j < 499)
+					world[i][j] = 'W'; // Water generation
+			}
+			else if (randVal < 0.3)
+			{
+				world[i][j] = 'B'; // Berry generation
 			}
 			else
 				world[i][j] = 'G'; // Grass generation
 		}
 	}
+}
+
+void SP2::Init()
+{
+	player = new PlayerInformation;
+
+	InitGround();
 
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -118,7 +133,7 @@ void SP2::Init()
 	glUseProgram(m_programID);
 
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].position.Set(0, 300, 10);
+	lights[0].position.Set(0, 100, 0);
 	lights[0].color.Set(1, 1, 1);
 	lights[0].power = 1.f;
 	lights[0].kC = 1.f;
@@ -131,7 +146,7 @@ void SP2::Init()
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-
+	
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
 	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
@@ -178,11 +193,18 @@ void SP2::Init()
 	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
 
+	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
+	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
+
 	meshList[GEO_TREE] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Tree.obj");
 	meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
 
 	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Ore.obj");
 	meshList[GEO_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
+	
+	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Bush.obj");
+	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
+
 	//
 
 	//Particles
@@ -205,6 +227,7 @@ void SP2::Init()
 		sa->m_anim->Set(0, 17, 1, 1.f, true);
 		//Startframe, endframe, repeat, time, active
 	}
+
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
@@ -213,11 +236,15 @@ void SP2::Init()
 	rotateAngle = 0;
 	bLightEnabled = true;
 	translate_tex_coord = 0;
+
+	player->AttachCamera(&camera);
 }
 
 void SP2::Update(double dt)
 {
 	UpdateParticles(dt);
+	player->update(dt);
+
 	//Sprite Animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
@@ -225,12 +252,6 @@ void SP2::Update(double dt)
 		sa->Update(dt);
 		sa->m_anim->animActive = true;
 	}
-	
-	//Anchor player to the ground
-	Vector3 viewVector = camera.target - camera.position;
-	camera.position.y = 20;
-	camera.target = camera.position + viewVector;
-	//
 
 	if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
@@ -284,6 +305,7 @@ void SP2::Update(double dt)
 	camera.Update(dt);
 	fps = (float)(1.f / dt);
 }
+
 void SP2::UpdateParticles(double dt)
 {
 	if (m_particleCount < MAX_PARTICLE)
@@ -382,6 +404,7 @@ void SP2::RenderText(Mesh* mesh, std::string text, Color color)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
 	glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
@@ -582,7 +605,7 @@ void SP2::RenderPassGPass()
 	RenderWorld();
 }
 
-void SP2::RenderTerrain()
+void SP2::RenderGroundObjects()
 {
 	int x = 10, z = 10;
 
@@ -610,42 +633,26 @@ void SP2::RenderTerrain()
 				{
 					switch (world[i][k])
 					{
-					case 'G':
-						modelStack.PushMatrix();
-						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
-						modelStack.Scale(scale, scale, scale);
-						modelStack.Rotate(270, 1, 0, 0);
-						RenderMesh(meshList[GEO_GRASS], false);
-						modelStack.PopMatrix();
-						break;
 					case 'T':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						modelStack.Rotate(270, 1, 0, 0);
-						RenderMesh(meshList[GEO_GRASS], false);
-
-						modelStack.PushMatrix();
-						modelStack.Translate(0, 0, 0);
-						modelStack.Rotate(-270, 1, 0, 0);
 						RenderMesh(meshList[GEO_TREE], true);
-						modelStack.PopMatrix();
 						modelStack.PopMatrix();
 						break;
 					case 'O':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						modelStack.Rotate(270, 1, 0, 0);
-						RenderMesh(meshList[GEO_GRASS], false);
-
-						modelStack.PushMatrix();
-						modelStack.Translate(0, 0, 0);
-						modelStack.Rotate(-270, 1, 0, 0);
 						RenderMesh(meshList[GEO_ORE], true);
 						modelStack.PopMatrix();
+						break;
+					case 'B':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						RenderMesh(meshList[GEO_BERRY], true);
 						modelStack.PopMatrix();
-
 					default:
 						break;
 					}
@@ -654,15 +661,68 @@ void SP2::RenderTerrain()
 		}
 	}
 }
+
+void SP2::RenderGround()
+{
+	int x = 10, z = 10;
+
+	int scale = 100;
+
+	int pX = camera.position.x / scale;
+	int pZ = camera.position.z / scale;
+
+	int outwards = 20;
+
+	int minOutwardsFromPlayerX = pX - outwards;
+	int minOutwardsFromPlayerZ = pZ - outwards;
+
+	int maxOutwardsFromPlayerX = pX + outwards;
+	int maxOutwardsFromPlayerZ = pZ + outwards;
+
+	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
+	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
+	{
+		if (i >= 0 && i <= 500)
+		{
+			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
+			{
+				if (k >= 0 && k <= 500)
+				{
+					switch (world[i][k])
+					{
+					case 'W':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_WATER], true);
+						modelStack.PopMatrix();
+						break;
+					default:
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_GRASS], true);
+						modelStack.PopMatrix();
+						break;
+					}
+					
+				}
+			}
+		}
+	}
+}
 void SP2::RenderWorld()
 {
-
+	RenderGroundObjects();
 }
+
 void SP2::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, 1200, 800);
+	glViewport(0, 0, Application::GetWindowWidth(), Application::GetWindowHeight());
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -719,7 +779,7 @@ void SP2::RenderPassMain()
 	RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
 	modelStack.PopMatrix();
 
-	RenderTerrain();
+	RenderGround();
 
 	//	Render Particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)

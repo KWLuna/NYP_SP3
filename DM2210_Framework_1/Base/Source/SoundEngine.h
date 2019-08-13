@@ -1,9 +1,9 @@
 #pragma once
 
 #include "SingletonTemplate.h"
-#include "../../irrklang/include/irrKlang.h"
+#include "irrKlang.h"
 using namespace irrklang;
-#include <map>
+#include <map>         
 #include "Vector3.h"
 
 class CSoundEngine : public Singleton<CSoundEngine>
