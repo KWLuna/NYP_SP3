@@ -228,15 +228,6 @@ void SP2::Init()
 
 void SP2::Update(double dt)
 {
-
-
-
-
-
-	PlayerPos.Set(0,0,0);
-
-
-
 	UpdateParticles(dt);
 	//Sprite Animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -254,6 +245,8 @@ void SP2::Update(double dt)
 
 
 	
+	camera.position.x = stof(network.playerPosX);
+	camera.position.z = stof(network.playerPosZ);
 
 
 

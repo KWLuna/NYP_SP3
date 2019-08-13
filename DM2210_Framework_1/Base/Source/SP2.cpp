@@ -246,22 +246,22 @@ void SP2::Update(double dt)
 
 	if (Application::IsKeyPressed('W')) {
 		PlayerPos.z -= 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
+		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
 
 	}
 	if (Application::IsKeyPressed('S')) {
 		PlayerPos.z += 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
+		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
 
 	}
 	if (Application::IsKeyPressed('A') ) {
 		PlayerPos.x -= 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
+		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
 
 	}
 	if (Application::IsKeyPressed('D')) {
 		PlayerPos.x += 1;
-		network.TalktoServer("X:" + std::to_string(PlayerPos.x) + "Z:" + std::to_string(PlayerPos.z));
+		network.TalktoServer(std::to_string(PlayerPos.x)+ "," + std::to_string(PlayerPos.z));
 
 	}
 

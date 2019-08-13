@@ -2,6 +2,8 @@
 
 
 
+// client
+
 CNetworking::CNetworking()
 {
 }
@@ -40,7 +42,7 @@ void CNetworking::TalktoServer(std::string input)
 
 void CNetworking::ListenForPackets()
 {
-	std::cout << "Start Run for ListsenForPacakets" << std::endl;
+	//std::cout << "Start Run for ListsenForPacakets" << std::endl;
 
 	while (true)
 	{
@@ -71,7 +73,12 @@ void CNetworking::ListenForPackets()
 			return;
 		}
 
-		std::cout << "Receve the message : " << Buffer << std::endl;
+		std::string user_info = Buffer;
+		playerPosX = user_info.substr(0, user_info.find(",")); // get the x pos
+		playerPosZ = user_info.substr(user_info.find(",") + 1, user_info.size()); // get the z pos
+
+		std::cout << playerPosX << std::endl;
+		std::cout << playerPosZ << std::endl;
 
 		
 		iCloseSocket = closesocket(UDPSocketClient);

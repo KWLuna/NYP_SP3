@@ -1,6 +1,6 @@
 #include "CNetworking.h"
 
-
+// server
 
 CNetworking::CNetworking()
 {
@@ -40,7 +40,7 @@ void CNetworking::TalktoServer(std::string input)
 
 void CNetworking::ListenForPackets()
 {
-	std::cout << "Start Run for ListsenForPacakets" << std::endl;
+	//std::cout << "Start Run for ListsenForPacakets" << std::endl;
 
 	while (true)
 	{
@@ -71,7 +71,7 @@ void CNetworking::ListenForPackets()
 			return;
 		}
 
-		std::cout << "Receve the message : " << Buffer << std::endl;
+		//std::cout << "Receve the message : " << Buffer << std::endl;
 
 		//std::string user_info = Buffer;
 		///*

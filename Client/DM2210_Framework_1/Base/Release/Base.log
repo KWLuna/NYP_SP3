@@ -1,20 +1,7 @@
-﻿  CNetworking.cpp
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\cnetworking.cpp(25): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\string.h(132): note: see declaration of 'strcpy'
-  Application.cpp
-  SP2.cpp
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(368): warning C4018: '<': signed/unsigned mismatch
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(616): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(617): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(640): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(641): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(648): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(649): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(662): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\jagat\desktop\sp3\client\dm2210_framework_1\base\source\sp2.cpp(663): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+﻿  Camera3.cpp
   Generating code
-  20 of 1187 functions ( 1.7%) were compiled, the rest were copied from previous compilation.
+  4 of 1204 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    29 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Base.vcxproj -> C:\Users\jagat\Desktop\SP3\Client\DM2210_Framework_1\Release\Base.exe

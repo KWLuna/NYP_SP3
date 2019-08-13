@@ -34,8 +34,8 @@ public:
 	int iCloseSocket;
 
 
-	int playerPosX;
-	int playerPosY;
+	std::string playerPosX = "0";
+	std::string playerPosZ = "0";
 	
 };
 
