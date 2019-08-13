@@ -1,0 +1,16 @@
+﻿  SP2.cpp
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(381): warning C4018: '<': signed/unsigned mismatch
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(629): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(630): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(653): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(654): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(661): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(662): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(675): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\jagat\desktop\sp3\dm2210_framework_1\base\source\sp2.cpp(676): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Generating code
+  1 of 1208 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Base.vcxproj -> C:\Users\jagat\Desktop\SP3\DM2210_Framework_1\Release\Base.exe
