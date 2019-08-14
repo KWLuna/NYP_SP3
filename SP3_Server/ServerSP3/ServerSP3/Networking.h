@@ -1,13 +1,12 @@
 #pragma once
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include <Windows.h>
 #include <winsock.h> // networking lib
 #pragma comment(lib, "Ws2_32.lib")
 
 #include <thread> // threading for the listenr in the networking 
-
 #define MAXLEN   64      
 
 
@@ -24,7 +23,6 @@ public:
 	Networking();
 	~Networking();
 
-	void SendPackets(std::string);
 	void listener();
 	void FLOOD(std::string,std::string);
 	std::string getIPv4();
@@ -50,6 +48,9 @@ private:
 	WSADATA  wsadata;
 	char    hostname[MAXLEN];
 	int    ret;
-	std::string ipaddressoutput;
+
+	// vector to store all incoming IPv4 from client
+	std::vector<std::string> allClientIPv4;
+	
 };
 

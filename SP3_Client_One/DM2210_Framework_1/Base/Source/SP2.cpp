@@ -21,14 +21,19 @@ void SP2::Init()
 {
 
 
-	// get the message form the server
 
 	
-
+	// keep on getting the IPv address of the Server
 	Thread = std::thread([this] { network.GetServerIP(); });
 	Thread.detach();
 
-	
+	// send My address to client 
+
+
+
+
+	//Time to send back information to the server
+
 	int x = 500, z = 500;
 	for (int i = 0; i < x; ++i)
 	{
@@ -247,32 +252,13 @@ void SP2::Update(double dt)
 	Vector3 viewVector = camera.target - camera.position;
 	camera.position.y = 20;
 	camera.target = camera.position + viewVector;
-	//
 
-
-	
 
 	if (Application::IsKeyPressed('W')) {
-		PlayerPos.z -= 1;
-		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
+		network.TalktoServer(network.ServerIPv4, "I am gay");
 
 	}
-	if (Application::IsKeyPressed('S')) {
-		PlayerPos.z += 1;
-		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
-
-	}
-	if (Application::IsKeyPressed('A') ) {
-		PlayerPos.x -= 1;
-		network.TalktoServer(std::to_string(PlayerPos.x) + "," + std::to_string(PlayerPos.z));
-
-	}
-	if (Application::IsKeyPressed('D')) {
-		PlayerPos.x += 1;
-		network.TalktoServer(std::to_string(PlayerPos.x)+ "," + std::to_string(PlayerPos.z));
-
-	}
-
+	
 
 
 

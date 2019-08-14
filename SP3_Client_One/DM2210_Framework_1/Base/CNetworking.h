@@ -7,6 +7,8 @@
 #include <winsock.h> // for networking 
 #define MAXLEN   64      
 
+
+
 struct IPv4
 {
 	unsigned char b1, b2, b3, b4;
@@ -18,7 +20,7 @@ public:
 	CNetworking();
 	~CNetworking();
 
-	void TalktoServer(std::string input);
+	void TalktoServer(std::string IPv4, std::string sms);
 	void ListenForPackets();
 
 	void GetServerIP();
@@ -45,7 +47,9 @@ public:
 	WSADATA  wsadata;
 	char    hostname[MAXLEN];
 	int    ret;
-	std::string ipaddressoutput;
+
+	// Networking 
+	std::string ServerIPv4 = "BLANK";
 
 	
 };

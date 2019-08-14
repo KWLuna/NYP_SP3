@@ -16,6 +16,7 @@
 #include "../CNetworking.h"
 #include "../../Base/Player.h"
 
+extern std::string ServerIPv4;
 
 class SP2 : public Scene
 {
@@ -179,8 +180,7 @@ private:
 	Mtx44 m_lightDepthView;
 	RENDER_PASS m_renderPass;
 
-	// Networking 
-	std::string ServerIP;
+	
 };
 
 #endif
