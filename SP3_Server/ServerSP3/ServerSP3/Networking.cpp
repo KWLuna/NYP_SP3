@@ -73,7 +73,7 @@ void Networking::listener()
 	}
 }
 
-void Networking::SPAM(std::string IPv4 ,std::string input)
+void Networking::FLOOD(std::string IPv4 ,std::string input)
 {
 	
 		iWsaStartup = WSAStartup(MAKEWORD(2, 2), &WinSockData); // NEW
@@ -95,12 +95,11 @@ void Networking::SPAM(std::string IPv4 ,std::string input)
 			sizeof(UDPServer)
 		);
 
-
+		std::cout << Buffer << std::endl;
 		iCloseSocket = closesocket(UDPSocketClient);
 		iWsaCleanup = WSACleanup();
 		
 
-		std::cout << "Address : " << IPv4 << " Message : " << input << std::endl;
 	
 }
 

@@ -37,9 +37,32 @@ int print(const std::string &s)
 
 }
 
+
+
+
+void ServerStatus(std::string CopyOwnIPv4, std::string CopyCopyOwnIPv4, Networking network) {
+
+
+	// tell everyone i am ONLINE
+	while (true)
+	{
+		for (int i = 0; i < 256; i++)
+		{
+			CopyOwnIPv4.append(std::to_string(i));
+			network.FLOOD(CopyOwnIPv4, "ServerAddress:" + network.getIPv4());
+			//std::cout << CopyOwnIPv4 << std::endl;
+			CopyOwnIPv4 = CopyCopyOwnIPv4;
+
+		}
+
+		Sleep(5000);
+	}
+	
+
+}
+
 int main() {
 	Networking network;
-	std::thread Thread;
 	std::string ownIPv4;
 	std::string CopyOwnIPv4;
 
@@ -69,15 +92,12 @@ int main() {
 	// 
 	std::string CopyCopyOwnIPv4;
 	CopyCopyOwnIPv4 = CopyOwnIPv4;
-	
-	for (int i = 0; i < 255; i++)
-	{
-		CopyOwnIPv4.append(std::to_string(i));
-		network.SPAM(CopyOwnIPv4, "Server IP : " + ownIPv4);
-		//std::cout << CopyOwnIPv4 << std::endl;
-		CopyOwnIPv4 = CopyCopyOwnIPv4;
 
-	}
+
+	// detach thread send server ip every 10 secs
+	std::thread Thread (ServerStatus,CopyOwnIPv4, CopyCopyOwnIPv4, network);
+	Thread.detach();
+	
 
 
 

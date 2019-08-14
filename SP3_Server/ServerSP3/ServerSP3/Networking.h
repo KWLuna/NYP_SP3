@@ -26,7 +26,7 @@ public:
 
 	void SendPackets(std::string);
 	void listener();
-	void SPAM(std::string,std::string);
+	void FLOOD(std::string,std::string);
 	std::string getIPv4();
 private:
 
