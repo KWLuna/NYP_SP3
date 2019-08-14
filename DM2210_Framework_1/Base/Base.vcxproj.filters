@@ -87,9 +87,6 @@
     <ClCompile Include="Source\World.cpp">
       <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Item.cpp">
-      <Filter>PlayerInformation</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -163,9 +160,6 @@
     </ClInclude>
     <ClInclude Include="GameObjects.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Item.h">
-      <Filter>PlayerInformation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

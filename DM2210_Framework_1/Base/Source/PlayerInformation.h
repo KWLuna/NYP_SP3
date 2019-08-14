@@ -1,32 +1,27 @@
 #pragma once
 #include "Camera3.h"
-#include "item.h"
-#include <vector>
+
 class PlayerInformation
 {
 public:
 	PlayerInformation();
 	~PlayerInformation();
 
+	Vector3 GetPos(void) const;
+	Vector3 GetTarget(void) const;
+	Vector3 GetUp(void) const;
+
+	void SetPos(const Vector3& pos);
+	void SetTarget(const Vector3& target);
+	void SetUp(const Vector3& up);
+
 	void Constrain(void);
 	void AttachCamera(Camera3* _cameraPtr);
 
 	void update(double dt);
 
-	bool addItem(Item * object);
-
-	Item * getItem(int ID); 
-	
-	int getTotalItems();
 
 private:
 	Camera3 * attachedCamera;
-
-	int slot1;
-	int slot2;
-
-	double bounceTime;
-
-	std::vector<Item*> ItemList;
 };
 
