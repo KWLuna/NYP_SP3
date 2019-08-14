@@ -6,7 +6,9 @@ using namespace std;
 PlayerInformation::PlayerInformation()
 {
 	bounceTime = 0;
-
+	hunger = 32;
+	HP = 100;
+	m_fSpeed = 100.f;
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 9; ++i)
 		ItemList.push_back(new Item(0, 0));
@@ -115,22 +117,28 @@ void PlayerInformation::update(double dt)
 	//Movement
 	if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
 	{
-		float m_fSpeed = 100;
-
 		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 		Vector3 rightUV;
 		if (Application::IsKeyPressed('W'))
 		{
-			if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
+			
+			if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)) && hunger > 30)
+			{
+
 				attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
+				action = SPRINTING;
+			}
 			else
 			{
 				attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
+				action = WALKING;
+
 			}
 		}
 		else if (Application::IsKeyPressed('S'))
 		{
 			attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
+			action = WALKING;
 		}
 		if (Application::IsKeyPressed('A'))
 		{
@@ -138,6 +146,7 @@ void PlayerInformation::update(double dt)
 			rightUV.y = 0;
 			rightUV.Normalize();
 			attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
+			action = WALKING;
 		}
 		else if (Application::IsKeyPressed('D'))
 		{
@@ -145,10 +154,73 @@ void PlayerInformation::update(double dt)
 			rightUV.y = 0;
 			rightUV.Normalize();
 			attachedCamera->position += rightUV * m_fSpeed * (float)dt;
+			action = WALKING;
 		}
+		
 		// Constrain the position
 		Constrain();
 		// Update the target
 		attachedCamera->target = attachedCamera->position + viewVector;
 	}
+	else
+	{
+		action = STANDING;
+	}
+
+	if (action == NUM_ACTION)
+	{
+		action = STANDING;
+	}
+	switch (action)
+	{
+	case PlayerInformation::STANDING:
+		break;
+	case PlayerInformation::SPRINTING:
+		hunger -= 0.1 * dt;
+		break;
+	case PlayerInformation::WALKING:
+		hunger -= 0.05 * dt;
+		break;
+	case PlayerInformation::EATING:
+		hunger += 0.5 * dt;
+		break;
+	case PlayerInformation::NUM_ACTION:
+		break;
+	default:
+		break;
+	}
+
+	if (hunger < 30)
+	{
+		m_fSpeed = 80;
+		if (hunger < 0)
+		{
+			hunger = 0;
+		}
+		if (hunger == 0)
+		{
+			HP -= 3 * dt;
+		}
+	}
+	else
+	{
+		m_fSpeed = 100;
+		if (hunger > 80)
+		{
+			if (HP < 100)
+			{
+				HP += 0.5 * dt;
+				hunger -= 0.1 * dt;
+			}
+		}
+	}
+	
+}
+double PlayerInformation::getHunger()
+{
+	return hunger;
+}
+double PlayerInformation::getHP()
+{
+	return HP;
 }

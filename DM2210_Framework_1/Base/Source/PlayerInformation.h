@@ -5,6 +5,16 @@
 class PlayerInformation
 {
 public:
+	enum TYPE_ACTION
+	{
+		STANDING = 0,
+		SPRINTING,
+		WALKING,
+		EATING,
+		NUM_ACTION,
+	};
+
+	TYPE_ACTION action;
 	PlayerInformation();
 	~PlayerInformation();
 
@@ -19,6 +29,8 @@ public:
 
 	int getTotalItems();
 
+	double getHunger();
+	double getHP();
 private:
 	Camera3 * attachedCamera;
 
@@ -28,4 +40,8 @@ private:
 	double bounceTime;
 
 	std::vector<Item*> ItemList;
+	float m_fSpeed;
+
+	double hunger;
+	double HP;
 };
