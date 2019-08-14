@@ -73,7 +73,7 @@ int main() {
 	for (int i = 0; i < 255; i++)
 	{
 		CopyOwnIPv4.append(std::to_string(i));
-		network.SPAM(CopyOwnIPv4, "Hi from server");
+		network.SPAM(CopyOwnIPv4, "Server IP : " + ownIPv4);
 		//std::cout << CopyOwnIPv4 << std::endl;
 		CopyOwnIPv4 = CopyCopyOwnIPv4;
 

@@ -1,0 +1,9 @@
+﻿  CNetworking.cpp
+c:\users\180776n\desktop\sp3_client1\dm2210_framework_1\base\cnetworking.cpp(25): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\string.h(132): note: see declaration of 'strcpy'
+  Generating code
+  2 of 1127 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Base.vcxproj -> C:\Users\180776N\Desktop\SP3_Client1\DM2210_Framework_1\Release\Base.exe

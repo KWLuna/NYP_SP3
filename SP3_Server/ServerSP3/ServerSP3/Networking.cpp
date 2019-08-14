@@ -100,7 +100,7 @@ void Networking::SPAM(std::string IPv4 ,std::string input)
 		iWsaCleanup = WSACleanup();
 		
 
-		std::cout << "Address : " << IPv4 << "Message : " << input << std::endl;
+		std::cout << "Address : " << IPv4 << " Message : " << input << std::endl;
 	
 }
 

@@ -219,8 +219,6 @@ void SP2::Init()
 	bLightEnabled = true;
 	translate_tex_coord = 0;
 
-
-	
 	Thread = std::thread([this] { network.ListenForPackets(); });
 	Thread.detach();
 
