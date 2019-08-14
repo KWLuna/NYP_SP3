@@ -73,8 +73,6 @@ class SP2 : public Scene
 	};
 	enum GEOMETRY_TYPE
 	{
-		GEO_GOLD,
-		GEO_EMPTY,
 		GEO_AXES,
 		GEO_CROSSHAIR,
 		GEO_LIGHTBALL,
@@ -94,11 +92,8 @@ class SP2 : public Scene
 			GEO_ORE,
 			GEO_TREE,
 		//
-		
-		//Items
 		GEO_INVENTORY,
-		
-		//
+
 		//TSL
 		GEO_SPRITE_ANIMATION,
 		GEO_PARTICLE, //Water & snow Particle
@@ -126,7 +121,7 @@ public:
 	void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
 	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size = 1.0f, float x = 0.0f, float y = 0.0f);
 	void RenderMesh(Mesh *mesh, bool enableLight);
-	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX , float scaleY, float xPos, float yPos , float zPos);
+	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX , float scaleY, float xPos, float yPos);
 
 
 	void RenderAnimation();

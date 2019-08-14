@@ -8,8 +8,6 @@ public:
 		ITEM_WOOD,
 		ITEM_STONE,
 		ITEM_GOLD,
-
-		ITEM_END
 	};
 	ITEM_TYPE Items;
 
