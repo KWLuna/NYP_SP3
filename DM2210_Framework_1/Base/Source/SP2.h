@@ -11,6 +11,7 @@
 #include "Particle.h"
 #include "DepthFBO.h"
 #include "PlayerInformation.h"
+#include "CAnimal.h"
 
 class SP2 : public Scene
 {
@@ -91,7 +92,12 @@ class SP2 : public Scene
 			GEO_BERRY,
 			GEO_ORE,
 			GEO_TREE,
-		//
+		
+		//Animals
+		GEO_PIG, 
+		GEO_CHICKEN,
+		GEO_COW,
+
 		//TSL
 		GEO_SPRITE_ANIMATION,
 		GEO_PARTICLE, //Water & snow Particle
@@ -127,7 +133,11 @@ public:
 
 	
 
-	//
+	//Ke Wei
+	CAnimal* FetchGO();
+	void SpawningAnimal();
+	void RenderAnimal(CAnimal* animal);
+	void AnimalChecker(double dt);
 	//Shadow
 	void RenderPassGPass();
 	void RenderPassMain();
@@ -174,6 +184,10 @@ private:
 	Mtx44 m_lightDepthProj;
 	Mtx44 m_lightDepthView;
 	RENDER_PASS m_renderPass;
+	
+	//Animal
+	std::vector<CAnimal *> m_AnimalList;
+	int m_NumOfAnimal;
 };
 
 #endif
