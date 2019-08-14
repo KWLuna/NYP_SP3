@@ -75,7 +75,8 @@ void Networking::listener()
 
 void Networking::FLOOD(std::string IPv4 ,std::string input)
 {
-	
+
+	std::cout << input << std::endl;
 		iWsaStartup = WSAStartup(MAKEWORD(2, 2), &WinSockData); // NEW
 		UDPServer.sin_family = AF_INET;// NEW
 		UDPServer.sin_addr.s_addr = inet_addr(IPv4.c_str());// the other computer ip(computer)
@@ -83,7 +84,7 @@ void Networking::FLOOD(std::string IPv4 ,std::string input)
 		UDPSocketClient = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 
-
+		
 		strcpy_s(Buffer, input.c_str());	// or pass &s[0]
 
 		iSendto = sendto(
@@ -95,7 +96,6 @@ void Networking::FLOOD(std::string IPv4 ,std::string input)
 			sizeof(UDPServer)
 		);
 
-		std::cout << Buffer << std::endl;
 		iCloseSocket = closesocket(UDPSocketClient);
 		iWsaCleanup = WSACleanup();
 		
@@ -119,7 +119,6 @@ std::string Networking::getIPv4()
 	szLocalIP = inet_ntoa(*(struct in_addr *)*host_entry->h_addr_list);
 	//std::cout << szLocalIP << std::endl;
 	WSACleanup();
-
 	return szLocalIP;
 
 }

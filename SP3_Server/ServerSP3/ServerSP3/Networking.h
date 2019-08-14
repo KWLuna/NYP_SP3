@@ -38,7 +38,7 @@ private:
 
 	struct sockaddr_in UDPServer;
 	int iBind;
-	char Buffer[50000] = "Hello From Server!";
+	char Buffer[500] = "Hello From Server!";
 	int iSendto = 0;
 	int iReceiveFrom = 0;
 

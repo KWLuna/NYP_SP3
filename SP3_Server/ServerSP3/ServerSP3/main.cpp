@@ -2,6 +2,8 @@
 #include <string>
 #include "Networking.h"
 #include <thread>
+#include <sstream>
+
 
 
 /*
@@ -40,18 +42,16 @@ int print(const std::string &s)
 
 
 
-void ServerStatus(std::string CopyOwnIPv4, std::string CopyCopyOwnIPv4, Networking network) {
+void ServerStatus(std::string CopyOwnIPv4, std::string deafulIPv4, Networking network) {
 
 
 	// tell everyone i am ONLINE
 	while (true)
 	{
-		for (int i = 0; i < 256; i++)
+		for (int i = 0; i < 255; i++)
 		{
-			CopyOwnIPv4.append(std::to_string(i));
-			network.FLOOD(CopyOwnIPv4, "ServerAddress:" + network.getIPv4());
-			//std::cout << CopyOwnIPv4 << std::endl;
-			CopyOwnIPv4 = CopyCopyOwnIPv4;
+			network.FLOOD(CopyOwnIPv4.append(std::to_string(i)), network.getIPv4());
+			CopyOwnIPv4 = deafulIPv4;
 
 		}
 
@@ -70,13 +70,6 @@ int main() {
 	ownIPv4 = network.getIPv4();
 	CopyOwnIPv4 = ownIPv4;
 	std::cout << ownIPv4 << std::endl;
-
-	// Step 2
-	// SPAM Packets to all IP on the network 
-
-
-
-	// sub string the to find the last part of it 
 	
 	int posofLastdot = print(CopyOwnIPv4);
 	std::cout << "Number is : " << posofLastdot << std::endl;
@@ -85,19 +78,13 @@ int main() {
 	CopyOwnIPv4 = CopyOwnIPv4.substr(0, posofLastdot + 1);
 	std::cout << CopyOwnIPv4 << std::endl;
 
-
-	// Make a copy of it to Another copy to replace it 
-	// everytime it appened to get the normal one with out 
-	// last . somthing 
-	// 
 	std::string CopyCopyOwnIPv4;
 	CopyCopyOwnIPv4 = CopyOwnIPv4;
 
 
 	// detach thread send server ip every 10 secs
-	std::thread Thread (ServerStatus,CopyOwnIPv4, CopyCopyOwnIPv4, network);
-	Thread.detach();
-	
+	std::thread t1(ServerStatus, CopyCopyOwnIPv4, CopyOwnIPv4, network);
+	t1.detach();
 
 
 
