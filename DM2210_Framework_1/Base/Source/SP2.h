@@ -84,9 +84,12 @@ class SP2 : public Scene
 		GEO_CONE,
 		GEO_TEXT,
 
-		GEO_GOLD,
-		GEO_EMPTY,
+		//Inventory
 		GEO_INVENTORY,
+			GEO_GOLD,
+			GEO_EMPTY_INVENTORY,
+			GEO_HIGHLIGHT_INVENTORY,
+		//
 
 		//World
 			//Ground textures
@@ -96,11 +99,16 @@ class SP2 : public Scene
 			GEO_BERRY,
 			GEO_ORE,
 			GEO_TREE,
+		//
 		
 		//Animals
 		GEO_PIG, 
 		GEO_CHICKEN,
 		GEO_COW,
+
+		//Crafting
+		GEO_CRAFTING_MENU,
+		GEO_EMPTY_CRAFTING,
 
 		//TSL
 		GEO_SPRITE_ANIMATION,

@@ -19,13 +19,20 @@ public:
 
 	int getTotalItems();
 
+	bool getIsCrafting();
+	int getCurrentSlot();
+
 private:
 	Camera3 * attachedCamera;
 
-	int slot1;
-	int slot2;
+	bool m_bCrafting;
 
-	double bounceTime;
+	int m_iCraftingSlotOne;
+	int m_iCraftingSlotTwo;
+
+	int m_iInventorySlot;
+
+	double m_dBounceTime;
 
 	std::vector<Item*> ItemList;
 };

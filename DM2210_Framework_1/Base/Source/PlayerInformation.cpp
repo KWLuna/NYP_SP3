@@ -5,10 +5,17 @@
 using namespace std;
 PlayerInformation::PlayerInformation()
 {
-	bounceTime = 0;
+	m_dBounceTime = 0;
+
+	m_bCrafting = false;
+
+	m_iInventorySlot = 0;
+
+	m_iCraftingSlotOne = 0;
+	m_iCraftingSlotTwo = 0;
 
 	//Init inventory as empty , 9 slots in total.
-	for (int i = 0; i < 9; ++i)
+	for (int i = 0; i < 15; ++i)
 		ItemList.push_back(new Item(0, 0));
 }
 
@@ -16,6 +23,10 @@ PlayerInformation::~PlayerInformation()
 {
 }
 
+int PlayerInformation::getCurrentSlot()
+{
+	return m_iInventorySlot;
+}
 void PlayerInformation::AttachCamera(Camera3* _cameraPtr)
 {
 	attachedCamera = _cameraPtr;
@@ -76,8 +87,14 @@ int PlayerInformation::getTotalItems()
 	return ItemList.size();
 }
 
+bool PlayerInformation::getIsCrafting()
+{
+	return m_bCrafting;
+}
+
 void PlayerInformation::update(double dt)
 {
+	m_dBounceTime -= 1 * dt;
 	for (int i = 0; i < ItemList.size(); ++i)
 	{
 		if (ItemList[i]->getQuantity() == 0)
@@ -86,69 +103,91 @@ void PlayerInformation::update(double dt)
 		}
 	}
 
-	for (int i = 1; i < 10; ++i)
+	if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
 	{
-		string chara = to_string(i);
+		if (m_bCrafting == true)
+			m_bCrafting = false;
+		else
+			m_bCrafting = true;
 
-		// Test if a key is pressed;
-		if (Application::IsKeyPressed(chara[0]))
+		m_dBounceTime = 1;
+	}
+
+	if (m_bCrafting == true)
+	{
+		for (int i = 0; i < 9; ++i)
 		{
-			if (slot1 != i)
+			string chara = to_string(i);
+
+			// Test if a key is pressed;
+			if (Application::IsKeyPressed(chara[0]))
 			{
-				if (slot1 >= 1 && slot1 <= 9)
-				{
-					Item * temp = new Item(ItemList[slot1]->getID(), ItemList[slot1]->getQuantity());
+				if (m_iCraftingSlotTwo == 0)
+					m_iCraftingSlotTwo = i;
 
-					ItemList[slot1]->setID(ItemList[i]->getID());
-					ItemList[slot1]->setQuantity(ItemList[i]->getQuantity());
-
-					ItemList[i]->setID(temp->getID());
-					ItemList[i]->setQuantity(temp->getQuantity());
-				}
-				slot1 = i;
+				m_iCraftingSlotOne = i;
 			}
-			// If key is pressed , break
-			break;
 		}
 	}
 
-	//Movement
-	if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
+	if (m_bCrafting == false)
 	{
-		float m_fSpeed = 100;
+		if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
+		{
+			m_iInventorySlot -= 1;
+			m_dBounceTime = 0.2;
 
-		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
-		Vector3 rightUV;
-		if (Application::IsKeyPressed('W'))
+			if (m_iInventorySlot < 0)
+				m_iInventorySlot = 14;
+		}
+
+		if (Application::IsKeyPressed(VK_RIGHT) && m_dBounceTime <= 0)
 		{
-			if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
-				attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
-			else
+			m_iInventorySlot += 1;
+			m_dBounceTime = 0.2;
+
+			if (m_iInventorySlot > 14)
+				m_iInventorySlot = 0;
+		}
+
+		//Movement
+		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
+		{
+			float m_fSpeed = 100;
+
+			Vector3 viewVector = attachedCamera->target - attachedCamera->position;
+			Vector3 rightUV;
+			if (Application::IsKeyPressed('W'))
 			{
-				attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
+				if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
+					attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
+				else
+				{
+					attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
+				}
 			}
+			else if (Application::IsKeyPressed('S'))
+			{
+				attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
+			}
+			if (Application::IsKeyPressed('A'))
+			{
+				rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
+				rightUV.y = 0;
+				rightUV.Normalize();
+				attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
+			}
+			else if (Application::IsKeyPressed('D'))
+			{
+				rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
+				rightUV.y = 0;
+				rightUV.Normalize();
+				attachedCamera->position += rightUV * m_fSpeed * (float)dt;
+			}
+			// Constrain the position
+			Constrain();
+			// Update the target
+			attachedCamera->target = attachedCamera->position + viewVector;
 		}
-		else if (Application::IsKeyPressed('S'))
-		{
-			attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
-		}
-		if (Application::IsKeyPressed('A'))
-		{
-			rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
-			rightUV.y = 0;
-			rightUV.Normalize();
-			attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
-		}
-		else if (Application::IsKeyPressed('D'))
-		{
-			rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
-			rightUV.y = 0;
-			rightUV.Normalize();
-			attachedCamera->position += rightUV * m_fSpeed * (float)dt;
-		}
-		// Constrain the position
-		Constrain();
-		// Update the target
-		attachedCamera->target = attachedCamera->position + viewVector;
 	}
 }

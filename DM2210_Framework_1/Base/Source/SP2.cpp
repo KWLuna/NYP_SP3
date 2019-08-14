@@ -219,9 +219,17 @@ void SP2::Init()
 	meshList[GEO_GOLD] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
 
-	meshList[GEO_EMPTY] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_EMPTY]->textureArray[0] = LoadTGA("Image//Empty.tga");
+	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
 
+	meshList[GEO_HIGHLIGHT_INVENTORY] = MeshBuilder::GenerateQuad("GEO_HIGHLIGHT_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_HIGHLIGHT_INVENTORY]->textureArray[0] = LoadTGA("Image//Highlight_Inventory.tga");
+
+	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
+
+	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
 	//Particles
 	meshList[GEO_PARTICLE] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
@@ -882,7 +890,7 @@ void SP2::RenderGroundObjects()
 		}
 	}
 }
-
+ 
 void SP2::RenderGround()
 {
 	int x = 10, z = 10;
@@ -941,15 +949,37 @@ void SP2::RenderWorld()
 
 	for (int i = 0; i < player->getTotalItems(); ++i)
 	{
-		RenderImageToScreen(meshList[GEO_EMPTY], false, 60, 60,
-			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 1);
+		if (i != player->getCurrentSlot())
+			RenderImageToScreen(meshList[GEO_EMPTY_INVENTORY], false, 60, 60,
+				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
+		else
+			RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 60, 60,
+				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
 
 		RenderImageToScreen(meshList[GEO_GOLD], false, 50, 50,
-			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 2);
+			180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2);
+	}
+
+	//Crafting Interface
+	if (player->getIsCrafting() == true)
+	{
+		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+
+		//Left Crafting
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
+		//Right Crafting
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+		//Bottom Crafting
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
+
 
 	}
 
-	RenderGroundObjects();
+	
 
 	RenderGroundObjects();
 }
