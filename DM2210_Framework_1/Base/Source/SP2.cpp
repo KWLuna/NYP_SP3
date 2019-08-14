@@ -1,6 +1,5 @@
 #include "SP2.h"
 #include "GL\glew.h"
-
 #include "shader.hpp"
 #include "MeshBuilder.h"
 #include "Application.h"
@@ -170,7 +169,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(0, 300, 700), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
@@ -212,6 +211,16 @@ void SP2::Init()
 	meshList[GEO_CHICKEN]->textureArray[0] = LoadTGA("Image//chicken.tga");
 	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//cow.obj");
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
+
+	//Item Sprites
+	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
+
+	meshList[GEO_GOLD] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_GOLD]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
+
+	meshList[GEO_EMPTY] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY]->textureArray[0] = LoadTGA("Image//Empty.tga");
 
 
 	//Particles
@@ -268,7 +277,7 @@ void SP2::Update(double dt)
 		sa->m_anim->animActive = true;
 	}
 
-	if (Application::IsKeyPressed('1'))
+	/*if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if (Application::IsKeyPressed('2'))
 		glDisable(GL_CULL_FACE);
@@ -299,20 +308,20 @@ void SP2::Update(double dt)
 	else if (Application::IsKeyPressed('9'))
 	{
 		bLightEnabled = false;
-	}
+	}*/
 
-	if (Application::IsKeyPressed('I'))
-		lights[0].position.z -= (float)(10.f * dt);
-	if (Application::IsKeyPressed('K'))
-		lights[0].position.z += (float)(10.f * dt);
-	if (Application::IsKeyPressed('J'))
-		lights[0].position.x -= (float)(10.f * dt);
-	if (Application::IsKeyPressed('L'))
-		lights[0].position.x += (float)(10.f * dt);
-	if (Application::IsKeyPressed('O'))
-		lights[0].position.y -= (float)(10.f * dt);
-	if (Application::IsKeyPressed('P'))
-		lights[0].position.y += (float)(10.f * dt);
+	//if (Application::IsKeyPressed('I'))
+	//	lights[0].position.z -= (float)(10.f * dt);
+	//if (Application::IsKeyPressed('K'))
+	//	lights[0].position.z += (float)(10.f * dt);
+	//if (Application::IsKeyPressed('J'))
+	//	lights[0].position.x -= (float)(10.f * dt);
+	//if (Application::IsKeyPressed('L'))
+	//	lights[0].position.x += (float)(10.f * dt);
+	//if (Application::IsKeyPressed('O'))
+	//	lights[0].position.y -= (float)(10.f * dt);
+	//if (Application::IsKeyPressed('P'))
+	//	lights[0].position.y += (float)(10.f * dt);
 
 
 	//Turning fog on and off
@@ -739,6 +748,51 @@ void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 	}
 }
 
+void SP2::RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY, float xPos, float yPos, float zPos)
+{
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, Application::GetWindowWidth(), 0, Application::GetWindowHeight(), -10, 10);
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity();
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+
+	modelStack.Translate(xPos, yPos, zPos);
+	modelStack.Scale(scaleX, scaleY, 1);
+
+	Mtx44 MVP, modelView, modelView_inverse_transpose;
+
+	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+
+	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+
+	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+	if (mesh->textureArray[0] > 0)
+	{
+		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
+		glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+	}
+	else
+	{
+		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
+	}
+	mesh->Render();
+	if (mesh->textureArray[0] > 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	modelStack.PopMatrix();
+	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
+	viewStack.PopMatrix();
+	projectionStack.PopMatrix();
+}
+
+
 void SP2::RenderAnimation()
 {
 	modelStack.PushMatrix();
@@ -882,6 +936,21 @@ void SP2::RenderGround()
 }
 void SP2::RenderWorld()
 {
+	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
+		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
+
+	for (int i = 0; i < player->getTotalItems(); ++i)
+	{
+		RenderImageToScreen(meshList[GEO_EMPTY], false, 60, 60,
+			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 1);
+
+		RenderImageToScreen(meshList[GEO_GOLD], false, 50, 50,
+			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 2);
+
+	}
+
+	RenderGroundObjects();
+
 	RenderGroundObjects();
 }
 

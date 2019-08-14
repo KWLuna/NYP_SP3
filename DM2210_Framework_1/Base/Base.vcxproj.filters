@@ -93,6 +93,9 @@
     <ClCompile Include="Source\CAnimal.cpp">
       <Filter>AnimalAI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Item.cpp">
+      <Filter>PlayerInformation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="Source\CAnimal.h">
       <Filter>AnimalAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Item.h">
+      <Filter>PlayerInformation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

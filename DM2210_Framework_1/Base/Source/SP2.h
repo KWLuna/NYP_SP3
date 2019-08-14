@@ -84,6 +84,10 @@ class SP2 : public Scene
 		GEO_CONE,
 		GEO_TEXT,
 
+		GEO_GOLD,
+		GEO_EMPTY,
+		GEO_INVENTORY,
+
 		//World
 			//Ground textures
 			GEO_GRASS,
@@ -126,6 +130,7 @@ public:
 	void RenderMeshIn2D(Mesh *mesh, bool enableLight, float size = 1.0f, float x = 0.0f, float y = 0.0f);
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	void RenderAnimation();
+	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY, float xPos, float yPos, float zPos);
 
 	//Gary
 	void RenderGroundObjects();
