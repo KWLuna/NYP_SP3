@@ -211,7 +211,6 @@ void main(){
 				
 				// Specular : reflective highlight, like a mirror
 				visibility * vec4(material.kSpecular, 1) * vec4(lights[i].color, 1) * lights[i].power * pow(cosAlpha, material.kShininess) * attenuationFactor * spotlightEffect;
-
 		}
 	}
 	else
@@ -240,18 +239,19 @@ void main(){
 			else
 				color = vec4( fragmentColor, 1 );
 		}
-		
 	}
+
+	if (color.a < 0.1)
+		discard;
 
 	if(fogParam.enabled)
 	{
 		float fogDistance = abs(vertexPosition_cameraspace.z);
 		float fogFactor = getFogFactor(fogParam, fogDistance);
 		
+		//Disabling fog
 		if (color.a != 0) 
 			color.xyz = mix(color.xyz, fogParam.color, fogFactor);
-		//color = mix(color, vec4(fogParam.color, 1), fogFactor);
+
 	}
-
-
 }

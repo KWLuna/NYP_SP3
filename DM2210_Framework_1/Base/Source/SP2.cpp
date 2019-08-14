@@ -1,6 +1,6 @@
 #include "SP2.h"
 #include "GL\glew.h"
-
+#include "Item.h"
 #include "shader.hpp"
 #include "MeshBuilder.h"
 #include "Application.h"
@@ -8,6 +8,8 @@
 #include "LoadTGA.h"
 #include <sstream>
 
+#include <iostream>
+using namespace std;
 SP2::SP2()
 {
 }
@@ -19,6 +21,8 @@ SP2::~SP2()
 void SP2::InitGround()
 {
 	int x = 500, z = 500;
+
+	
 	for (int i = 0; i < x; ++i)
 	{
 		for (int j = 0; j < z; ++j)
@@ -51,6 +55,13 @@ void SP2::InitGround()
 void SP2::Init()
 {
 	player = new PlayerInformation;
+	
+	m_particleCount = 0;
+	MAX_PARTICLE = 1000;
+
+	rotateAngle = 0;
+	bLightEnabled = true;
+	translate_tex_coord = 0;
 
 	InitGround();
 
@@ -166,16 +177,17 @@ void SP2::Init()
 	glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 	glUniform1f(m_parameters[U_FOG_START], 1000);
 	glUniform1f(m_parameters[U_FOG_END], 2000);
-	glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
+	glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(0, 300, 700), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
+	//init meshes as NULL
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
-	{
 		meshList[i] = NULL;
-	}
+
+	//Meshes
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
@@ -204,21 +216,21 @@ void SP2::Init()
 	
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
-
 	//
 
 	//Particles
 	meshList[GEO_PARTICLE] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE]->textureArray[0] = LoadTGA("Image//particle_water.tga");
-
-	m_particleCount = 0;
-	MAX_PARTICLE = 1000;
+	
 	//Sprite animation
 	meshList[GEO_SPRITE_ANIMATION] = MeshBuilder::GenerateSpriteAnimation("cat", 1, 17);
 	meshList[GEO_SPRITE_ANIMATION]->textureArray[0] = LoadTGA("Image//tabby.tga");
 	//Shadow
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
+
+	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
 
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
@@ -233,11 +245,10 @@ void SP2::Init()
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
-	rotateAngle = 0;
-	bLightEnabled = true;
-	translate_tex_coord = 0;
+	
 
 	player->AttachCamera(&camera);
+
 }
 
 void SP2::Update(double dt)
@@ -253,7 +264,7 @@ void SP2::Update(double dt)
 		sa->m_anim->animActive = true;
 	}
 
-	if (Application::IsKeyPressed('1'))
+	/*if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if (Application::IsKeyPressed('2'))
 		glDisable(GL_CULL_FACE);
@@ -284,7 +295,7 @@ void SP2::Update(double dt)
 	else if (Application::IsKeyPressed('9'))
 	{
 		bLightEnabled = false;
-	}
+	}*/
 
 	if (Application::IsKeyPressed('I'))
 		lights[0].position.z -= (float)(10.f * dt);
@@ -459,22 +470,26 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y)
+void SP2::RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY , float xPos, float yPos)
 {
 	Mtx44 ortho;
-	ortho.SetToOrtho(-80, 80, -60, 60, -10, 10);
+	ortho.SetToOrtho(0, Application::GetWindowWidth(), 0, Application::GetWindowHeight(), -10, 10);
 	projectionStack.PushMatrix();
 	projectionStack.LoadMatrix(ortho);
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity();
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity();
-	modelStack.Scale(size, size, size);
-	modelStack.Translate(x, y, 0);
+
+	modelStack.Translate(xPos, yPos, 0);
+	modelStack.Scale(scaleX, scaleY, 1);
 
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 
 	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+
+	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 	if (mesh->textureArray[0] > 0)
 	{
@@ -494,6 +509,51 @@ void SP2::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, floa
 	}
 
 	modelStack.PopMatrix();
+	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
+	viewStack.PopMatrix();
+	projectionStack.PopMatrix();
+}
+
+void SP2::RenderMeshIn2D(Mesh *mesh, bool enableLight, float size, float x, float y)
+{
+	Mtx44 ortho;
+	ortho.SetToOrtho(0, Application::GetWindowWidth(), 0, Application::GetWindowHeight(), -10, 10);
+	projectionStack.PushMatrix();
+	projectionStack.LoadMatrix(ortho);
+	viewStack.PushMatrix();
+	viewStack.LoadIdentity();
+	modelStack.PushMatrix();
+	modelStack.LoadIdentity();
+	
+	modelStack.Translate(x, y, 0);
+	modelStack.Scale(size, size, 1);
+
+	Mtx44 MVP, modelView, modelView_inverse_transpose;
+
+	MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+
+	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+
+	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+	if (mesh->textureArray[0] > 0)
+	{
+		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mesh->textureArray[0]);
+		glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+	}
+	else
+	{
+		glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
+	}
+	mesh->Render();
+	if (mesh->textureArray[0] > 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	modelStack.PopMatrix();
+	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 	viewStack.PopMatrix();
 	projectionStack.PopMatrix();
 }
@@ -607,8 +667,6 @@ void SP2::RenderPassGPass()
 
 void SP2::RenderGroundObjects()
 {
-	int x = 10, z = 10;
-
 	int scale = 100;
 
 	int pX = camera.position.x / scale;
@@ -713,8 +771,15 @@ void SP2::RenderGround()
 		}
 	}
 }
+
 void SP2::RenderWorld()
 {
+	RenderImageToScreen(meshList[GEO_INVENTORY],false ,Application::GetWindowWidth() , Application::GetWindowHeight() / 7 ,
+													Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 370);
+
+		//if (player->getItem(i)->getID() == Item::ITEM_GOLD )
+
+	cout << Item::ITEM_GOLD << endl;
 	RenderGroundObjects();
 }
 
@@ -766,6 +831,14 @@ void SP2::RenderPassMain()
 
 	RenderWorld();
 
+	
+
+	/*modelStack.PushMatrix();
+	modelStack.Translate(0 , 100 , 0);
+	modelStack.Scale(10, 10, 10);
+	RenderMesh(meshList[GEO_INVENTORY], false);
+	modelStack.PopMatrix();*/
+
 	//render light ball
 	modelStack.PushMatrix();
 	modelStack.Translate(lights[0].position.x, lights[0].position.y, lights[0].position.z);
@@ -794,6 +867,7 @@ void SP2::RenderPassMain()
 }
 void SP2::Render()
 {
+
 	//***************** PRE RENDER PASS ************************//
 	RenderPassGPass();
 	//***************** MAIN RENDER PASS ***********************//

@@ -14,5 +14,6 @@ void main(){
 	}
 	if (alpha < 0.3)
 		discard;
+
     fragmentdepth = gl_FragCoord.z;
 }
