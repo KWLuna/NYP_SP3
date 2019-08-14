@@ -28,6 +28,9 @@
     <Filter Include="GameObjects">
       <UniqueIdentifier>{9e6c3b9c-adb6-4a76-8477-c57748dc59a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AnimalAI">
+      <UniqueIdentifier>{2c4343b8-f0ec-433e-8c68-35f6dc4b17a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -86,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="Source\World.cpp">
       <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CAnimal.cpp">
+      <Filter>AnimalAI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="GameObjects.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CAnimal.h">
+      <Filter>AnimalAI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

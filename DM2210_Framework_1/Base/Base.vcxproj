@@ -15,6 +15,7 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Camera2.cpp" />
     <ClCompile Include="Source\Camera3.cpp" />
+    <ClCompile Include="Source\CAnimal.cpp" />
     <ClCompile Include="Source\DepthFBO.cpp" />
     <ClCompile Include="Source\LoadHmap.cpp" />
     <ClCompile Include="Source\LoadOBJ.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Camera2.h" />
     <ClInclude Include="Source\Camera3.h" />
+    <ClInclude Include="Source\CAnimal.h" />
     <ClInclude Include="Source\DepthFBO.h" />
     <ClInclude Include="Source\Geometry.h" />
     <ClInclude Include="Source\Light.h" />
