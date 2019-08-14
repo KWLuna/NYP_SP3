@@ -229,9 +229,17 @@ void SP2::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
+	//Item Sprites
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
 
+	meshList[GEO_GOLD] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_GOLD]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
+
+	meshList[GEO_EMPTY] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY]->textureArray[0] = LoadTGA("Image//Empty.tga");
+
+	//
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
@@ -470,7 +478,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2::RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY , float xPos, float yPos)
+void SP2::RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY , float xPos, float yPos , float zPos)
 {
 	Mtx44 ortho;
 	ortho.SetToOrtho(0, Application::GetWindowWidth(), 0, Application::GetWindowHeight(), -10, 10);
@@ -481,7 +489,7 @@ void SP2::RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float 
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity();
 
-	modelStack.Translate(xPos, yPos, 0);
+	modelStack.Translate(xPos, yPos, zPos);
 	modelStack.Scale(scaleX, scaleY, 1);
 
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
@@ -672,7 +680,7 @@ void SP2::RenderGroundObjects()
 	int pX = camera.position.x / scale;
 	int pZ = camera.position.z / scale;
 
-	int outwards = 20;
+	int outwards = 10;
 
 	int minOutwardsFromPlayerX = pX - outwards;
 	int minOutwardsFromPlayerZ = pZ - outwards;
@@ -729,13 +737,15 @@ void SP2::RenderGround()
 	int pX = camera.position.x / scale;
 	int pZ = camera.position.z / scale;
 
-	int outwards = 20;
+	int outwards = 10;
 
 	int minOutwardsFromPlayerX = pX - outwards;
 	int minOutwardsFromPlayerZ = pZ - outwards;
 
 	int maxOutwardsFromPlayerX = pX + outwards;
 	int maxOutwardsFromPlayerZ = pZ + outwards;
+
+	//i = - 10 , i < 20 , total 400 loops , 400 tiles
 
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
@@ -774,12 +784,19 @@ void SP2::RenderGround()
 
 void SP2::RenderWorld()
 {
-	RenderImageToScreen(meshList[GEO_INVENTORY],false ,Application::GetWindowWidth() , Application::GetWindowHeight() / 7 ,
-													Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 370);
+	RenderImageToScreen(meshList[GEO_INVENTORY],false ,Application::GetWindowWidth() , Application::GetWindowHeight() / 10 ,
+													Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360 , 0);
+	
+	for (int i = 0; i < player->getTotalItems(); ++i)
+	{
+		RenderImageToScreen(meshList[GEO_EMPTY], false, 60, 60,
+			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 1);
 
-		//if (player->getItem(i)->getID() == Item::ITEM_GOLD )
+			RenderImageToScreen(meshList[GEO_GOLD], false, 50, 50,
+				Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 2);
+			
+	}
 
-	cout << Item::ITEM_GOLD << endl;
 	RenderGroundObjects();
 }
 
