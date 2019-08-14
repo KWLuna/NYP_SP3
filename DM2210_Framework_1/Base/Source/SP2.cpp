@@ -951,7 +951,6 @@ void SP2::RenderWorld()
 
 	RenderGroundObjects();
 
-	RenderGroundObjects();
 }
 
 void SP2::RenderPassMain()
@@ -1059,6 +1058,16 @@ void SP2::Render()
 	ss1.precision(4);
 	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
+
+	std::ostringstream ss2;
+	ss2.precision(3);
+	ss2 << "Hunger: " << player->getHunger();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 3, 0, 9);
+
+	std::ostringstream ss3;
+	ss3.precision(3);
+	ss3 << "HP: " << player->getHP();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 3, 0, 12);
 }
 
 void SP2::Exit()
