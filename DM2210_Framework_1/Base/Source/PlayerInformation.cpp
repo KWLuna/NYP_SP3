@@ -109,11 +109,11 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	firstItem = ItemList[firstItem]->getID();
 	secondItem = ItemList[secondItem]->getID();
 
-	if (firstItem == Item::ITEM_STONE)
+	/*if (firstItem == Item::ITEM_STONE)
 	{
 		if (secondItem == Item::ITEM_WOOD)
 			return new Item(Item::ITEM_TORCH , 4);
-	}
+	}*/
 
 	return new Item(-1, 0);
 }
