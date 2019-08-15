@@ -1,11 +1,1 @@
-﻿  PlayerInformation.cpp
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(37): warning C4018: '<': signed/unsigned mismatch
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(51): warning C4018: '<': signed/unsigned mismatch
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(62): warning C4018: '<': signed/unsigned mismatch
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(83): warning C4018: '<': signed/unsigned mismatch
-  Generating code
-  1 of 1288 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  Base.vcxproj -> C:\Users\Lkewe\Documents\GitHub\SP3\DM2210_Framework_1\Release\Base.exe
+﻿

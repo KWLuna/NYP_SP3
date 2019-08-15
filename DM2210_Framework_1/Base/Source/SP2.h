@@ -12,6 +12,7 @@
 #include "DepthFBO.h"
 #include "PlayerInformation.h"
 #include "CAnimal.h"
+#include "Physics.h"
 
 class SP2 : public Scene
 {
@@ -175,6 +176,9 @@ private:
 
 	//Terrain
 	std::vector<unsigned char> m_heightMap;
+
+	//Physics engine
+	Physics Phengine;
 
 	//Particles
 	void UpdateParticles(double dt);
