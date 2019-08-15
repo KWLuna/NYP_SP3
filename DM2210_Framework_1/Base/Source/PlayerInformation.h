@@ -53,6 +53,7 @@ private:
 	int m_iCraftingSlotOne; // which slot the crafting slot 1 is refering to
 	int m_iCraftingSlotTwo; // Which slot the crafting slot 2 is refering to
 
+	int m_iSwitchInventorySlot;
 	int m_iInventorySlot; // Which slot is currently selected
 
 	double m_dBounceTime; // Bounce time
