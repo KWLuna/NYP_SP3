@@ -20,11 +20,13 @@ public:
 	Vector3 pos;
 	Vector3 scale;
 	Vector3 gravity;
+	Vector3 dir;
 	Vector3 Targetpos;
-	bool spawned;
-	bool active;
-	float mass;
-	float HP;
+	bool m_bSpawned;
+	bool m_bActive;
+	float m_fMass;
+	float m_fHP;
+	float m_fAngle;
 
 	CAnimal(ANIMAL_TYPE typeValue = GO_PIG);
 	void Update(double dt);
@@ -33,7 +35,7 @@ public:
 	//GetFunctions
 	int getcurrentBehaviour();
 	//Set Functions
-	void SetBehaviour(int B);
+	void SetBehaviour(int m_iB);
 protected: 
 	enum Behaviour
 	{
@@ -47,9 +49,10 @@ protected:
 	int currentBehaviour;
 
 	//Resting
-	float IsResting;
-	float RandRestTime;
-
+	float m_fIsResting;
+	float m_fRandRestTime;
+	float m_fWalkingTarget;
+	bool m_bRotated;
 };
 
 #endif

@@ -5,8 +5,9 @@
 using namespace std;
 PlayerInformation::PlayerInformation()
 {
-	hunger = 32;
-	HP = 100;
+	m_dHP = 100;
+	m_dHunger = 100;
+	
 	m_fSpeed = 100.f;
 	m_dBounceTime = 0;
 
@@ -187,6 +188,19 @@ void PlayerInformation::update(double dt)
 			m_iInventorySlot = 0;
 	}
 
+	if (m_dHunger < 30)
+	{
+		m_fSpeed = 80;
+		if (m_dHunger < 0)
+		{
+			m_dHunger = 0;
+		}
+		if (m_dHunger == 0)
+		{
+			m_dHP -= 3 * dt;
+		}
+	}
+
 	if (m_bCrafting == true)
 	{
 		if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
@@ -215,7 +229,6 @@ void PlayerInformation::update(double dt)
 
 				if (ItemList[m_iCraftingSlotOne]->getID() == 0)
 					m_iCraftingSlotOne = -1;
-
 			}
 			else if (m_iCraftingSlotTwo == -1)
 			{
@@ -224,126 +237,133 @@ void PlayerInformation::update(double dt)
 				if (ItemList[m_iCraftingSlotTwo]->getID() == 0)
 					m_iCraftingSlotTwo = -1;
 			}
-
-
 		}
-
 	}
+
+		m_fSpeed = 100;
+		if (m_dHunger > 80)
+		{
+			if (m_dHP < 100)
+			{
+				m_dHP += 0.5 * dt;
+				m_dHunger -= 0.1 * dt;
+			}
+			
+		}
 
 	if (m_bCrafting == false)
 	{
 		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 		Vector3 rightUV;
 
-				//Movement
-				if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
+		//Movement
+		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
+		{
+			float m_fSpeed = 100;
+
+			Vector3 viewVector = attachedCamera->target - attachedCamera->position;
+			Vector3 rightUV;
+			if (Application::IsKeyPressed('W'))
+			{
+				if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
 				{
-					float m_fSpeed = 100;
-
-					Vector3 viewVector = attachedCamera->target - attachedCamera->position;
-					Vector3 rightUV;
-					if (Application::IsKeyPressed('W'))
-					{
-						if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
-						{
-							attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
-							action = SPRINTING;
-						}
-						else
-						{
-							action = WALKING;
-							attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
-						}
-					}
-					else if (Application::IsKeyPressed('S'))
-					{
-						attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
-						action = WALKING;
-					}
-					if (Application::IsKeyPressed('A'))
-					{
-						rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
-						rightUV.y = 0;
-						rightUV.Normalize();
-						attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
-						action = WALKING;
-					}
-					else if (Application::IsKeyPressed('D'))
-					{
-						rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
-						rightUV.y = 0;
-						rightUV.Normalize();
-						attachedCamera->position += rightUV * m_fSpeed * (float)dt;
-						action = WALKING;
-					}
-
-					// Constrain the position
-					Constrain();
-					// Update the target
-					attachedCamera->target = attachedCamera->position + viewVector;
+					attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
+					action = SPRINTING;
 				}
 				else
 				{
-					action = STANDING;
+					action = WALKING;
+					attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
 				}
-
-				if (action == NUM_ACTION)
-				{
-					action = STANDING;
-				}
-
-				switch (action)
-				{
-				case PlayerInformation::STANDING:
-					break;
-				case PlayerInformation::SPRINTING:
-					hunger -= 0.1 * dt;
-					break;
-				case PlayerInformation::WALKING:
-					hunger -= 0.05 * dt;
-					break;
-				case PlayerInformation::EATING:
-					hunger += 0.5 * dt;
-					break;
-				case PlayerInformation::NUM_ACTION:
-					break;
-				default:
-					break;
-				}
-
-				if (hunger < 30)
-				{
-					m_fSpeed = 80;
-					if (hunger < 0)
-					{
-						hunger = 0;
-					}
-					if (hunger == 0)
-					{
-						HP -= 3 * dt;
-					}
-				}
-				else
-				{
-					m_fSpeed = 100;
-					if (hunger > 80)
-					{
-						if (HP < 100)
-						{
-							HP += 0.5 * dt;
-							hunger -= 0.1 * dt;
-						}
-					}
-				}
-
 			}
+			else if (Application::IsKeyPressed('S'))
+			{
+				attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
+				action = WALKING;
+			}
+			if (Application::IsKeyPressed('A'))
+			{
+				rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
+				rightUV.y = 0;
+				rightUV.Normalize();
+				attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
+				action = WALKING;
+			}
+			else if (Application::IsKeyPressed('D'))
+			{
+				rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
+				rightUV.y = 0;
+				rightUV.Normalize();
+				attachedCamera->position += rightUV * m_fSpeed * (float)dt;
+				action = WALKING;
+			}
+
+			// Constrain the position
+			Constrain();
+			// Update the target
+			attachedCamera->target = attachedCamera->position + viewVector;
+		}
+		else
+		{
+			action = STANDING;
+		}
+
+		if (action == NUM_ACTION)
+		{
+			action = STANDING;
+		}
+
+		switch (action)
+		{
+		case PlayerInformation::STANDING:
+			break;
+		case PlayerInformation::SPRINTING:
+			m_dHunger -= 0.1 * dt;
+			break;
+		case PlayerInformation::WALKING:
+			m_dHunger -= 0.05 * dt;
+			break;
+		case PlayerInformation::EATING:
+			m_dHunger += 0.5 * dt;
+			break;
+		case PlayerInformation::NUM_ACTION:
+			break;
+		default:
+			break;
+		}
+
+		if (m_dHunger < 30)
+		{
+			m_fSpeed = 80;
+			if (m_dHunger < 0)
+			{
+				m_dHunger = 0;
+			}
+			if (m_dHunger == 0)
+			{
+				m_dHP -= 3 * dt;
+			}
+		}
+		else
+		{
+			m_fSpeed = 100;
+			if (m_dHunger > 80)
+			{
+				if (m_dHP < 100)
+				{
+					m_dHP += 0.5 * dt;
+					m_dHunger -= 0.1 * dt;
+				}
+			}
+		}
+	}
 }
 
 double PlayerInformation::getHunger()
 {
-	return hunger;
+	return m_dHunger;
 }
 double PlayerInformation::getHP()
 {
-	return HP;
+	return m_dHP;
 }

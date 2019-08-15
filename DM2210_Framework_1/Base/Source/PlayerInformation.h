@@ -65,6 +65,6 @@ private:
 	std::vector<Item*> ItemList;
 	float m_fSpeed;
 
-	double hunger;
-	double HP;
+	double m_dHunger;
+	double m_dHP;
 };
