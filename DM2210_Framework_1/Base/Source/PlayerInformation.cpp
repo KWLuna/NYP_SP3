@@ -19,6 +19,7 @@ PlayerInformation::PlayerInformation()
 	m_iConstrainY = 40;
 	m_iCraftingSlotOne = -1;
 	m_iCraftingSlotTwo = -1;
+	m_iSwitchInventorySlot = -1;
 
 
 	m_bSwitchStance = false;
@@ -110,11 +111,29 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	firstItem = ItemList[firstItem]->getID();
 	secondItem = ItemList[secondItem]->getID();
 
-	/*if (firstItem == Item::ITEM_STONE)
+	if (firstItem == Item::ITEM_STICK)
 	{
-		if (secondItem == Item::ITEM_WOOD)
+		if (secondItem == Item::ITEM_COAL)
 			return new Item(Item::ITEM_TORCH , 4);
-	}*/
+	}
+
+	if (firstItem == Item::ITEM_COAL)
+	{
+		if (secondItem == Item::ITEM_STICK)
+			return new Item(Item::ITEM_TORCH, 4);
+	}
+
+	if (firstItem == Item::ITEM_WOODEN_SWORD)
+	{
+		if (secondItem == Item::ITEM_STONE)
+			return new Item(Item::ITEM_STONE_SWORD, 1);
+	}
+
+	if (firstItem == Item::ITEM_STONE_SWORD)
+	{
+		if (secondItem == Item::ITEM_GOLD_NUGGET)
+			return new Item(Item::ITEM_GOLD_SWORD, 1);
+	}
 
 	return new Item(-1, 0);
 }
@@ -123,6 +142,12 @@ void PlayerInformation::update(double dt)
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
+
+	for (int i = 0; i < ItemList.size(); ++i)
+	{
+		if (ItemList[i]->getQuantity() == 0)
+			ItemList[i]->setID(0);
+	}
 
 	if (Application::IsKeyPressed('C') && m_bSwitchStance == false && m_dBounceTime <= 0)
 	{
@@ -163,7 +188,11 @@ void PlayerInformation::update(double dt)
 	if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
 	{
 		if (m_bCrafting == true)
+		{
+			m_iCraftingSlotOne = -1;
+			m_iCraftingSlotTwo = -1;
 			m_bCrafting = false;
+		}
 		else
 			m_bCrafting = true;
 
@@ -211,16 +240,22 @@ void PlayerInformation::update(double dt)
 			{
 				Item * result = craft(m_iCraftingSlotOne, m_iCraftingSlotTwo);
 
-				m_iCraftingSlotOne = -1;
-				m_iCraftingSlotTwo = -1;
-
 				if (result->getID() != -1)
 				{
 					if (addItem(result) == false)
 					{
 						// drop item , waiting for raycast
 					}
+					else
+					{
+						ItemList[m_iCraftingSlotTwo]->addQuantity(-1);
+						ItemList[m_iCraftingSlotOne]->addQuantity(-1);
+					}
 				}
+
+				m_iCraftingSlotOne = -1;
+				m_iCraftingSlotTwo = -1;
+
 			}
 
 			if (m_iCraftingSlotOne == -1)
@@ -237,6 +272,12 @@ void PlayerInformation::update(double dt)
 				if (ItemList[m_iCraftingSlotTwo]->getID() == 0)
 					m_iCraftingSlotTwo = -1;
 			}
+		}
+
+		if (Application::IsKeyPressed(VK_BACK) && m_dBounceTime <= 0)
+		{
+			m_iCraftingSlotOne = -1;
+			m_iCraftingSlotTwo = -1;
 		}
 	}
 
@@ -255,6 +296,23 @@ void PlayerInformation::update(double dt)
 	{
 		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 		Vector3 rightUV;
+
+		if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
+		{
+			if (m_iSwitchInventorySlot == -1)
+				m_iSwitchInventorySlot = m_iInventorySlot;
+			else
+			{
+				Item * temp = ItemList[m_iInventorySlot];
+
+				ItemList[m_iInventorySlot] = ItemList[m_iSwitchInventorySlot];
+				ItemList[m_iSwitchInventorySlot] = temp;
+
+				m_iSwitchInventorySlot = -1;
+			}
+
+			m_dBounceTime = 0.2;
+		}
 
 		//Movement
 		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))

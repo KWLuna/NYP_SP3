@@ -246,11 +246,23 @@ void SP2::Init()
 	meshList[GEO_TORCH] = MeshBuilder::GenerateQuad("GEO_TORCH", Color(1, 1, 1), 1.0f);
 	meshList[GEO_TORCH]->textureArray[0] = LoadTGA("Image//Torch.tga");
 
-	meshList[GEO_WOODEN_SWORD] = MeshBuilder::GenerateQuad("GEO_ITEM_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WOODEN_SWORD] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_SWORD]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
 
-	meshList[GEO_WOODEN_PICKAXE] = MeshBuilder::GenerateQuad("GEO_ITEM_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WOODEN_PICKAXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_PICKAXE]->textureArray[0] = LoadTGA("Image//Wooden_Pickaxe.tga");
+
+	meshList[GEO_STONE_SWORD] = MeshBuilder::GenerateQuad("GEO_STONE_SWORD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_STONE_SWORD]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
+
+	meshList[GEO_STONE_PICKAXE] = MeshBuilder::GenerateQuad("GEO_STONE_PICKAXE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_STONE_PICKAXE]->textureArray[0] = LoadTGA("Image//Stone_Pickaxe.tga");
+
+	meshList[GEO_GOLD_SWORD] = MeshBuilder::GenerateQuad("GEO_GOLD_SWORD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_GOLD_SWORD]->textureArray[0] = LoadTGA("Image//Gold_Sword.tga");
+
+	meshList[GEO_GOLD_PICKAXE] = MeshBuilder::GenerateQuad("GEO_GOLD_PICKAXE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_GOLD_PICKAXE]->textureArray[0] = LoadTGA("Image//Gold_Pickaxe.tga");
 
 	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
@@ -297,11 +309,9 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
-	player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
+	player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+	player->addItem(new Item(Item::ITEM_STONE, 1));
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
-
-	player->addItem(new Item(Item::ITEM_MEAT, 1));
-
 
 	unsigned int NUMBEROFOBJECTS = 100;
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)

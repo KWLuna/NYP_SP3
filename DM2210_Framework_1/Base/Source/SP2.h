@@ -103,6 +103,12 @@ class SP2 : public Scene
 
 		GEO_WOODEN_SWORD,
 		GEO_WOODEN_PICKAXE,
+
+		GEO_STONE_SWORD,
+		GEO_STONE_PICKAXE,
+
+		GEO_GOLD_SWORD,
+		GEO_GOLD_PICKAXE,
 		//
 
 		//World
