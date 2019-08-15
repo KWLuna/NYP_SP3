@@ -330,11 +330,12 @@ void SP2::AnimalChecker(double dt)
 			}
 			else
 				go->m_bActive = false;
-		}
-		if (go->m_bActive)
-		{
-			go->Update(dt);
-			m_NumOfAnimal++;
+
+			if (go->m_bActive)
+			{
+				go->Update(dt);
+				m_NumOfAnimal++;
+			}
 		}
 	}
 }
@@ -350,17 +351,17 @@ CAnimal* SP2::FetchGO()
 			return go;
 		}
 	}
-	for (unsigned int i = 0; i < 10; ++i)
+	for (unsigned int i = 0; i < 5; ++i)
 	{
 		CAnimal *go = new CAnimal(CAnimal::GO_PIG);
 		m_AnimalList.push_back(go);
 	}
-	for (unsigned int i = 0; i < 10; ++i)
+	for (unsigned int i = 0; i < 5; ++i)
 	{
 		CAnimal *go = new CAnimal(CAnimal::GO_COW);
 		m_AnimalList.push_back(go);
 	}
-	for (unsigned int i = 0; i < 10; ++i)
+	for (unsigned int i = 0; i < 5; ++i)
 	{
 		CAnimal *go = new CAnimal(CAnimal::GO_CHICKEN);
 		m_AnimalList.push_back(go);
@@ -392,7 +393,6 @@ void SP2::SpawningAnimal()
 		{
 			for (float k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-
 				if (k >= 0 && k <= 500)
 				{
 					int choice = Math::RandIntMinMax(0, 10);

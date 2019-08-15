@@ -88,7 +88,6 @@ void CAnimal::Update(double dt)
 			{
 				dir = (Targetpos - pos).Normalize();
 				float m_fTempAngle = atan2(dir.x, dir.z);
-				std::cout << m_fTempAngle << std::endl;
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 				{
 					m_fAngle += 5 * static_cast<float>(dt);
