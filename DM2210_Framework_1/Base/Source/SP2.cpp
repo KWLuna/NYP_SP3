@@ -270,8 +270,8 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
-	player->addItem(new Item(Item::ITEM_GOLD, 1));
-	player->addItem(new Item(Item::ITEM_GOLD, 1));
+	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 
 	player->addItem(new Item(Item::ITEM_MEAT, 1));
 
@@ -296,53 +296,6 @@ void SP2::Update(double dt)
 		sa->Update(dt);
 		sa->m_anim->animActive = true;
 	}
-
-	/*if (Application::IsKeyPressed('1'))
-		glEnable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('2'))
-		glDisable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('3'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if (Application::IsKeyPressed('4'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	if (Application::IsKeyPressed('5'))
-	{
-		lights[0].type = Light::LIGHT_POINT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('6'))
-	{
-		lights[0].type = Light::LIGHT_DIRECTIONAL;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('7'))
-	{
-		lights[0].type = Light::LIGHT_SPOT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('8'))
-	{
-		bLightEnabled = true;
-	}
-	else if (Application::IsKeyPressed('9'))
-	{
-		bLightEnabled = false;
-	}*/
-
-	//if (Application::IsKeyPressed('I'))
-	//	lights[0].position.z -= (float)(10.f * dt);
-	//if (Application::IsKeyPressed('K'))
-	//	lights[0].position.z += (float)(10.f * dt);
-	//if (Application::IsKeyPressed('J'))
-	//	lights[0].position.x -= (float)(10.f * dt);
-	//if (Application::IsKeyPressed('L'))
-	//	lights[0].position.x += (float)(10.f * dt);
-	//if (Application::IsKeyPressed('O'))
-	//	lights[0].position.y -= (float)(10.f * dt);
-	//if (Application::IsKeyPressed('P'))
-	//	lights[0].position.y += (float)(10.f * dt);
-
 
 	//Turning fog on and off
 	rotateAngle += (float)(10 * dt);
@@ -483,7 +436,7 @@ void SP2::UpdateParticles(double dt)
 		particle->vel.Set(1, 1, 1);
 		particle->m_gravity.Set(0, -9.8f, 0);
 		particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
-		particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200.f, Math::RandFloatMinMax(-1700, 1000));
+		particle->pos.Set(Math::RandFloatMinMax(camera.position.x -1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z -1700, camera.position.z + 1700));
 	}
 
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
@@ -493,8 +446,8 @@ void SP2::UpdateParticles(double dt)
 		{
 			if (particle->type == ParticleObject_TYPE::P_WATER)
 			{
-				particle->vel += particle->m_gravity * (float)dt;
-				particle->pos += particle->vel * (float)dt * 10.f;
+				particle->vel += particle->m_gravity * 10 *  (float)dt;
+				particle->pos += particle->vel * (float)dt * 15.f;
 
 				if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
 				{
@@ -855,7 +808,7 @@ void SP2::RenderGroundObjects()
 	int pX = camera.position.x / scale;
 	int pZ = camera.position.z / scale;
 
-	int outwards = 20;
+	int outwards = 10;
 
 	int minOutwardsFromPlayerX = pX - outwards;
 	int minOutwardsFromPlayerZ = pZ - outwards;
@@ -912,7 +865,7 @@ void SP2::RenderGround()
 	int pX = camera.position.x / scale;
 	int pZ = camera.position.z / scale;
 
-	int outwards = 20;
+	int outwards = 10;
 
 	int minOutwardsFromPlayerX = pX - outwards;
 	int minOutwardsFromPlayerZ = pZ - outwards;
@@ -959,7 +912,7 @@ void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float s
 {
 	switch (ID)
 	{
-		case Item::ITEM_GOLD :
+		case Item::ITEM_GOLD_NUGGET :
 		{
 			RenderImageToScreen(meshList[GEO_GOLD], false, scaleX, scaleY, posX, posY, posZ);
 			break;
