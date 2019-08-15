@@ -234,19 +234,6 @@ void PlayerInformation::update(double dt)
 	{
 		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 		Vector3 rightUV;
-		if (Application::IsKeyPressed('W'))
-		{
-
-			if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)) && hunger > 30)
-			{
-
-				attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
-				action = SPRINTING;
-			}
-			else
-			{
-				attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
-				action = WALKING;
 
 				//Movement
 				if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
@@ -258,9 +245,13 @@ void PlayerInformation::update(double dt)
 					if (Application::IsKeyPressed('W'))
 					{
 						if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
+						{
 							attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
+							action = SPRINTING;
+						}
 						else
 						{
+							action = WALKING;
 							attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
 						}
 					}
@@ -300,6 +291,7 @@ void PlayerInformation::update(double dt)
 				{
 					action = STANDING;
 				}
+
 				switch (action)
 				{
 				case PlayerInformation::STANDING:
@@ -345,8 +337,6 @@ void PlayerInformation::update(double dt)
 				}
 
 			}
-		}
-	}
 }
 
 double PlayerInformation::getHunger()

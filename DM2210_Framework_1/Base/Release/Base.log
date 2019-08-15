@@ -1,11 +1,35 @@
-﻿  PlayerInformation.cpp
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(37): warning C4018: '<': signed/unsigned mismatch
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(51): warning C4018: '<': signed/unsigned mismatch
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(62): warning C4018: '<': signed/unsigned mismatch
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(83): warning C4018: '<': signed/unsigned mismatch
+﻿  SP2.cpp
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(485): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(808): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(809): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(832): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(833): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(839): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(840): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(846): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(847): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(865): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(866): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(889): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(890): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(897): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(898): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(935): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(934): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(942): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(945): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(947): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(954): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(953): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(958): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(962): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(968): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(972): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(978): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\sp2.cpp(981): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   Generating code
-  1 of 1288 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  4 of 1300 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Base.vcxproj -> C:\Users\Lkewe\Documents\GitHub\SP3\DM2210_Framework_1\Release\Base.exe
+  Base.vcxproj -> D:\Github\SP3\DM2210_Framework_1\Release\Base.exe

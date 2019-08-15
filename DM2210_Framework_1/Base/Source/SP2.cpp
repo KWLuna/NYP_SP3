@@ -930,6 +930,7 @@ void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float s
 
 void SP2::RenderWorld()
 {
+
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
 
@@ -982,7 +983,7 @@ void SP2::RenderWorld()
 		//
 	}
 
-	
+	RenderGroundObjects();
 
 }
 
