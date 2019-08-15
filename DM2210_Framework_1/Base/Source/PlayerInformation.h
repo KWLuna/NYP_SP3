@@ -4,35 +4,51 @@
 #include <vector>
 class PlayerInformation
 {
+	enum POSITION
+	{
+		STAND,
+		CROUCH,
+		PRONE,
+	};
 public:
 	PlayerInformation();
 	~PlayerInformation();
 
 	void Constrain(void);
 	void AttachCamera(Camera3* _cameraPtr);
-
 	void update(double dt);
 
 	bool addItem(Item * object);
-
 	Item * getItem(int ID);
 
 	int getTotalItems();
-
 	bool getIsCrafting();
+	
 	int getCurrentSlot();
 
+	int getCraftingSlotOne();
+	int getCraftingSlotTwo();
+	
+	
+	Item * craft(int firstItem, int secondItem);
+
 private:
-	Camera3 * attachedCamera;
+	 
+	Camera3 * attachedCamera; // Attach camera to player
 
-	bool m_bCrafting;
+	bool m_bCrafting; // is the player in crafting mode
 
-	int m_iCraftingSlotOne;
-	int m_iCraftingSlotTwo;
+	int m_iCraftingSlotOne; // which slot the crafting slot 1 is refering to
+	int m_iCraftingSlotTwo; // Which slot the crafting slot 2 is refering to
 
-	int m_iInventorySlot;
+	int m_iInventorySlot; // Which slot is currently selected
 
-	double m_dBounceTime;
+	double m_dBounceTime; // Bounce time
 
-	std::vector<Item*> ItemList;
+	int m_iConstrainY; // Height which the player is limited to
+	int m_iCurrentStance;
+
+	bool m_bSwitchStance;
+
+	std::vector<Item*> ItemList; // List of items which the player has
 };

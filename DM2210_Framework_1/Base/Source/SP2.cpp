@@ -7,6 +7,9 @@
 #include "LoadTGA.h"
 #include <sstream>
 
+#include <iostream>
+using namespace std;
+
 SP2::SP2()
 {
 }
@@ -219,6 +222,9 @@ void SP2::Init()
 	meshList[GEO_GOLD] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
 
+	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
+	meshList[GEO_MEAT]->textureArray[0] = LoadTGA("Image//Meat.tga");
+
 	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
 
@@ -262,6 +268,12 @@ void SP2::Init()
 	translate_tex_coord = 0;
 
 	player->AttachCamera(&camera);
+
+	//Test item stacking
+	player->addItem(new Item(Item::ITEM_GOLD, 1));
+	player->addItem(new Item(Item::ITEM_GOLD, 1));
+
+	player->addItem(new Item(Item::ITEM_MEAT, 1));
 
 
 	unsigned int NUMBEROFOBJECTS = 100;
@@ -610,14 +622,14 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(0, 80, 0, 60, -10, 10);
+	ortho.SetToOrtho(0, Application::GetWindowWidth(), 0, Application::GetWindowHeight(), -10, 10);
 	projectionStack.PushMatrix();
 	projectionStack.LoadMatrix(ortho);
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity();
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity();
-	modelStack.Translate(x, y, 0);
+	modelStack.Translate(Application::GetWindowWidth() / 2 + x,Application::GetWindowHeight() / 2 + y, 0);
 	modelStack.Scale(size, size, size);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
@@ -629,7 +641,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.5f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -942,6 +954,27 @@ void SP2::RenderGround()
 		}
 	}
 }
+
+void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float scaleY , int ID)
+{
+	switch (ID)
+	{
+		case Item::ITEM_GOLD :
+		{
+			RenderImageToScreen(meshList[GEO_GOLD], false, scaleX, scaleY, posX, posY, posZ);
+			break;
+		}
+		case Item::ITEM_MEAT :
+			RenderImageToScreen(meshList[GEO_MEAT], false, scaleX, scaleY, posX, posY, posZ);
+			break;
+		case Item::ITEM_EMPTY :
+			break;
+		default:
+			break;
+	}
+}
+
+
 void SP2::RenderWorld()
 {
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
@@ -949,6 +982,7 @@ void SP2::RenderWorld()
 
 	for (int i = 0; i < player->getTotalItems(); ++i)
 	{
+		//Frames for inventory
 		if (i != player->getCurrentSlot())
 			RenderImageToScreen(meshList[GEO_EMPTY_INVENTORY], false, 60, 60,
 				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
@@ -956,8 +990,7 @@ void SP2::RenderWorld()
 			RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 60, 60,
 				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
 
-		RenderImageToScreen(meshList[GEO_GOLD], false, 50, 50,
-			180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2);
+		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
 	}
 
 	//Crafting Interface
@@ -965,18 +998,35 @@ void SP2::RenderWorld()
 	{
 		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
 			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+		
+		//Left Slot
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
+			
+			if (player->getCraftingSlotOne() != -1)
+			//Render the id of whatever belongs to the first crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
+		//
 
-		//Left Crafting
-		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
-		//Right Crafting
-		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+		// Right slot
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+		
+			if (player->getCraftingSlotTwo() != -1)
+			//Render the id of whatever belongs to the second crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
+		//
+
 		//Bottom Crafting
 		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
 			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
 
-
+		if (player->getCraftingSlotTwo() != -1)
+		RenderItem(Application::GetWindowWidth() / 2 , Application::GetWindowHeight() / 2 - 200
+				, 2, 150, 150, player->craft(player->getCraftingSlotOne() , player->getCraftingSlotTwo())->getID());
+		//
 	}
 
 	
@@ -1029,8 +1079,10 @@ void SP2::RenderPassMain()
 	}
 
 	RenderMesh(meshList[GEO_AXES], false);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
 
 	RenderWorld();
+
 
 	//render light ball
 	modelStack.PushMatrix();
@@ -1046,6 +1098,7 @@ void SP2::RenderPassMain()
 	modelStack.PopMatrix();
 
 	RenderGround();
+	RenderAnimation();
 
 	//Render Animals
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
@@ -1067,6 +1120,15 @@ void SP2::RenderPassMain()
 		}
 	}
 
+	std::ostringstream ss;
+	ss.precision(5);
+	ss << "FPS: " << fps;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600 , 300  );
+
+
+	ss.str("");
+	ss << to_string(player->getItem(player->getCurrentSlot())->getQuantity());
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
 }
 void SP2::Render()
 {
@@ -1074,21 +1136,11 @@ void SP2::Render()
 	RenderPassGPass();
 	//***************** MAIN RENDER PASS ***********************//
 	RenderPassMain();
-	RenderAnimation();
 
 	// Render the crosshair
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
 
 	//On screen text
-	std::ostringstream ss;
-	ss.precision(5);
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
-
-	std::ostringstream ss1;
-	ss1.precision(4);
-	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
+	
 }
 
 void SP2::Exit()

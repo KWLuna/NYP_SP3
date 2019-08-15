@@ -9,11 +9,15 @@ PlayerInformation::PlayerInformation()
 
 	m_bCrafting = false;
 
+	m_iCurrentStance = STAND;
+
 	m_iInventorySlot = 0;
+	m_iConstrainY = 40;
+	m_iCraftingSlotOne = -1;
+	m_iCraftingSlotTwo = -1;
 
-	m_iCraftingSlotOne = 0;
-	m_iCraftingSlotTwo = 0;
 
+	m_bSwitchStance = false;
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 15; ++i)
 		ItemList.push_back(new Item(0, 0));
@@ -36,20 +40,24 @@ void PlayerInformation::Constrain()
 {
 	//Anchor player to the ground
 	Vector3 viewVector = attachedCamera->target - attachedCamera->position;
-	attachedCamera->position.y = 40;
+	attachedCamera->position.y = m_iConstrainY;
 	attachedCamera->target = attachedCamera->position + viewVector;
 	//
 }
 
 Item * PlayerInformation::getItem(int id)
 {
-	for (int i = 0; i < ItemList.size(); ++i)
-	{
-		if (ItemList[i]->getID() == id)
-		{
-			return ItemList[i];
-		}
-	}
+	return ItemList[id];
+}
+
+int PlayerInformation::getCraftingSlotOne()
+{
+	return m_iCraftingSlotOne;
+}
+
+int PlayerInformation::getCraftingSlotTwo()
+{
+	return m_iCraftingSlotTwo;
 }
 
 bool PlayerInformation::addItem(Item * object)
@@ -92,17 +100,62 @@ bool PlayerInformation::getIsCrafting()
 	return m_bCrafting;
 }
 
-void PlayerInformation::update(double dt)
+Item * PlayerInformation::craft(int firstItem, int secondItem)
 {
-	m_dBounceTime -= 1 * dt;
-	for (int i = 0; i < ItemList.size(); ++i)
+	//Convert into ids.
+	firstItem = ItemList[firstItem]->getID();
+	secondItem = ItemList[secondItem]->getID();
+
+	if (firstItem == Item::ITEM_STONE)
 	{
-		if (ItemList[i]->getQuantity() == 0)
-		{
-			ItemList[i]->setID(0);
-		}
+		if (secondItem == Item::ITEM_WOOD)
+			return new Item(Item::ITEM_TORCH , 4);
 	}
 
+	return new Item(-1, 0);
+}
+
+void PlayerInformation::update(double dt)
+{
+	// Update bounce time.
+	m_dBounceTime -= 1 * dt;
+
+	if (Application::IsKeyPressed('C') && m_bSwitchStance == false && m_dBounceTime <= 0)
+	{
+		m_iCurrentStance += 1;
+
+		if (m_iCurrentStance > PRONE)
+			m_iCurrentStance = 0;
+
+		m_dBounceTime = 0.5;
+		m_bSwitchStance = true;
+	}
+
+	if (m_bSwitchStance == true)
+	{
+		switch (m_iCurrentStance)
+		{
+		case STAND:
+			if (m_iConstrainY < 40)
+				m_iConstrainY += 10 * dt;
+			else
+				m_bSwitchStance = false;
+			break;
+		case CROUCH:
+			if (m_iConstrainY > 20)
+				m_iConstrainY -= 10 * dt;
+			else
+				m_bSwitchStance = false;
+			break;
+		case PRONE:
+			if (m_iConstrainY > 5)
+				m_iConstrainY -= 10 * dt;
+			else
+				m_bSwitchStance = false;
+			break;
+		}
+	}
+	
 	if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
 	{
 		if (m_bCrafting == true)
@@ -110,45 +163,72 @@ void PlayerInformation::update(double dt)
 		else
 			m_bCrafting = true;
 
-		m_dBounceTime = 1;
+		m_dBounceTime = 0.2;
+	}
+
+	if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
+	{
+		m_iInventorySlot -= 1;
+		m_dBounceTime = 0.2;
+	
+		if (m_iInventorySlot < 0)
+			m_iInventorySlot = 14;
+	}
+	
+	if (Application::IsKeyPressed(VK_RIGHT) && m_dBounceTime <= 0)
+	{
+		m_iInventorySlot += 1;
+		m_dBounceTime = 0.2;
+	
+		if (m_iInventorySlot > 14)
+			m_iInventorySlot = 0;
 	}
 
 	if (m_bCrafting == true)
 	{
-		for (int i = 0; i < 9; ++i)
+		if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
 		{
-			string chara = to_string(i);
+			m_dBounceTime = 0.2;
 
-			// Test if a key is pressed;
-			if (Application::IsKeyPressed(chara[0]))
+			if (m_iCraftingSlotOne != -1 && m_iCraftingSlotTwo != -1)
 			{
-				if (m_iCraftingSlotTwo == 0)
-					m_iCraftingSlotTwo = i;
+				Item * result = craft(m_iCraftingSlotOne, m_iCraftingSlotTwo);
 
-				m_iCraftingSlotOne = i;
+				m_iCraftingSlotOne = -1;
+				m_iCraftingSlotTwo = -1;
+
+				if (result->getID() != -1)
+				{
+					if (addItem(result) == false)
+					{
+						// drop item , waiting for raycast
+					}
+				}
 			}
+
+			if (m_iCraftingSlotOne == -1)
+			{
+				m_iCraftingSlotOne = m_iInventorySlot;
+
+				if (ItemList[m_iCraftingSlotOne]->getID() == 0)
+					m_iCraftingSlotOne = -1;
+
+			}
+			else if (m_iCraftingSlotTwo == -1)
+			{
+				m_iCraftingSlotTwo = m_iInventorySlot;
+
+				if (ItemList[m_iCraftingSlotTwo]->getID() == 0)
+					m_iCraftingSlotTwo = -1;
+			}
+
+			
 		}
+
 	}
 
 	if (m_bCrafting == false)
 	{
-		if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
-		{
-			m_iInventorySlot -= 1;
-			m_dBounceTime = 0.2;
-
-			if (m_iInventorySlot < 0)
-				m_iInventorySlot = 14;
-		}
-
-		if (Application::IsKeyPressed(VK_RIGHT) && m_dBounceTime <= 0)
-		{
-			m_iInventorySlot += 1;
-			m_dBounceTime = 0.2;
-
-			if (m_iInventorySlot > 14)
-				m_iInventorySlot = 0;
-		}
 
 		//Movement
 		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
@@ -185,9 +265,11 @@ void PlayerInformation::update(double dt)
 				attachedCamera->position += rightUV * m_fSpeed * (float)dt;
 			}
 			// Constrain the position
-			Constrain();
 			// Update the target
 			attachedCamera->target = attachedCamera->position + viewVector;
 		}
 	}
+
+	Constrain();
+
 }

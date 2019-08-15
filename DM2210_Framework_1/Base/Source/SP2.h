@@ -87,6 +87,7 @@ class SP2 : public Scene
 		//Inventory
 		GEO_INVENTORY,
 			GEO_GOLD,
+			GEO_MEAT,
 			GEO_EMPTY_INVENTORY,
 			GEO_HIGHLIGHT_INVENTORY,
 		//
@@ -140,6 +141,8 @@ public:
 	void RenderAnimation();
 	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY, float xPos, float yPos, float zPos);
 
+
+	void RenderItem(float posX , float posY , float posZ , float scaleX , float scaleY , int slot);
 	//Gary
 	void RenderGroundObjects();
 	void RenderGround();
