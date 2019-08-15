@@ -6,8 +6,8 @@ using namespace std;
 PlayerInformation::PlayerInformation()
 {
 	bounceTime = 0;
-	hunger = 32;
-	HP = 100;
+	m_dHunger = 100;
+	m_dHP = 100;
 	m_fSpeed = 100.f;
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 9; ++i)
@@ -122,7 +122,7 @@ void PlayerInformation::update(double dt)
 		if (Application::IsKeyPressed('W'))
 		{
 			
-			if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)) && hunger > 30)
+			if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)) && m_dHunger > 30)
 			{
 
 				attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
@@ -176,13 +176,13 @@ void PlayerInformation::update(double dt)
 	case PlayerInformation::STANDING:
 		break;
 	case PlayerInformation::SPRINTING:
-		hunger -= 0.1 * dt;
+		m_dHunger -= 0.1 * dt;
 		break;
 	case PlayerInformation::WALKING:
-		hunger -= 0.05 * dt;
+		m_dHunger -= 0.05 * dt;
 		break;
 	case PlayerInformation::EATING:
-		hunger += 0.5 * dt;
+		m_dHunger += 0.5 * dt;
 		break;
 	case PlayerInformation::NUM_ACTION:
 		break;
@@ -190,27 +190,27 @@ void PlayerInformation::update(double dt)
 		break;
 	}
 
-	if (hunger < 30)
+	if (m_dHunger < 30)
 	{
 		m_fSpeed = 80;
-		if (hunger < 0)
+		if (m_dHunger < 0)
 		{
-			hunger = 0;
+			m_dHunger = 0;
 		}
-		if (hunger == 0)
+		if (m_dHunger == 0)
 		{
-			HP -= 3 * dt;
+			m_dHP -= 3 * dt;
 		}
 	}
 	else
 	{
 		m_fSpeed = 100;
-		if (hunger > 80)
+		if (m_dHunger > 80)
 		{
-			if (HP < 100)
+			if (m_dHP < 100)
 			{
-				HP += 0.5 * dt;
-				hunger -= 0.1 * dt;
+				m_dHP += 0.5 * dt;
+				m_dHunger -= 0.1 * dt;
 			}
 		}
 	}
@@ -218,9 +218,9 @@ void PlayerInformation::update(double dt)
 }
 double PlayerInformation::getHunger()
 {
-	return hunger;
+	return m_dHunger;
 }
 double PlayerInformation::getHP()
 {
-	return HP;
+	return m_dHP;
 }
