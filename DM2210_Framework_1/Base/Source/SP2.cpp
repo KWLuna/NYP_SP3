@@ -190,7 +190,8 @@ void SP2::Init()
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
 	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
-
+	meshList[GEO_CUBE] = MeshBuilder::GenerateOBJ("inversecube", "OBJ//skybox.obj");
+	meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox.tga");
 	//
 	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
@@ -321,16 +322,16 @@ void SP2::AnimalChecker(double dt)
 	{
 		CAnimal *go = (CAnimal *)*it;
 
-		if (go->spawned)
+		if (go->m_bSpawned)
 		{
 			if (go->pos.x > MinX && go->pos.x < MaxX && go->pos.z > MinZ && go->pos.z < MaxZ)
 			{
-				go->active = true;
+				go->m_bActive = true;
 			}
 			else
-				go->active = false;
+				go->m_bActive = false;
 		}
-		if (go->active)
+		if (go->m_bActive)
 		{
 			go->Update(dt);
 			m_NumOfAnimal++;
@@ -342,10 +343,10 @@ CAnimal* SP2::FetchGO()
 {
 	for (auto go : m_AnimalList)
 	{
-		if (!go->active)
+		if (!go->m_bActive)
 		{
 			//Exercise 2b: increase object count every time an object is set to active
-			go->active = true;
+			go->m_bActive = true;
 			return go;
 		}
 	}
@@ -366,7 +367,7 @@ CAnimal* SP2::FetchGO()
 	}
 
 	CAnimal *go = m_AnimalList.back();
-	go->active = true;
+	go->m_bActive = true;
 	return go;
 }
 void SP2::SpawningAnimal()
@@ -418,7 +419,7 @@ void SP2::SpawningAnimal()
 						}
 						go->pos.Set(0 + i * scale, 0, 0 + k * scale);
 						go->Targetpos.Set(Math::RandFloatMinMax(go->pos.x - 400.f, go->pos.x + 400.f), 1, Math::RandFloatMinMax(go->pos.z - 400.f, go->pos.z + 400.f));
-						go->spawned = true;
+						go->m_bSpawned = true;
 						go->scale.Set(5, 5, 5);
 					}
 				}
@@ -501,13 +502,15 @@ void SP2::RenderAnimal(CAnimal* animal)
 	case CAnimal::GO_PIG:
 		modelStack.PushMatrix();
 		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
+		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
 		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
 		RenderMesh(meshList[GEO_PIG], false);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_COW:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
+		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z );
+		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
 		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
 		RenderMesh(meshList[GEO_COW], false);
 		modelStack.PopMatrix();
@@ -515,6 +518,7 @@ void SP2::RenderAnimal(CAnimal* animal)
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
 		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
+		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
 		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
 		RenderMesh(meshList[GEO_CHICKEN], false);
 		modelStack.PopMatrix();
@@ -985,6 +989,15 @@ void SP2::RenderWorld()
 
 	RenderGroundObjects();
 
+	//Render Animals
+	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+	{
+		CAnimal *animal = (CAnimal *)*it;
+		if (animal->m_bActive)
+		{
+			RenderAnimal(animal);
+		}
+	}
 }
 
 void SP2::RenderPassMain()
@@ -1053,15 +1066,11 @@ void SP2::RenderPassMain()
 	RenderGround();
 	RenderAnimation();
 
-	//Render Animals
-	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
-	{
-		CAnimal *animal = (CAnimal *)*it;
-		if (animal->active)
-		{
-			RenderAnimal(animal);
-		}
-	}
+	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Scale(3500, 3500, 3500);
+	RenderMesh(meshList[GEO_CUBE], false);
+	modelStack.PopMatrix();
 
 	//	Render Particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
