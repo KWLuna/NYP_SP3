@@ -3,11 +3,14 @@ class Item
 public:
 	enum ITEM_TYPE
 	{
+		ITEM_EMPTY,
 		ITEM_MEAT,
 		ITEM_WOOD,
+		ITEM_STICK,
+		ITEM_COAL,
 		ITEM_STONE,
-		ITEM_GOLD,
-
+		ITEM_GOLD_NUGGET,
+		ITEM_TORCH,
 		ITEM_END
 	};
 	ITEM_TYPE Items;

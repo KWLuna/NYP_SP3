@@ -7,6 +7,9 @@
 #include "LoadTGA.h"
 #include <sstream>
 
+#include <iostream>
+using namespace std;
+
 SP2::SP2()
 {
 }
@@ -219,9 +222,20 @@ void SP2::Init()
 	meshList[GEO_GOLD] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
 
-	meshList[GEO_EMPTY] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_EMPTY]->textureArray[0] = LoadTGA("Image//Empty.tga");
+	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
+	meshList[GEO_MEAT]->textureArray[0] = LoadTGA("Image//Meat.tga");
 
+	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
+
+	meshList[GEO_HIGHLIGHT_INVENTORY] = MeshBuilder::GenerateQuad("GEO_HIGHLIGHT_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_HIGHLIGHT_INVENTORY]->textureArray[0] = LoadTGA("Image//Highlight_Inventory.tga");
+
+	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
+
+	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
 	//Particles
 	meshList[GEO_PARTICLE] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
@@ -255,6 +269,12 @@ void SP2::Init()
 
 	player->AttachCamera(&camera);
 
+	//Test item stacking
+	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+
+	player->addItem(new Item(Item::ITEM_MEAT, 1));
+
 
 	unsigned int NUMBEROFOBJECTS = 100;
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
@@ -276,53 +296,6 @@ void SP2::Update(double dt)
 		sa->Update(dt);
 		sa->m_anim->animActive = true;
 	}
-
-	/*if (Application::IsKeyPressed('1'))
-		glEnable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('2'))
-		glDisable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('3'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if (Application::IsKeyPressed('4'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	if (Application::IsKeyPressed('5'))
-	{
-		lights[0].type = Light::LIGHT_POINT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('6'))
-	{
-		lights[0].type = Light::LIGHT_DIRECTIONAL;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('7'))
-	{
-		lights[0].type = Light::LIGHT_SPOT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
-	}
-	else if (Application::IsKeyPressed('8'))
-	{
-		bLightEnabled = true;
-	}
-	else if (Application::IsKeyPressed('9'))
-	{
-		bLightEnabled = false;
-	}*/
-
-	//if (Application::IsKeyPressed('I'))
-	//	lights[0].position.z -= (float)(10.f * dt);
-	//if (Application::IsKeyPressed('K'))
-	//	lights[0].position.z += (float)(10.f * dt);
-	//if (Application::IsKeyPressed('J'))
-	//	lights[0].position.x -= (float)(10.f * dt);
-	//if (Application::IsKeyPressed('L'))
-	//	lights[0].position.x += (float)(10.f * dt);
-	//if (Application::IsKeyPressed('O'))
-	//	lights[0].position.y -= (float)(10.f * dt);
-	//if (Application::IsKeyPressed('P'))
-	//	lights[0].position.y += (float)(10.f * dt);
-
 
 	//Turning fog on and off
 	rotateAngle += (float)(10 * dt);
@@ -463,7 +436,7 @@ void SP2::UpdateParticles(double dt)
 		particle->vel.Set(1, 1, 1);
 		particle->m_gravity.Set(0, -9.8f, 0);
 		particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
-		particle->pos.Set(Math::RandFloatMinMax(-1700, 1700), 1200.f, Math::RandFloatMinMax(-1700, 1000));
+		particle->pos.Set(Math::RandFloatMinMax(camera.position.x -1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z -1700, camera.position.z + 1700));
 	}
 
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
@@ -473,8 +446,8 @@ void SP2::UpdateParticles(double dt)
 		{
 			if (particle->type == ParticleObject_TYPE::P_WATER)
 			{
-				particle->vel += particle->m_gravity * (float)dt;
-				particle->pos += particle->vel * (float)dt * 10.f;
+				particle->vel += particle->m_gravity * 10 *  (float)dt;
+				particle->pos += particle->vel * (float)dt * 15.f;
 
 				if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
 				{
@@ -602,14 +575,14 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 
 	glDisable(GL_DEPTH_TEST);
 	Mtx44 ortho;
-	ortho.SetToOrtho(0, 80, 0, 60, -10, 10);
+	ortho.SetToOrtho(0, Application::GetWindowWidth(), 0, Application::GetWindowHeight(), -10, 10);
 	projectionStack.PushMatrix();
 	projectionStack.LoadMatrix(ortho);
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity();
 	modelStack.PushMatrix();
 	modelStack.LoadIdentity();
-	modelStack.Translate(x, y, 0);
+	modelStack.Translate(Application::GetWindowWidth() / 2 + x,Application::GetWindowHeight() / 2 + y, 0);
 	modelStack.Scale(size, size, size);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
@@ -621,7 +594,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 1.0f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.5f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -835,7 +808,7 @@ void SP2::RenderGroundObjects()
 	int pX = camera.position.x / scale;
 	int pZ = camera.position.z / scale;
 
-	int outwards = 20;
+	int outwards = 10;
 
 	int minOutwardsFromPlayerX = pX - outwards;
 	int minOutwardsFromPlayerZ = pZ - outwards;
@@ -882,7 +855,7 @@ void SP2::RenderGroundObjects()
 		}
 	}
 }
-
+ 
 void SP2::RenderGround()
 {
 	int x = 10, z = 10;
@@ -892,7 +865,7 @@ void SP2::RenderGround()
 	int pX = camera.position.x / scale;
 	int pZ = camera.position.z / scale;
 
-	int outwards = 20;
+	int outwards = 10;
 
 	int minOutwardsFromPlayerX = pX - outwards;
 	int minOutwardsFromPlayerZ = pZ - outwards;
@@ -934,6 +907,27 @@ void SP2::RenderGround()
 		}
 	}
 }
+
+void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float scaleY , int ID)
+{
+	switch (ID)
+	{
+		case Item::ITEM_GOLD_NUGGET :
+		{
+			RenderImageToScreen(meshList[GEO_GOLD], false, scaleX, scaleY, posX, posY, posZ);
+			break;
+		}
+		case Item::ITEM_MEAT :
+			RenderImageToScreen(meshList[GEO_MEAT], false, scaleX, scaleY, posX, posY, posZ);
+			break;
+		case Item::ITEM_EMPTY :
+			break;
+		default:
+			break;
+	}
+}
+
+
 void SP2::RenderWorld()
 {
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
@@ -941,15 +935,54 @@ void SP2::RenderWorld()
 
 	for (int i = 0; i < player->getTotalItems(); ++i)
 	{
-		RenderImageToScreen(meshList[GEO_EMPTY], false, 60, 60,
-			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 1);
+		//Frames for inventory
+		if (i != player->getCurrentSlot())
+			RenderImageToScreen(meshList[GEO_EMPTY_INVENTORY], false, 60, 60,
+				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
+		else
+			RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 60, 60,
+				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
 
-		RenderImageToScreen(meshList[GEO_GOLD], false, 50, 50,
-			Application::GetWindowWidth() / 2 - 400 + i * 100, Application::GetWindowHeight() / 2 - 360, 2);
-
+		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
 	}
 
-	RenderGroundObjects();
+	//Crafting Interface
+	if (player->getIsCrafting() == true)
+	{
+		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+		
+		//Left Slot
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
+			
+			if (player->getCraftingSlotOne() != -1)
+			//Render the id of whatever belongs to the first crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
+		//
+
+		// Right slot
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+		
+			if (player->getCraftingSlotTwo() != -1)
+			//Render the id of whatever belongs to the second crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
+		//
+
+		//Bottom Crafting
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
+
+		if (player->getCraftingSlotTwo() != -1)
+		RenderItem(Application::GetWindowWidth() / 2 , Application::GetWindowHeight() / 2 - 200
+				, 2, 150, 150, player->craft(player->getCraftingSlotOne() , player->getCraftingSlotTwo())->getID());
+		//
+	}
+
+	
 
 }
 
@@ -998,8 +1031,10 @@ void SP2::RenderPassMain()
 	}
 
 	RenderMesh(meshList[GEO_AXES], false);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
 
 	RenderWorld();
+
 
 	//render light ball
 	modelStack.PushMatrix();
@@ -1015,6 +1050,7 @@ void SP2::RenderPassMain()
 	modelStack.PopMatrix();
 
 	RenderGround();
+	RenderAnimation();
 
 	//Render Animals
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
@@ -1036,6 +1072,15 @@ void SP2::RenderPassMain()
 		}
 	}
 
+	std::ostringstream ss;
+	ss.precision(5);
+	ss << "FPS: " << fps;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600 , 300  );
+
+
+	ss.str("");
+	ss << to_string(player->getItem(player->getCurrentSlot())->getQuantity());
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
 }
 void SP2::Render()
 {
@@ -1043,31 +1088,6 @@ void SP2::Render()
 	RenderPassGPass();
 	//***************** MAIN RENDER PASS ***********************//
 	RenderPassMain();
-	RenderAnimation();
-
-	// Render the crosshair
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
-
-	//On screen text
-	std::ostringstream ss;
-	ss.precision(5);
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 3, 0, 6);
-
-	std::ostringstream ss1;
-	ss1.precision(4);
-	ss1 << "Light(" << lights[0].position.x << ", " << lights[0].position.y << ", " << lights[0].position.z << ")";
-	RenderTextOnScreen(meshList[GEO_TEXT], ss1.str(), Color(0, 1, 0), 3, 0, 3);
-
-	std::ostringstream ss2;
-	ss2.precision(3);
-	ss2 << "Hunger: " << player->getHunger();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(0, 1, 0), 3, 0, 9);
-
-	std::ostringstream ss3;
-	ss3.precision(3);
-	ss3 << "HP: " << player->getHP();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss3.str(), Color(0, 1, 0), 3, 0, 12);
 }
 
 void SP2::Exit()
