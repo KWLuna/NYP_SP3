@@ -8,6 +8,8 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 #include <sstream>
+#include "Physics.h"
+
 
 SP2::SP2()
 {
@@ -173,6 +175,7 @@ void SP2::Init()
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(0.5f, 1, 0.3f), 36, 10.f, 10.f);
 	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
+	meshList[GEO_CUBE] = MeshBuilder::GenerateCube("cube", Color(1, 1, 1), 1.f);
 
 	//
 	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
@@ -230,6 +233,19 @@ void SP2::Update(double dt)
 	Vector3 viewVector = camera.target - camera.position;
 	camera.position.y = 20;
 	camera.target = camera.position + viewVector;
+
+	Physics meme;
+	bool check = meme.RayTraceDist(viewVector, camera.position, Vector3(-500,-500,-500), Vector3(500,500,500));
+	if (check)
+	{
+		std::cout << "xd" << meme.GetDist() << std::endl;
+	
+	}
+	else if (!check)
+	{
+		std::cout << "memes" << std::endl;
+	}
+
 	//
 
 	if (Application::IsKeyPressed('1'))
@@ -656,7 +672,10 @@ void SP2::RenderTerrain()
 }
 void SP2::RenderWorld()
 {
-
+	modelStack.PushMatrix();
+	modelStack.Scale(1000, 1000, 1000);
+	RenderMesh(meshList[GEO_CUBE], false);
+	modelStack.PopMatrix();
 }
 void SP2::RenderPassMain()
 {

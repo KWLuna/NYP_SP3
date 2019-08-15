@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Base", "Base\Base.vcxproj", "{9B172635-4E2B-46F1-A403-08F4194D00F5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B594FE34-E00B-4E94-AD04-D1FF100AA5DC} = {B594FE34-E00B-4E94-AD04-D1FF100AA5DC}
@@ -25,5 +27,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {668224B4-575C-409B-8F05-323862DB0E02}
 	EndGlobalSection
 EndGlobal
