@@ -16,6 +16,7 @@
 
 #include "CAnimal.h"
 #include "Physics.h"
+#include "Season.h"
 
 class SP2 : public Scene
 {
@@ -143,7 +144,12 @@ class SP2 : public Scene
 
 		//TSL
 		GEO_SPRITE_ANIMATION,
-		GEO_PARTICLE, //Water & snow Particle
+		//Particles
+		GEO_PARTICLE_WATER, 
+		GEO_PARTICLE_SNOWFLAKE,
+		GEO_PARTICLE_LEAF,
+		GEO_PARTICLE_DEADLEAF,
+
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		NUM_GEOMETRY,
 	};
@@ -179,12 +185,17 @@ public:
 
 	void RenderCrafting();
 	void RenderFurnace();
+	Color fogColor;
 
 	//Ke Wei
+		//Animal
 	CAnimal* FetchGO();
 	void SpawningAnimal();
 	void RenderAnimal(CAnimal* animal);
 	void AnimalChecker(double dt);
+		//Season Changing
+	void SeasonChanger(double dt);
+
 	//Shadow
 	void RenderPassGPass();
 	void RenderPassMain();
@@ -200,8 +211,6 @@ private:
 	PlayerInformation * player;
 
 	char world[500][500];
-
-	float rotateAngle;
 
 	MS modelStack;
 	MS viewStack;
@@ -239,6 +248,10 @@ private:
 	//Animal
 	std::vector<CAnimal *> m_AnimalList;
 	int m_NumOfAnimal;
+	//Season
+	Season SP2_Seasons;
+	float m_fWindBounceTime;
+	bool m_bTexChange;
 };
 
 #endif
