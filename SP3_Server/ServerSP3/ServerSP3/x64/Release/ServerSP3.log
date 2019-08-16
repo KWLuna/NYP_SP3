@@ -3,8 +3,14 @@ c:\users\jagat\desktop\sp3\sp3_server\serversp3\serversp3\networking.h(43): warn
 c:\users\jagat\desktop\sp3\sp3_server\serversp3\serversp3\main.cpp(36): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
   Networking.cpp
 c:\users\jagat\desktop\sp3\sp3_server\serversp3\serversp3\networking.h(43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\jagat\desktop\sp3\sp3_server\serversp3\serversp3\networking.cpp(83): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
   Generating code
-c:\users\jagat\desktop\sp3\sp3_server\serversp3\serversp3\main.cpp(40): warning C4715: 'print': not all control paths return a value
-  All 334 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  115 of 401 functions (28.7%) were compiled, the rest were copied from previous compilation.
+    67 functions were new in current compilation
+    17 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ServerSP3.vcxproj -> C:\Users\jagat\Desktop\SP3\SP3_Server\ServerSP3\x64\Release\ServerSP3.exe

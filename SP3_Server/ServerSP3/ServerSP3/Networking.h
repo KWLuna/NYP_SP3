@@ -52,6 +52,10 @@ private:
 	// vector to store all incoming IPv4 from client
 	std::vector<std::string> allClientIPv4;
 	bool inVector;
+
+
+
+	std::vector<int> dotpos; // to use to check if the packet sent is a ip address packet only
 	
 };
 

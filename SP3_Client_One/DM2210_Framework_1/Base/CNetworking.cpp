@@ -158,8 +158,6 @@ std::string CNetworking::IPtoASCII() {
 			dotPos.push_back(i);
 		}	
 	}
-
-
 	
 
 

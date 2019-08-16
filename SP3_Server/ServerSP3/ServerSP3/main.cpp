@@ -89,7 +89,7 @@ int main() {
 	std::thread t2(&Networking::listener, network);
 	t2.detach();
 
-
+	// where to send out to now 
 
 
 

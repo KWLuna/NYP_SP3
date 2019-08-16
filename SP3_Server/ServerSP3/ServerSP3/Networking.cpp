@@ -2,6 +2,13 @@
 
 
 
+
+
+		// The server will convert the ASCII back to IP address number 
+			// Use the number to find it in the Vector and then send the message out 
+
+
+
 Networking::Networking()
 {
 
@@ -17,8 +24,12 @@ Networking::~Networking()
 
 void Networking::listener()
 {
+
 	while (true)
 	{
+
+		dotpos.clear();
+
 		for (int i = 0; i < allClientIPv4.size(); i++)
 		{
 			std::cout << allClientIPv4[i] << std::endl;
@@ -62,32 +73,52 @@ void Networking::listener()
 
 
 
-		if (allClientIPv4.size() == 0)
-		{
-			allClientIPv4.push_back(Buffer);
-			inVector = true;
 
-		}
-		else 
+
+		// need to test this on another computer later 
+		for (std::string::size_type i = 0; i < strlen(Buffer); i++)
 		{
-			for (int i = 0; i < allClientIPv4.size(); i++)
+			if ('.' == Buffer[i])
 			{
-				if (allClientIPv4[i] == Buffer)
+				dotpos.push_back(i);
+			}
+		}
+
+
+		if (dotpos.size() != 3) // send out normal packet out to other parts of the game 
+		{
+			break;
+		}
+		else if (dotpos.size() == 3) // to get the ip and store into a vector
+		{
+			if (allClientIPv4.size() == 0)
+			{
+				allClientIPv4.push_back(Buffer);
+				inVector = true;
+
+			}
+			else
+			{
+				for (int i = 0; i < allClientIPv4.size(); i++)
 				{
-					inVector = true;
+					if (allClientIPv4[i] == Buffer)
+					{
+						inVector = true;
+					}
 				}
+
 			}
 
+			if (!inVector)
+			{
+				allClientIPv4.push_back(Buffer);
+			}
+			else
+			{
+				continue;
+			}
 		}
-
-		if (!inVector)
-		{
-			allClientIPv4.push_back(Buffer);
-		}
-		else 
-		{
-			continue;
-		}
+		
 
 	
 
