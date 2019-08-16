@@ -40,6 +40,9 @@
     <Filter Include="SP2\Weapons">
       <UniqueIdentifier>{a6a35f04-c66d-4ebc-ab88-adebb97756b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Season">
+      <UniqueIdentifier>{a883bd4f-9405-4ae2-9f51-c76fd96e56a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Source\Furnace.cpp">
       <Filter>SP2\PlayerInformation\Smelting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Season.cpp">
+      <Filter>Season</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="Source\Furnace.h">
       <Filter>SP2\PlayerInformation\Smelting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Season.h">
+      <Filter>Season</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

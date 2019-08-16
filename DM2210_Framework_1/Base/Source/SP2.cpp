@@ -659,7 +659,6 @@ void SP2::UpdateParticles(double dt)
 	m_fWindBounceTime += 2 * dt;
 	if (m_fWindBounceTime > 10.f)
 	{
-		cout << "wind is affected" << endl;
 		m_wind.Set(Math::RandFloatMinMax(1.f, 4.f), 1.f, Math::RandFloatMinMax(1.f, 4.f));
 		m_fWindBounceTime = 0;
 	}
@@ -670,7 +669,6 @@ void SP2::UpdateParticles(double dt)
 	{
 		if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
 		{
-			cout << "spring" << endl;
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_WATER;
 			particle->scale.Set(10, 10, 10);
@@ -682,8 +680,6 @@ void SP2::UpdateParticles(double dt)
 		}
 		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
-			cout << "summer" << endl;
-
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_DEADLEAF;
 			particle->scale.Set(10, 10, 10);
@@ -695,8 +691,6 @@ void SP2::UpdateParticles(double dt)
 		}
 		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
 		{
-			cout << "fall" << endl;
-
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_LEAF;
 			particle->scale.Set(10, 10, 10);
@@ -708,8 +702,6 @@ void SP2::UpdateParticles(double dt)
 		}
 		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
 		{
-			cout << "winter" << endl;
-
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_SNOWFLAKE;
 			particle->scale.Set(10, 10, 10);
