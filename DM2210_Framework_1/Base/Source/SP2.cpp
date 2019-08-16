@@ -164,7 +164,7 @@ void SP2::Init()
 	glUniform2f(m_parameters[U_TRANSLATE_TEX_COORD], 0, 0);
 
 	//Initialise FOG
-	Color fogColor(0.5f, 0.5f, 0.5f);
+	fogColor.Set(0.5f, 0.5f, 0.5f);
 	glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 	glUniform1f(m_parameters[U_FOG_START], 1000);
 	glUniform1f(m_parameters[U_FOG_END], 2000);
@@ -199,13 +199,13 @@ void SP2::Init()
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
 
-	meshList[GEO_TREE] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Tree.obj");
+	meshList[GEO_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
 	meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
 
-	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Ore.obj");
+	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
 	meshList[GEO_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
 	
-	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("SkyBox", "OBJ//Bush.obj");
+	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
 	//Animals
@@ -239,8 +239,14 @@ void SP2::Init()
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
 	//Particles
-	meshList[GEO_PARTICLE] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
-	meshList[GEO_PARTICLE]->textureArray[0] = LoadTGA("Image//particle_water.tga");
+	meshList[GEO_PARTICLE_WATER] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
+	meshList[GEO_PARTICLE_WATER]->textureArray[0] = LoadTGA("Image//particle_water.tga");
+	meshList[GEO_PARTICLE_SNOWFLAKE] = MeshBuilder::GenerateQuad("GEO_PARTICLE_SNOW", Color(1, 1, 1), 1.0f);
+	meshList[GEO_PARTICLE_SNOWFLAKE]->textureArray[0] = LoadTGA("Image//particle_snow.tga");
+	meshList[GEO_PARTICLE_LEAF] = MeshBuilder::GenerateQuad("GEO_PARTICLE_LEAF", Color(1, 1, 1), 1.0f);
+	meshList[GEO_PARTICLE_LEAF]->textureArray[0] = LoadTGA("Image//particle_leaf.tga");
+	meshList[GEO_PARTICLE_DEADLEAF] = MeshBuilder::GenerateQuad("GEO_PARTICLE_DEADLEAF", Color(1, 1, 1), 1.0f);
+	meshList[GEO_PARTICLE_DEADLEAF]->textureArray[0] = LoadTGA("Image//particle_deadleaf.tga");
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -264,7 +270,6 @@ void SP2::Init()
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
 	projectionStack.LoadMatrix(perspective);
-	rotateAngle = 0;
 	bLightEnabled = true;
 	translate_tex_coord = 0;
 
@@ -283,12 +288,17 @@ void SP2::Init()
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
+	SP2_Seasons.setSeason(0);
+	m_fWindBounceTime = 0;
+	m_bTexChange = false;
 }
 
 void SP2::Update(double dt)
 {
 	UpdateParticles(dt);
 	player->update(dt);
+	SP2_Seasons.Update(dt);
+	SeasonChanger(dt);
 
 	//Sprite Animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -298,8 +308,6 @@ void SP2::Update(double dt)
 		sa->m_anim->animActive = true;
 	}
 
-	//Turning fog on and off
-	rotateAngle += (float)(10 * dt);
 	camera.Update(dt);
 	fps = (float)(1.f / dt);
 
@@ -344,10 +352,9 @@ CAnimal* SP2::FetchGO()
 {
 	for (auto go : m_AnimalList)
 	{
-		if (!go->m_bActive)
+		if (!go->m_bSpawned)
 		{
-			//Exercise 2b: increase object count every time an object is set to active
-			go->m_bActive = true;
+			go->m_bSpawned = true;
 			return go;
 		}
 	}
@@ -368,7 +375,7 @@ CAnimal* SP2::FetchGO()
 	}
 
 	CAnimal *go = m_AnimalList.back();
-	go->m_bActive = true;
+	go->m_bSpawned = true;
 	return go;
 }
 void SP2::SpawningAnimal()
@@ -427,17 +434,157 @@ void SP2::SpawningAnimal()
 		}
 	}
 }
+void SP2::SeasonChanger(double dt)
+{
+
+	if (SP2_Seasons.getTimer() == -1)
+	{
+		m_bTexChange = false;
+	}
+	if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
+	{
+		//Fog is thicker, longer
+	
+		//Light should be slightly brighter than fall but darker than summer
+		lights[0].power = 1.5f;
+
+
+		if (m_bTexChange == false)
+		{
+			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
+			meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
+			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//skybox_spring.tga");
+			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
+
+
+			fogColor.Set(0.5f, 0.5f, 0.5f);
+			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
+			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
+
+			m_bTexChange = true;
+		}
+	}
+	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
+	{
+		lights[0].power = 2.f;
+		if (m_bTexChange == false)
+		{
+			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Summer.tga");
+			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox_summer.tga");
+			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
+
+
+			fogColor.Set(0.8f, 0.6f, 0.0f);
+			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
+			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
+
+			m_bTexChange = true;
+		}
+	}
+	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
+	{
+		lights[0].power = 1.f;
+		if (m_bTexChange == false)
+		{
+			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Fall.tga");
+			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox.tga");
+			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
+
+			//fogColor.Set(0.8f, 0.4f, 0.0f);
+			fogColor.Set(0.5f, 0.5f, 0.5f);
+			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
+			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
+
+			m_bTexChange = true;
+		}
+	}
+	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+	{
+		lights[0].power = 0.5f;
+		//change water
+
+		if (m_bTexChange == false)
+		{
+			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
+			meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//iced_lake.tga");
+			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox_winter.tga");
+			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
+
+			fogColor.Set(0.2f, 0.7f, 1.f);
+			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
+			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
+
+			m_bTexChange = true;
+		}
+	}
+}
 void SP2::UpdateParticles(double dt)
 {
+	Vector3 m_wind;
+
+	m_fWindBounceTime += 2 * dt;
+	if (m_fWindBounceTime > 10.f)
+	{
+		cout << "wind is affected" << endl;
+		m_wind.Set(Math::RandFloatMinMax(1.f, 4.f), 1.f, Math::RandFloatMinMax(1.f, 4.f));
+		m_fWindBounceTime = 0;
+	}
+	else
+		m_wind.Set(1.f, 1.f, 1.f);
+
 	if (m_particleCount < MAX_PARTICLE)
 	{
-		ParticleObject* particle = GetParticle();
-		particle->type = ParticleObject_TYPE::P_WATER;
-		particle->scale.Set(10, 10, 10);
-		particle->vel.Set(1, 1, 1);
-		particle->m_gravity.Set(0, -9.8f, 0);
-		particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
-		particle->pos.Set(Math::RandFloatMinMax(camera.position.x -1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z -1700, camera.position.z + 1700));
+		if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
+		{
+			cout << "spring" << endl;
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_WATER;
+			particle->scale.Set(10, 10, 10);
+			particle->vel.Set(1, 1, 1);
+			particle->m_gravity.Set(0, -9.8f, 0);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
+			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
+			particle->wind = m_wind;
+		}
+		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
+		{
+			cout << "summer" << endl;
+
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_DEADLEAF;
+			particle->scale.Set(10, 10, 10);
+			particle->vel.Set(1, 1, 1);
+			particle->m_gravity.Set(0, -9.8f, 0);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
+			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 600.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
+			particle->wind = m_wind;
+		}
+		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
+		{
+			cout << "fall" << endl;
+
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_LEAF;
+			particle->scale.Set(10, 10, 10);
+			particle->vel.Set(1, 1, 1);
+			particle->m_gravity.Set(0, -9.8f, 0);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
+			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 600.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
+			particle->wind = m_wind;
+		}
+		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+		{
+			cout << "winter" << endl;
+
+			ParticleObject* particle = GetParticle();
+			particle->type = ParticleObject_TYPE::P_SNOWFLAKE;
+			particle->scale.Set(10, 10, 10);
+			particle->vel.Set(1, 1, 1);
+			particle->m_gravity.Set(0, -9.8f, 0);
+			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
+			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
+			particle->wind = m_wind;
+		}
 	}
 
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
@@ -445,25 +592,11 @@ void SP2::UpdateParticles(double dt)
 		ParticleObject *particle = (ParticleObject *)*it;
 		if (particle->active)
 		{
-			if (particle->type == ParticleObject_TYPE::P_WATER)
+			particle->Update(dt);
+			if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
 			{
-				particle->vel += particle->m_gravity * 10 *  (float)dt;
-				particle->pos += particle->vel * (float)dt * 15.f;
-
-				if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
-				{
-					particle->active = false;
-					m_particleCount--;
-					for (std::vector<ParticleObject *>::iterator it2 = particleList.begin(); it2 != particleList.end(); ++it2)
-					{
-						ParticleObject *particle1 = (ParticleObject *)*it2;
-						if (particle->active == false && particle1->type == ParticleObject_TYPE::P_WATERSPLAT && particle1->pos.x == particle->pos.x && particle1->pos.z == particle->pos.z)
-						{
-							particle1->active = true;
-							m_particleCount++;
-						}
-					}
-				}
+				particle->active = false;
+				m_particleCount--;
 			}
 		}
 	}
@@ -482,10 +615,24 @@ ParticleObject* SP2::GetParticle(void)
 			return particle;
 		}
 	}
-
 	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
 	{
 		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_WATER);
+		particleList.push_back(particle);
+	}
+	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
+	{
+		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_SNOWFLAKE);
+		particleList.push_back(particle);
+	}
+	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
+	{
+		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_LEAF);
+		particleList.push_back(particle);
+	}
+	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
+	{
+		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_DEADLEAF);
 		particleList.push_back(particle);
 	}
 
@@ -537,7 +684,34 @@ void SP2::RenderParticles(ParticleObject * particle)
 		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
 		modelStack.Rotate(particle->rotation, 0, 0, 1);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		RenderMesh(meshList[GEO_PARTICLE], false);
+		RenderMesh(meshList[GEO_PARTICLE_WATER], false);
+		modelStack.PopMatrix();
+		break;
+	case ParticleObject_TYPE::P_SNOWFLAKE:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+		modelStack.Rotate(particle->rotation, 0, 0, 1);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_SNOWFLAKE], false);
+		modelStack.PopMatrix();
+		break;
+	case ParticleObject_TYPE::P_LEAF:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+		modelStack.Rotate(particle->rotation, 0, 0, 1);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_LEAF], false);
+		modelStack.PopMatrix();
+		break;
+	case ParticleObject_TYPE::P_DEADLEAF:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+		modelStack.Rotate(particle->rotation, 0, 0, 1);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_DEADLEAF], false);
 		modelStack.PopMatrix();
 		break;
 	default:
