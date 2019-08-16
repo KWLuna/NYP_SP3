@@ -21,15 +21,15 @@ void SP2::Init()
 {
 
 
-	//// Wait for Server to be up
-	//network.GetServerIPStart();
+	// Wait for Server to be up
+	network.GetServerIPStart();
 
-	//// Send my IP to Server to store 
-	//network.TalktoServer(network.ServerIPv4, network.getIPv4());
+	// Send my IP to Server to store 
+	network.TalktoServer(network.ServerIPv4, network.getIPv4());
 
-	////// keep on getting the IPv address of the Server
-	//Thread = std::thread([this] { network.GetServerIP(); });
-	//Thread.detach();
+	//// keep on getting the IPv address of the Server
+	Thread = std::thread([this] { network.GetServerIP(); });
+	Thread.detach();
 
 
 
@@ -260,7 +260,7 @@ void SP2::Update(double dt)
 	if (Application::IsKeyPressed('W')) {
 		//network.TalktoServer(network.ServerIPv4, network.getIPv4() + "PositionOfPlayer");
 		
-		network.TalktoServer(network.ServerIPv4, network.IPtoASCII()); 
+		network.TalktoServer(network.ServerIPv4, network.IPtoASCII() + "C1"); 
 
 		// send the ip and sms to the server to find out what to do with it 
 	}

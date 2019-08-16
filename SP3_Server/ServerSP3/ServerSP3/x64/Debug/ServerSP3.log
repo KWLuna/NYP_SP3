@@ -1,0 +1,8 @@
+﻿  Networking.cpp
+c:\users\180776n\desktop\serversp3\serversp3\networking.h(43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\180776n\desktop\serversp3\serversp3\networking.cpp(83): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+  ServerSP3.vcxproj -> C:\Users\180776N\Desktop\ServerSP3\x64\Debug\ServerSP3.exe

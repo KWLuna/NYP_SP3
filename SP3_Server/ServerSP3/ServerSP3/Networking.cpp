@@ -1,6 +1,8 @@
 #include "Networking.h"
 
 
+#include <fcntl.h>
+#include <io.h>
 
 
 
@@ -19,8 +21,6 @@ Networking::Networking()
 Networking::~Networking()
 {
 }
-
-
 
 void Networking::listener()
 {
@@ -85,8 +85,49 @@ void Networking::listener()
 		}
 
 
-		if (dotpos.size() != 3) // send out normal packet out to other parts of the game 
+		if (dotpos.size() != 3) // It is a normal pack coming in do convert back and check 
 		{
+			// step one convert the pack ip to ip and check aginst the vector
+
+			std::cout << "step one convert the pack ip to ip and check aginst the vector" << std::endl;
+			std::string firstSign = "BLANK";
+			std::string secondSign = " ";
+			std::string CopyOfBuffer = " ";
+
+			CopyOfBuffer = Buffer;
+			std::cout << " Copy of Buffer : " << CopyOfBuffer << std::endl;
+
+			firstSign = CopyOfBuffer.substr(0, 1);
+			std::cout << " First Sign : " << firstSign << std::endl;
+
+			secondSign = CopyOfBuffer.substr(1, 1);
+			std::cout << "Scound Sign : " << secondSign << std::endl;
+
+			 //convert the two string to char 
+			std::cout << "convert the two string to char " << std::endl;
+
+			char cstr[2];
+			strcpy_s(cstr, firstSign.c_str());    // or pass &s[0]
+			std::cout << cstr << std::endl;
+
+			char cstr2[2];
+			strcpy_s(cstr2, secondSign.c_str());    // or pass &s[0]
+			std::cout << cstr2 << std::endl;
+
+			// char back to int 
+			std::cout << "convert char back to int  " << std::endl;
+
+			/*int firstNumber = 0;
+			firstNumber = (int)cstr;
+			int SecondNumber = 0;
+			SecondNumber = (int)cstr2;
+			std::cout << "First Number : " << firstNumber << std::endl;
+			std::cout << "Scound Number : " << SecondNumber << std::endl;*/
+
+			int x = static_cast<unsigned char>(cstr[0]);
+			std::cout << x << std::endl;
+			int y = static_cast<unsigned char>(cstr2[0]);
+			std::cout << y << std::endl;
 			break;
 		}
 		else if (dotpos.size() == 3) // to get the ip and store into a vector
