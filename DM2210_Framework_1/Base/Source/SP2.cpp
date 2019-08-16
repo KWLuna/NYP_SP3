@@ -195,6 +195,8 @@ void SP2::Init()
 	//
 	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
+	
+	meshList[GEO_GRASS]->material.kAmbient.Set(0.3, 0.3, 0.3);
 
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
@@ -224,6 +226,10 @@ void SP2::Init()
 	//
 	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_MEAT]->textureArray[0] = LoadTGA("Image//Meat.tga");
+
+
+	meshList[GEO_COOKED_MEAT] = MeshBuilder::GenerateQuad("GEO_COOKED_MEAT", Color(1, 1, 1), 1.0f);
+	meshList[GEO_COOKED_MEAT]->textureArray[0] = LoadTGA("Image//Cooked_Meat.tga");
 
 	meshList[GEO_WOOD] = MeshBuilder::GenerateQuad("GEO_WOOD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOOD]->textureArray[0] = LoadTGA("Image//Wooden_Log.tga");
@@ -273,6 +279,9 @@ void SP2::Init()
 	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
 
+	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
@@ -312,6 +321,8 @@ void SP2::Init()
 	player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 	player->addItem(new Item(Item::ITEM_STONE, 1));
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+	player->addItem(new Item(Item::ITEM_COAL, 100));
+	player->addItem(new Item(Item::ITEM_MEAT, 100));
 
 	unsigned int NUMBEROFOBJECTS = 100;
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
@@ -319,12 +330,86 @@ void SP2::Init()
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
+
+	//Temp furnace for testing , delete when raytrace is introduced.
+	//FurnaceList.push_back(new Furnace);
+	//FurnaceList[0]->SetStatus(true);
+}
+
+void SP2::RenderFurnace()
+{
+	for (int i = 0; i < FurnaceList.size(); ++i)
+	{
+		// Render this furnace UI only.
+		if (FurnaceList[i]->GetStatus() == true)
+		{
+			//Interface
+			RenderImageToScreen(meshList[GEO_SMELTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
+				Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+
+			//Top
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 + 150, 1);
+
+			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 + 150
+				, 2, 150, 150, FurnaceList[i]->GetSmeltingID());
+
+			//Bottom
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 - 150, 1);
+
+			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 - 150
+				, 2, 150, 150, FurnaceList[i]->GetFuelID());
+
+			//Result
+			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2 
+				, 2, 150, 150, FurnaceList[i]->GetResultID());
+
+		/*	RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, FurnaceList[i]->GetResultID());*/
+
+
+			if (FurnaceList[i]->GetSlot() == 1)
+				RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 175, 175,
+					Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 + 150, 2);
+			else if (FurnaceList[i]->GetSlot() == 2)
+				RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 175, 175,
+					Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 - 150, 2);
+			else
+				RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 175, 175,
+					Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 2);
+
+			std::ostringstream ss;
+			ss.precision(5);
+			ss << FurnaceList[i]->GetFuelTotal();
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 100, -170, -200);
+
+			ss.str("");
+			ss << FurnaceList[i]->GetSmeltingTotal();
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 100, -170, 100);
+
+			ss.str("");
+			ss << FurnaceList[i]->GetResultTotal();
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 0, 0), 100, 130 , -40);
+
+			break;
+		}
+	}
 }
 
 void SP2::Update(double dt)
 {
 	UpdateParticles(dt);
 	player->update(dt);
+	
+	//update all the furnaces present in the level.
+	for (int i = 0; i < FurnaceList.size(); ++i)
+	{
+		FurnaceList[i]->update(dt, player);
+	}
 
 	//Sprite Animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -605,6 +690,7 @@ void SP2::RenderText(Mesh* mesh, std::string text, Color color)
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
+
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -621,9 +707,11 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	viewStack.PushMatrix();
 	viewStack.LoadIdentity();
 	modelStack.PushMatrix();
+
 	modelStack.LoadIdentity();
-	modelStack.Translate(Application::GetWindowWidth() / 2 + x,Application::GetWindowHeight() / 2 + y, 0);
-	modelStack.Scale(size, size, size);
+	modelStack.Translate(Application::GetWindowWidth() / 2 + x ,Application::GetWindowHeight() / 2 + y, 0);
+	modelStack.Scale(size, size, 1);
+	
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
 	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
@@ -953,10 +1041,48 @@ void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float s
 		RenderImageToScreen(meshList[GEO_ITEMS_START + ID], false, scaleX, scaleY, posX, posY, posZ);
 }
 
+void SP2::RenderCrafting()
+{
+	//Crafting Interface
+	if (player->getIsCrafting() == true)
+	{
+		
+		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+
+		//Left Slot
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
+
+		if (player->getCraftingSlotOne() != -1)
+			//Render the id of whatever belongs to the first crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
+		//
+
+		// Right slot
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+
+		if (player->getCraftingSlotTwo() != -1)
+			//Render the id of whatever belongs to the second crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
+		//
+
+		//Bottom Crafting
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
+
+		if (player->getCraftingSlotTwo() != -1)
+			RenderItem(Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200
+				, 2, 150, 150, player->craft(player->getCraftingSlotOne(), player->getCraftingSlotTwo())->getID());
+		//+
+	}
+}
 
 void SP2::RenderWorld()
 {
-
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
 
@@ -973,41 +1099,7 @@ void SP2::RenderWorld()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
 	}
 
-	//Crafting Interface
-	if (player->getIsCrafting() == true)
-	{
-		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
-			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
-		
-		//Left Slot
-			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-				Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
-			
-			if (player->getCraftingSlotOne() != -1)
-			//Render the id of whatever belongs to the first crafting slot 
-			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
-				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
-		//
-
-		// Right slot
-			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
-		
-			if (player->getCraftingSlotTwo() != -1)
-			//Render the id of whatever belongs to the second crafting slot 
-			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
-				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
-		//
-
-		//Bottom Crafting
-		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
-
-		if (player->getCraftingSlotTwo() != -1)
-		RenderItem(Application::GetWindowWidth() / 2 , Application::GetWindowHeight() / 2 - 200
-				, 2, 150, 150, player->craft(player->getCraftingSlotOne() , player->getCraftingSlotTwo())->getID());
-		//+
-	}
+	
 
 	RenderGroundObjects();
 
@@ -1104,11 +1196,13 @@ void SP2::RenderPassMain()
 		}
 	}
 
+	RenderCrafting();
+	RenderFurnace();
+
 	std::ostringstream ss;
 	ss.precision(5);
 	ss << "FPS: " << fps;
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600 , 300  );
-
 
 	ss.str("");
 	ss << to_string(player->getItem(player->getCurrentSlot())->getQuantity());
@@ -1116,9 +1210,7 @@ void SP2::RenderPassMain()
 }
 void SP2::Render()
 {
-	//***************** PRE RENDER PASS ************************//
 	RenderPassGPass();
-	//***************** MAIN RENDER PASS ***********************//
 	RenderPassMain();
 }
 

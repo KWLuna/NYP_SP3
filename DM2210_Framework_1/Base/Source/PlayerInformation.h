@@ -2,6 +2,10 @@
 #include "Camera3.h"
 #include "item.h"
 #include <vector>
+#include "Application.h"
+#include <string>
+#include <iostream>
+using namespace std;
 class PlayerInformation
 {
 	enum POSITION
@@ -39,6 +43,7 @@ public:
 	int getCraftingSlotOne();
 	int getCraftingSlotTwo();
 	
+	void SetFurnaceStatus(bool condition);
 	
 	Item * craft(int firstItem, int secondItem);
 
@@ -62,6 +67,7 @@ private:
 	int m_iCurrentStance;
 
 	bool m_bSwitchStance;
+	bool m_bFurnaceStatus;
 
 	std::vector<Item*> ItemList;
 	float m_fSpeed;

@@ -1,10 +1,18 @@
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
 class Item
 {
 public:
 	enum ITEM_TYPE
 	{
+		//DONE
 		ITEM_EMPTY,
 		ITEM_MEAT,
+		ITEM_COOKED_MEAT,
+
 		ITEM_WOOD,
 		ITEM_STICK,
 		ITEM_COAL,
@@ -20,10 +28,11 @@ public:
 
 		ITEM_GOLD_SWORD,
 		ITEM_GOLD_PICKAXE,
+		
+		//TO ADD
 
 		ITEM_END
 	};
-	ITEM_TYPE Items;
 
 	Item();
 	Item(char id, int quantity);
@@ -37,6 +46,8 @@ public:
 	void setQuantity(int quantity);
 
 private:
+	vector <int * > smeltables;
+
 	char m_iID;
 	int m_iQuantity;
 };

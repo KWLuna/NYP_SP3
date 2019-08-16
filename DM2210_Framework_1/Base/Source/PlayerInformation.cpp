@@ -1,8 +1,5 @@
 #include "PlayerInformation.h"
-#include "Application.h"
-#include <string>
-#include <iostream>
-using namespace std;
+
 PlayerInformation::PlayerInformation()
 {
 	m_dHP = 100;
@@ -21,6 +18,7 @@ PlayerInformation::PlayerInformation()
 	m_iCraftingSlotTwo = -1;
 	m_iSwitchInventorySlot = -1;
 
+	m_bFurnaceStatus = false;
 
 	m_bSwitchStance = false;
 	//Init inventory as empty , 9 slots in total.
@@ -93,6 +91,11 @@ bool PlayerInformation::addItem(Item * object)
 	}
 
 	return false; //tell prog that adding item was unsuccesful
+}
+
+void PlayerInformation::SetFurnaceStatus(bool condition)
+{
+	m_bFurnaceStatus = condition;
 }
 
 int PlayerInformation::getTotalItems()
@@ -185,19 +188,23 @@ void PlayerInformation::update(double dt)
 		}
 	}
 
-	if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
+	if (m_bFurnaceStatus == false)
 	{
-		if (m_bCrafting == true)
+		if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
 		{
-			m_iCraftingSlotOne = -1;
-			m_iCraftingSlotTwo = -1;
-			m_bCrafting = false;
-		}
-		else
-			m_bCrafting = true;
+			if (m_bCrafting == true)
+			{
+				m_iCraftingSlotOne = -1;
+				m_iCraftingSlotTwo = -1;
+				m_bCrafting = false;
+			}
+			else
+				m_bCrafting = true;
 
-		m_dBounceTime = 0.2;
+			m_dBounceTime = 0.2;
+		}
 	}
+	
 
 	if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
 	{
@@ -292,7 +299,7 @@ void PlayerInformation::update(double dt)
 			
 		}
 
-	if (m_bCrafting == false)
+	if (m_bCrafting == false && m_bFurnaceStatus == false)
 	{
 		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 		Vector3 rightUV;

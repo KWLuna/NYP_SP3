@@ -10,7 +10,10 @@
 #include "LoadHmap.h"
 #include "Particle.h"
 #include "DepthFBO.h"
+
 #include "PlayerInformation.h"
+#include "Furnace.h"
+
 #include "CAnimal.h"
 #include "Physics.h"
 
@@ -94,6 +97,7 @@ class SP2 : public Scene
 		//2D Image Sprites
 		GEO_ITEMS_START,
 		GEO_MEAT,
+		GEO_COOKED_MEAT,
 		GEO_WOOD,
 		GEO_STICK,
 		GEO_COAL,
@@ -129,6 +133,7 @@ class SP2 : public Scene
 
 		//Crafting
 		GEO_CRAFTING_MENU,
+		GEO_SMELTING_MENU,
 		GEO_EMPTY_CRAFTING,
 
 		//TSL
@@ -167,7 +172,8 @@ public:
 	void RenderGroundObjects();
 	void RenderGround();
 
-	
+	void RenderCrafting();
+	void RenderFurnace();
 
 	//Ke Wei
 	CAnimal* FetchGO();
@@ -214,9 +220,10 @@ private:
 	void UpdateParticles(double dt);
 	void RenderParticles(ParticleObject * particle);
 
+
 	ParticleObject* GetParticle(void);
 	std::vector<ParticleObject*> particleList;
-
+	std::vector<Furnace*> FurnaceList;
 	//Shadow
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;

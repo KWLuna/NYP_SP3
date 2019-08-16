@@ -40,6 +40,9 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{426006d2-7fa0-4933-b8b6-3da5d6dbf267}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlayerInformation\Smelting">
+      <UniqueIdentifier>{41d8fc86-493e-487a-b9e8-ff63cb57661d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Source\Entity.cpp">
       <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Furnace.cpp">
+      <Filter>PlayerInformation\Smelting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -202,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="Source\Entity.h">
       <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Furnace.h">
+      <Filter>PlayerInformation\Smelting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
