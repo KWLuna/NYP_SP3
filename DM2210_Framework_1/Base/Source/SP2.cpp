@@ -1262,6 +1262,14 @@ void SP2::RenderCrafting()
 
 void SP2::RenderWorld()
 {
+	//for testing raytracing
+	modelStack.PushMatrix();
+	modelStack.Translate(12500, 0, 12500);
+	modelStack.Scale(1000, 1000, 1000);
+	RenderMesh(meshList[GEO_CUBE], false);
+	modelStack.PopMatrix();
+	//
+
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
 
