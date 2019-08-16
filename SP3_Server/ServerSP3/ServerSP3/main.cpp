@@ -85,7 +85,7 @@ int main() {
 	std::thread t1(ServerStatus, CopyCopyOwnIPv4, CopyOwnIPv4, network);
 	t1.detach();
 
-	// listen for any incominf message 
+	// listen for any incoming message 
 	std::thread t2(&Networking::listener, network);
 	t2.detach();
 

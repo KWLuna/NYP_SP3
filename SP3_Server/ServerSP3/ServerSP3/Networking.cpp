@@ -4,6 +4,8 @@
 
 Networking::Networking()
 {
+
+	
 }
 
 
@@ -17,7 +19,14 @@ void Networking::listener()
 {
 	while (true)
 	{
-		std::cout << "listing now" << std::endl;
+		for (int i = 0; i < allClientIPv4.size(); i++)
+		{
+			std::cout << allClientIPv4[i] << std::endl;
+		}
+
+		inVector = false;
+
+		//std::cout << "listing now" << std::endl;
 		iWsaStartup = WSAStartup(MAKEWORD(2, 2), &WinSockData); // NEW
 		UDPServer.sin_family = AF_INET;// NEW
 		UDPServer.sin_addr.s_addr = inet_addr(Networking::getIPv4().c_str());// your own ip (laptop)
@@ -40,14 +49,49 @@ void Networking::listener()
 			&iUDPServerLen
 		);
 
+		std::cout << iBufferLen << std::endl;
+
 		if (iReceiveFrom == SOCKET_ERROR)
 		{
 			return;
 		}
 		
-		std::cout << "Message from Client" << Buffer << std::endl;
+		//std::cout << "Message from Client" << Buffer << std::endl;
 		iCloseSocket = closesocket(UDPSocketClient);
 		iWsaCleanup = WSACleanup();
+
+
+
+		if (allClientIPv4.size() == 0)
+		{
+			allClientIPv4.push_back(Buffer);
+			inVector = true;
+
+		}
+		else 
+		{
+			for (int i = 0; i < allClientIPv4.size(); i++)
+			{
+				if (allClientIPv4[i] == Buffer)
+				{
+					inVector = true;
+				}
+			}
+
+		}
+
+		if (!inVector)
+		{
+			allClientIPv4.push_back(Buffer);
+		}
+		else 
+		{
+			continue;
+		}
+
+	
+
+
 	}
 }
 
@@ -57,7 +101,7 @@ void Networking::FLOOD(std::string IPv4 ,std::string input)
 
 	if (Networking::getIPv4() == IPv4)
 	{
-		std::cout << "Same " << std::endl;
+		//std::cout << "Same " << std::endl;
 	}
 	else
 	{
@@ -80,7 +124,7 @@ void Networking::FLOOD(std::string IPv4 ,std::string input)
 
 		iCloseSocket = closesocket(UDPSocketClient);
 		iWsaCleanup = WSACleanup();
-		std::cout << "Flood Ipv4 : " << IPv4 << std::endl;
+		//std::cout << "Flood Ipv4 : " << IPv4 << std::endl;
 
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <vector>
 
 #pragma comment(lib, "Ws2_32.lib")
 #include <Windows.h> // forgot not sure yet
@@ -21,8 +22,9 @@ public:
 	~CNetworking();
 
 	void TalktoServer(std::string IPv4, std::string sms);
-	void ListenForPackets();
 
+	void GetServerIPStart(); // just to run ones
+	std::string IPtoASCII();
 	void GetServerIP();
 	std::string getIPv4();
 
@@ -32,9 +34,11 @@ public:
 
 	SOCKET	UDPSocketClient;
 
+	// max buffer size is 19 
+
 	struct sockaddr_in UDPServer;
 	int iBind;
-	char Buffer[500] = "Hello From Client!";
+	char Buffer[1024] = "Hello From Client!";
 	int iSendto = 0;
 	int iReceiveFrom = 0;
 
@@ -50,6 +54,8 @@ public:
 
 	// Networking 
 	std::string ServerIPv4 = "BLANK";
+
+	
 
 	
 };

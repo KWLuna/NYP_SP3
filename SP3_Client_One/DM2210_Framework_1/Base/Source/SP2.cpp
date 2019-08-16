@@ -21,13 +21,16 @@ void SP2::Init()
 {
 
 
+	//// Wait for Server to be up
+	//network.GetServerIPStart();
 
-	
-	// keep on getting the IPv address of the Server
-	Thread = std::thread([this] { network.GetServerIP(); });
-	Thread.detach();
+	//// Send my IP to Server to store 
+	//network.TalktoServer(network.ServerIPv4, network.getIPv4());
 
-	// send My address to client 
+	////// keep on getting the IPv address of the Server
+	//Thread = std::thread([this] { network.GetServerIP(); });
+	//Thread.detach();
+
 
 
 
@@ -255,8 +258,11 @@ void SP2::Update(double dt)
 
 
 	if (Application::IsKeyPressed('W')) {
-		network.TalktoServer(network.ServerIPv4, "I am gay");
+		//network.TalktoServer(network.ServerIPv4, network.getIPv4() + "PositionOfPlayer");
+		
+		network.TalktoServer(network.ServerIPv4, network.IPtoASCII()); 
 
+		// send the ip and sms to the server to find out what to do with it 
 	}
 	
 
