@@ -34,7 +34,6 @@
     <ClCompile Include="Source\SP2.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SpriteAnimation.cpp" />
-    <ClCompile Include="Source\Sword.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Weapons.cpp" />
   </ItemGroup>
@@ -66,7 +65,6 @@
     <ClInclude Include="Source\SP2.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\SpriteAnimation.h" />
-    <ClInclude Include="Source\Sword.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Weapons.h" />

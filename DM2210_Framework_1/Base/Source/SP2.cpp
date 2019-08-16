@@ -148,7 +148,7 @@ void SP2::Init()
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-
+	
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
 	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
@@ -195,7 +195,7 @@ void SP2::Init()
 	//
 	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
-
+	
 	meshList[GEO_GRASS]->material.kAmbient.Set(0.3, 0.3, 0.3);
 
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
@@ -206,17 +206,17 @@ void SP2::Init()
 
 	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
 	meshList[GEO_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
-
+	
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
 	//Animals
 	meshList[GEO_PIG] = MeshBuilder::GenerateOBJ("Pig", "OBJ//Pig.obj");
 	meshList[GEO_PIG]->textureArray[0] = LoadTGA("Image//PIG.tga");
-
+	
 	meshList[GEO_CHICKEN] = MeshBuilder::GenerateOBJ("Chicken", "OBJ//chicken.obj");
 	meshList[GEO_CHICKEN]->textureArray[0] = LoadTGA("Image//chicken.tga");
-
+	
 	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//cow.obj");
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
@@ -253,7 +253,7 @@ void SP2::Init()
 
 	meshList[GEO_GOLD_NUGGET] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_NUGGET]->textureArray[0] = LoadTGA("Image//Gold_Nugget.tga");
-
+	
 	meshList[GEO_GOLD_NUGGET] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_NUGGET]->textureArray[0] = LoadTGA("Image//Gold_Nugget.tga");
 
@@ -293,10 +293,6 @@ void SP2::Init()
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
-	//Weapons
-	meshList[GEO_SWORD] = MeshBuilder::GenerateOBJ("Sword", "OBJ//sword.obj");
-	meshList[GEO_SWORD]->textureArray[0] = LoadTGA("Image//Meat.tga");
-
 	//Particles
 	meshList[GEO_PARTICLE_WATER] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE_WATER]->textureArray[0] = LoadTGA("Image//particle_water.tga");
@@ -324,7 +320,7 @@ void SP2::Init()
 		//Startframe, endframe, repeat, time, active
 	}
 
-	// Projection matrix : 45ï¿½ Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
@@ -387,7 +383,7 @@ void SP2::RenderFurnace()
 			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
 				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
 
-			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2 
 				, 2, 150, 150, FurnaceList[i]->GetResultID());
 
 		/*	RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
@@ -429,7 +425,7 @@ void SP2::Update(double dt)
 {
 	UpdateParticles(dt);
 	player->update(dt);
-
+	
 	//update all the furnaces present in the level.
 	for (int i = 0; i < FurnaceList.size(); ++i)
 	{
@@ -582,7 +578,7 @@ void SP2::SeasonChanger(double dt)
 	if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
 	{
 		//Fog is thicker, longer
-
+	
 		//Light should be slightly brighter than fall but darker than summer
 		lights[0].power = 1.5f;
 
@@ -894,7 +890,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	modelStack.LoadIdentity();
 	modelStack.Translate(Application::GetWindowWidth() / 2 + x ,Application::GetWindowHeight() / 2 + y, 0);
 	modelStack.Scale(size, size, 1);
-
+	
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
 	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
@@ -1165,7 +1161,7 @@ void SP2::RenderGroundObjects()
 		}
 	}
 }
-
+ 
 void SP2::RenderGround()
 {
 	int x = 10, z = 10;
@@ -1211,7 +1207,7 @@ void SP2::RenderGround()
 						modelStack.PopMatrix();
 						break;
 					}
-
+					
 				}
 			}
 		}
@@ -1220,55 +1216,16 @@ void SP2::RenderGround()
 
 void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float scaleY , int ID)
 {
-	switch (ID)
-	{
-		case Item::ITEM_SWORD:
-		{
-			break;
-		}
-		case Item::ITEM_GOLD_NUGGET :
-		{
-			RenderImageToScreen(meshList[GEO_GOLD], false, scaleX, scaleY, posX, posY, posZ);
-			break;
-		}
-		case Item::ITEM_MEAT :
-			RenderImageToScreen(meshList[GEO_MEAT], false, scaleX, scaleY, posX, posY, posZ);
-			break;
-		case Item::ITEM_EMPTY :
-			break;
-		default:
-			break;
-	}
+	if (ID != 0)
+		RenderImageToScreen(meshList[GEO_ITEMS_START + ID], false, scaleX, scaleY, posX, posY, posZ);
 }
 
 void SP2::RenderCrafting()
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(12500, 0, 12500);
-	modelStack.Scale(1000, 1000, 1000);
-	RenderMesh(meshList[GEO_CUBE], false);
-	modelStack.PopMatrix();
-
-	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
-		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
-
-	for (int i = 0; i < player->getTotalItems(); ++i)
-	{
-		//Frames for inventory
-		if (i != player->getCurrentSlot())
-			RenderImageToScreen(meshList[GEO_EMPTY_INVENTORY], false, 60, 60,
-				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
-		else
-			RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 60, 60,
-				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
-
-		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
-	}
-
 	//Crafting Interface
 	if (player->getIsCrafting() == true)
 	{
-
+		
 		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
 			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
 
@@ -1277,7 +1234,7 @@ void SP2::RenderCrafting()
 			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
 
 		if (player->getCraftingSlotOne() != -1)
-			//Render the id of whatever belongs to the first crafting slot
+			//Render the id of whatever belongs to the first crafting slot 
 			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
 				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
 		//
@@ -1287,7 +1244,7 @@ void SP2::RenderCrafting()
 			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
 
 		if (player->getCraftingSlotTwo() != -1)
-			//Render the id of whatever belongs to the second crafting slot
+			//Render the id of whatever belongs to the second crafting slot 
 			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
 				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
 		//
@@ -1321,7 +1278,7 @@ void SP2::RenderWorld()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
 	}
 
-
+	
 
 	RenderGroundObjects();
 
