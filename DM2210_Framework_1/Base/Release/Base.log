@@ -1,1 +1,9 @@
-﻿
+﻿  Furnace.cpp
+d:\github\sp3\dm2210_framework_1\base\source\furnace.cpp(85): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\furnace.cpp(114): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+  Generating code
+  0 of 1371 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Base.vcxproj -> D:\Github\SP3\DM2210_Framework_1\Release\Base.exe

@@ -34,6 +34,9 @@
     <Filter Include="Season">
       <UniqueIdentifier>{7833ca3d-74e2-4ebc-9f77-bd3a4364a223}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlayerInformation\Smelting">
+      <UniqueIdentifier>{41d8fc86-493e-487a-b9e8-ff63cb57661d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -101,6 +104,9 @@
     </ClCompile>
     <ClCompile Include="Source\Season.cpp">
       <Filter>Season</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Furnace.cpp">
+      <Filter>PlayerInformation\Smelting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="Source\Season.h">
       <Filter>Season</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Furnace.h">
+      <Filter>PlayerInformation\Smelting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

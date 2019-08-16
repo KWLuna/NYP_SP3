@@ -3,6 +3,7 @@ class Item
 public:
 	enum ITEM_TYPE
 	{
+		//DONE
 		ITEM_EMPTY,
 		ITEM_MEAT,
 		ITEM_WOOD,
@@ -20,6 +21,9 @@ public:
 
 		ITEM_GOLD_SWORD,
 		ITEM_GOLD_PICKAXE,
+		
+		//TO ADD
+		ITEM_COOKED_MEAT,
 
 		ITEM_END
 	};

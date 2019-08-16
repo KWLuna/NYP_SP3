@@ -273,6 +273,9 @@ void SP2::Init()
 	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
 
+	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
@@ -319,12 +322,70 @@ void SP2::Init()
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
+
+	//Temp furnace for testing , delete when raytrace is introduced.
+	FurnaceList.push_back(new Furnace);
+	FurnaceList[0]->SetStatus(true);
+}
+
+void SP2::RenderFurnace()
+{
+	for (int i = 0; i < FurnaceList.size(); ++i)
+	{
+		//Interface
+		RenderImageToScreen(meshList[GEO_SMELTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+
+		
+
+		//Top
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 + 175, 1);
+
+		RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+			, 2, 150, 150, FurnaceList[i]->GetSmeltingID());
+
+		//Bottom
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 - 175, 1);
+
+		RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+			, 2, 150, 150, FurnaceList[i]->GetFuelID());
+
+		//Result
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+
+		RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+			, 2, 150, 150, FurnaceList[i]->GetResultID());
+
+		// Render this furnace UI only.
+		if (FurnaceList[i]->GetStatus() == true)
+		{
+			if (FurnaceList[i]->GetSlot() == 1)
+				RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 175, 175,
+					Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 + 175, 2);
+			else if (FurnaceList[i]->GetSlot() == 2)
+				RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 175, 175,
+					Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2 - 175, 2);
+			else
+				RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 175, 175,
+					Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 2);
+			break;
+		}
+	}
 }
 
 void SP2::Update(double dt)
 {
 	UpdateParticles(dt);
 	player->update(dt);
+	
+	//update all the furnaces present in the level.
+	for (int i = 0; i < FurnaceList.size(); ++i)
+	{
+		FurnaceList[i]->update(dt, player);
+	}
 
 	//Sprite Animation
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
@@ -953,12 +1014,52 @@ void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float s
 		RenderImageToScreen(meshList[GEO_ITEMS_START + ID], false, scaleX, scaleY, posX, posY, posZ);
 }
 
+void SP2::RenderCrafting()
+{
+	//Crafting Interface
+	if (player->getIsCrafting() == true)
+	{
+		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
+
+		//Left Slot
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
+
+		if (player->getCraftingSlotOne() != -1)
+			//Render the id of whatever belongs to the first crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
+		//
+
+		// Right slot
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
+
+		if (player->getCraftingSlotTwo() != -1)
+			//Render the id of whatever belongs to the second crafting slot 
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
+				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
+		//
+
+		//Bottom Crafting
+		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
+			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
+
+		if (player->getCraftingSlotTwo() != -1)
+			RenderItem(Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200
+				, 2, 150, 150, player->craft(player->getCraftingSlotOne(), player->getCraftingSlotTwo())->getID());
+		//+
+	}
+}
 
 void SP2::RenderWorld()
 {
-
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
+
+	RenderFurnace();
+	RenderCrafting();
 
 	for (int i = 0; i < player->getTotalItems(); ++i)
 	{
@@ -973,41 +1074,7 @@ void SP2::RenderWorld()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
 	}
 
-	//Crafting Interface
-	if (player->getIsCrafting() == true)
-	{
-		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
-			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
-		
-		//Left Slot
-			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-				Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
-			
-			if (player->getCraftingSlotOne() != -1)
-			//Render the id of whatever belongs to the first crafting slot 
-			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
-				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
-		//
-
-		// Right slot
-			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
-		
-			if (player->getCraftingSlotTwo() != -1)
-			//Render the id of whatever belongs to the second crafting slot 
-			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
-				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
-		//
-
-		//Bottom Crafting
-		RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
-			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 200, 1);
-
-		if (player->getCraftingSlotTwo() != -1)
-		RenderItem(Application::GetWindowWidth() / 2 , Application::GetWindowHeight() / 2 - 200
-				, 2, 150, 150, player->craft(player->getCraftingSlotOne() , player->getCraftingSlotTwo())->getID());
-		//+
-	}
+	
 
 	RenderGroundObjects();
 
