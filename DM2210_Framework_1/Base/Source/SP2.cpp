@@ -238,6 +238,10 @@ void SP2::Init()
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 
+	//Weapons
+	meshList[GEO_SWORD] = MeshBuilder::GenerateOBJ("Sword", "OBJ//sword.obj");
+	meshList[GEO_SWORD]->textureArray[0] = LoadTGA("Image//Meat.tga");
+
 	//Particles
 	meshList[GEO_PARTICLE] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE]->textureArray[0] = LoadTGA("Image//particle_water.tga");
@@ -271,6 +275,8 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
+	player->addItem(new Item(Item::ITEM_SWORD, 1));
+
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 
@@ -916,6 +922,10 @@ void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float s
 {
 	switch (ID)
 	{
+		case Item::ITEM_SWORD:
+		{
+			break;
+		}
 		case Item::ITEM_GOLD_NUGGET :
 		{
 			RenderImageToScreen(meshList[GEO_GOLD], false, scaleX, scaleY, posX, posY, posZ);
@@ -934,6 +944,11 @@ void SP2::RenderItem(float posX, float posY , float posZ , float scaleX, float s
 
 void SP2::RenderWorld()
 {
+	modelStack.PushMatrix();
+	modelStack.Translate(12500, 0, 12500);
+	modelStack.Scale(1000, 1000, 1000);
+	RenderMesh(meshList[GEO_CUBE], false);
+	modelStack.PopMatrix();
 
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);

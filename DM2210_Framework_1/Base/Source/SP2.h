@@ -112,6 +112,9 @@ class SP2 : public Scene
 		GEO_CRAFTING_MENU,
 		GEO_EMPTY_CRAFTING,
 
+		//Weapons
+		GEO_SWORD,
+
 		//TSL
 		GEO_SPRITE_ANIMATION,
 		GEO_PARTICLE, //Water & snow Particle

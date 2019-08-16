@@ -20,7 +20,6 @@ PlayerInformation::PlayerInformation()
 	m_iCraftingSlotOne = -1;
 	m_iCraftingSlotTwo = -1;
 
-
 	m_bSwitchStance = false;
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 15; ++i)
@@ -255,7 +254,6 @@ void PlayerInformation::update(double dt)
 	{
 		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 		Vector3 rightUV;
-
 		//Movement
 		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
 		{
@@ -356,7 +354,28 @@ void PlayerInformation::update(double dt)
 				}
 			}
 		}
+		if (Application::IsMousePressed(0))
+		{
+			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
+			{
+				std::cout << "dank memes " << playerphysics.GetDist();
+			}
+			else
+				std::cout << "nah fam";
+		}
+		if (Application::IsMousePressed(1))
+		{
+			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
+			{
+				std::cout << "sexbomb " << playerphysics.GetDist();
+			}
+			else
+				std::cout << "thats gay";
+		}
+
 	}
+
+	
 }
 
 double PlayerInformation::getHunger()

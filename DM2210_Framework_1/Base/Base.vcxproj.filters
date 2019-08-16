@@ -114,6 +114,9 @@
     <ClCompile Include="Source\Entity.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Sword.cpp">
+      <Filter>Weapons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="Source\Entity.h">
       <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Sword.h">
+      <Filter>Weapons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

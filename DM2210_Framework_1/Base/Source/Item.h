@@ -11,6 +11,7 @@ public:
 		ITEM_STONE,
 		ITEM_GOLD_NUGGET,
 		ITEM_TORCH,
+		ITEM_SWORD,
 		ITEM_END
 	};
 	ITEM_TYPE Items;

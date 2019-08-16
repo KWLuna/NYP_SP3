@@ -1,6 +1,7 @@
 #pragma once
 #include "Camera3.h"
 #include "item.h"
+#include "Physics.h"
 #include <vector>
 class PlayerInformation
 {
@@ -67,4 +68,6 @@ private:
 
 	double m_dHunger;
 	double m_dHP;
+
+	Physics playerphysics;
 };
