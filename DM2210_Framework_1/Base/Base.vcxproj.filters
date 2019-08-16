@@ -13,35 +13,32 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="PlayerInformation">
-      <UniqueIdentifier>{b77eebc2-7f6b-414b-82a7-81a73b44857c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SoundEngine">
       <UniqueIdentifier>{91015baa-47be-490a-ad4e-5a958f290b41}</UniqueIdentifier>
     </Filter>
     <Filter Include="SP2">
       <UniqueIdentifier>{a90bb4aa-4d9a-44f7-99ac-0b9faa372c26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="World">
-      <UniqueIdentifier>{d5c517ed-cc9b-4633-9e36-68bb7009c1d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObjects">
-      <UniqueIdentifier>{9e6c3b9c-adb6-4a76-8477-c57748dc59a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AnimalAI">
-      <UniqueIdentifier>{2c4343b8-f0ec-433e-8c68-35f6dc4b17a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics">
-      <UniqueIdentifier>{e7f9a2f3-ccf2-4402-af40-1e7abbf878b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Weapons">
-      <UniqueIdentifier>{a6a35f04-c66d-4ebc-ab88-adebb97756b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Entity">
+    <Filter Include="SP2\Entity">
       <UniqueIdentifier>{426006d2-7fa0-4933-b8b6-3da5d6dbf267}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PlayerInformation\Smelting">
+    <Filter Include="SP2\GameObjects">
+      <UniqueIdentifier>{9e6c3b9c-adb6-4a76-8477-c57748dc59a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Physics">
+      <UniqueIdentifier>{e7f9a2f3-ccf2-4402-af40-1e7abbf878b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\PlayerInformation">
+      <UniqueIdentifier>{b77eebc2-7f6b-414b-82a7-81a73b44857c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\PlayerInformation\Smelting">
       <UniqueIdentifier>{41d8fc86-493e-487a-b9e8-ff63cb57661d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\AnimalAI">
+      <UniqueIdentifier>{2c4343b8-f0ec-433e-8c68-35f6dc4b17a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Weapons">
+      <UniqueIdentifier>{a6a35f04-c66d-4ebc-ab88-adebb97756b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -94,31 +91,28 @@
       <Filter>SP2</Filter>
     </ClCompile>
     <ClCompile Include="Source\PlayerInformation.cpp">
-      <Filter>PlayerInformation</Filter>
+      <Filter>SP2\PlayerInformation</Filter>
     </ClCompile>
     <ClCompile Include="Source\SoundEngine.cpp">
       <Filter>SoundEngine</Filter>
     </ClCompile>
-    <ClCompile Include="Source\World.cpp">
-      <Filter>World</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CAnimal.cpp">
-      <Filter>AnimalAI</Filter>
+      <Filter>SP2\AnimalAI</Filter>
     </ClCompile>
     <ClCompile Include="Source\Item.cpp">
-      <Filter>PlayerInformation</Filter>
+      <Filter>SP2\PlayerInformation</Filter>
     </ClCompile>
     <ClCompile Include="Source\Physics.cpp">
-      <Filter>Physics</Filter>
+      <Filter>SP2\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Weapons.cpp">
-      <Filter>Weapons</Filter>
+      <Filter>SP2\Weapons</Filter>
     </ClCompile>
     <ClCompile Include="Source\Entity.cpp">
-      <Filter>Entity</Filter>
+      <Filter>SP2\Entity</Filter>
     </ClCompile>
     <ClCompile Include="Source\Furnace.cpp">
-      <Filter>PlayerInformation\Smelting</Filter>
+      <Filter>SP2\PlayerInformation\Smelting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -183,34 +177,31 @@
       <Filter>SP2</Filter>
     </ClInclude>
     <ClInclude Include="Source\PlayerInformation.h">
-      <Filter>PlayerInformation</Filter>
+      <Filter>SP2\PlayerInformation</Filter>
     </ClInclude>
     <ClInclude Include="Source\SoundEngine.h">
       <Filter>SoundEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\World.h">
-      <Filter>World</Filter>
     </ClInclude>
     <ClInclude Include="GameObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\CAnimal.h">
-      <Filter>AnimalAI</Filter>
+      <Filter>SP2\AnimalAI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Item.h">
-      <Filter>PlayerInformation</Filter>
+      <Filter>SP2\PlayerInformation</Filter>
     </ClInclude>
     <ClInclude Include="Source\Physics.h">
-      <Filter>Physics</Filter>
+      <Filter>SP2\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Weapons.h">
-      <Filter>Weapons</Filter>
+      <Filter>SP2\Weapons</Filter>
     </ClInclude>
     <ClInclude Include="Source\Entity.h">
-      <Filter>Entity</Filter>
+      <Filter>SP2\Entity</Filter>
     </ClInclude>
     <ClInclude Include="Source\Furnace.h">
-      <Filter>PlayerInformation\Smelting</Filter>
+      <Filter>SP2\PlayerInformation\Smelting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

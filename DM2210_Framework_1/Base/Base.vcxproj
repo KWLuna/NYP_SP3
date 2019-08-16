@@ -18,6 +18,7 @@
     <ClCompile Include="Source\CAnimal.cpp" />
     <ClCompile Include="Source\DepthFBO.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\Furnace.cpp" />
     <ClCompile Include="Source\Item.cpp" />
     <ClCompile Include="Source\LoadHmap.cpp" />
     <ClCompile Include="Source\LoadOBJ.cpp" />
@@ -34,7 +35,6 @@
     <ClCompile Include="Source\SpriteAnimation.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Weapons.cpp" />
-    <ClCompile Include="Source\World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObjects.h" />
@@ -45,6 +45,7 @@
     <ClInclude Include="Source\CAnimal.h" />
     <ClInclude Include="Source\DepthFBO.h" />
     <ClInclude Include="Source\Entity.h" />
+    <ClInclude Include="Source\Furnace.h" />
     <ClInclude Include="Source\Geometry.h" />
     <ClInclude Include="Source\Item.h" />
     <ClInclude Include="Source\Light.h" />
@@ -65,7 +66,6 @@
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Weapons.h" />
-    <ClInclude Include="Source\World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\GPass.frag" />

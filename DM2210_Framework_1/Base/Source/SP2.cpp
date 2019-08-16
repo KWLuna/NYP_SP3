@@ -227,9 +227,17 @@ void SP2::Init()
 	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_MEAT]->textureArray[0] = LoadTGA("Image//Meat.tga");
 
-
 	meshList[GEO_COOKED_MEAT] = MeshBuilder::GenerateQuad("GEO_COOKED_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_COOKED_MEAT]->textureArray[0] = LoadTGA("Image//Cooked_Meat.tga");
+
+	meshList[GEO_WHEAT] = MeshBuilder::GenerateQuad("GEO_WHEAT", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WHEAT]->textureArray[0] = LoadTGA("Image//Wheat.tga");
+
+	meshList[GEO_CARROT] = MeshBuilder::GenerateQuad("GEO_CARROT", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CARROT]->textureArray[0] = LoadTGA("Image//Carrot.tga");
+
+	meshList[GEO_SEED] = MeshBuilder::GenerateQuad("GEO_SEED", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SEED]->textureArray[0] = LoadTGA("Image//Seed.tga");
 
 	meshList[GEO_WOOD] = MeshBuilder::GenerateQuad("GEO_WOOD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOOD]->textureArray[0] = LoadTGA("Image//Wooden_Log.tga");
@@ -323,6 +331,11 @@ void SP2::Init()
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 	player->addItem(new Item(Item::ITEM_COAL, 100));
 	player->addItem(new Item(Item::ITEM_MEAT, 100));
+	player->addItem(new Item(Item::ITEM_CARROT, 10));
+	player->addItem(new Item(Item::ITEM_WHEAT, 10));
+	player->addItem(new Item(Item::ITEM_SEED, 10));
+
+
 
 	unsigned int NUMBEROFOBJECTS = 100;
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)

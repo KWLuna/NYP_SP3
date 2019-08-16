@@ -98,6 +98,11 @@ class SP2 : public Scene
 		GEO_ITEMS_START,
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
+
+		GEO_WHEAT,
+		GEO_CARROT,
+		GEO_SEED,
+
 		GEO_WOOD,
 		GEO_STICK,
 		GEO_COAL,
