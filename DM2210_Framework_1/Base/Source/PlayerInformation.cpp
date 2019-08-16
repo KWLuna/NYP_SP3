@@ -18,7 +18,7 @@ PlayerInformation::PlayerInformation()
 	m_iCraftingSlotTwo = -1;
 	m_iSwitchInventorySlot = -1;
 
-	m_bFurnaceStatus = true;
+	m_bFurnaceStatus = false;
 
 	m_bSwitchStance = false;
 	//Init inventory as empty , 9 slots in total.

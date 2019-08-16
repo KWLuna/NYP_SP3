@@ -27,7 +27,9 @@ public:
 	bool GetStatus();
 	void SetStatus(bool condition);
 
-	bool GetResultID();
+	int GetResultID();
+
+	int GetResultTotal();
 
 	int GetSlot();
 private:
@@ -51,10 +53,13 @@ private:
 	
 	const int SMELT_TIME = 8;
 
-	int m_iSmelt_Time;
-	int m_iFuel_Time;
+	double m_dSmelt_Time;
+	double m_dFuel_Time;
 
 	int m_iResultID;
 	int m_iResultTotal;
+
+	vector <int> Smeltables;
+	vector <int> Burnables;
 };
 

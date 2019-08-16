@@ -9,13 +9,19 @@ Furnace::Furnace()
 	m_iSmeltingTotal = 0;
 
 	m_iResultID = 0;
+	m_iResultTotal = 0;
 
 	m_dBounceTime = 0;
 
 	m_iCurrentSlot = SMELTING;
 
-	m_iSmelt_Time = 0;
-	m_iFuel_Time = 0;
+	m_dSmelt_Time = 0;
+	m_dFuel_Time = 0;
+
+	Smeltables.push_back(Item::ITEM_MEAT);
+
+	Burnables.push_back(Item::ITEM_COAL);
+	Burnables.push_back(Item::ITEM_WOOD);
 }
 
 Furnace::~Furnace()
@@ -62,6 +68,7 @@ int Furnace::ReturnResult(int ID)
 {
 	if (ID == Item::ITEM_MEAT)
 		return Item::ITEM_COOKED_MEAT;
+
 	else return 0;
 }
 
@@ -75,19 +82,27 @@ int Furnace::GetSlot()
 	return m_iCurrentSlot;
 }
 
-bool Furnace::GetResultID()
+int Furnace::GetResultID()
 {
 	return m_iResultID;
 }
 
+int Furnace::GetResultTotal()
+{
+	return m_iResultTotal;
+}
+
+
 void Furnace::SmeltingProccess(double dt)
 {
-	m_iFuel_Time -= 1 * dt;
+	m_dFuel_Time -= 0.01;
+
+	cout << m_dSmelt_Time << " " << m_dFuel_Time << endl;
 
 	/*	If there is no conflict between what is in the smelting slot
 	*	Or if the smelting id is nothing
 	*/
-	if (m_iSmeltingID == ReturnResult(m_iSmeltingID) || m_iSmeltingID == 0)
+	if (m_iSmeltingID == ReturnResult(m_iSmeltingID) || m_iResultID == 0)
 	{
 		/*	If there is fuel and there is a smeltable item
 	*	This should always be first to allow continuous combustion.
@@ -96,10 +111,10 @@ void Furnace::SmeltingProccess(double dt)
 		if (m_iFuelTotal > 0 && m_iSmeltingTotal > 0)
 		{
 			//Check if need to deduct fuel to add smelting time.
-			if (m_iFuel_Time <= 0)
+			if (m_dFuel_Time <= 0)
 			{
 				m_iFuelTotal -= 1;
-				m_iFuel_Time = SMELT_TIME;
+				m_dFuel_Time = SMELT_TIME * 2;
 			}
 		}
 
@@ -107,28 +122,38 @@ void Furnace::SmeltingProccess(double dt)
 		*	If there is no fuel , set the smelting timer to 0.
 		*	If there is soemthing to smelt , incement the smelting timer. else , set the smelting time to 0.
 		*/
-		if (m_iFuel_Time > 0)
+		if (m_dFuel_Time > 0)
 		{
 			// If there are things to smelt, add the smelting time.
 			if (m_iSmeltingTotal > 0)
-				m_iSmelt_Time += 1 * dt;
+				m_dSmelt_Time += 1 * dt;
 			else
-				m_iSmelt_Time = 0;
+				m_dSmelt_Time = 0;
 		}
 		else
-			m_iSmelt_Time = 0;
+			m_dSmelt_Time = 0;
 
 		/*	If the smelting timer meets the requirement, add to the resultant.
 		*/
-		if (m_iSmelt_Time >= 16)
+		if (m_dSmelt_Time >= SMELT_TIME)
 		{
 			//Check if there is a need to set the id of the resultant.
 			if (m_iResultID == 0)
 				m_iResultID = ReturnResult(m_iSmeltingID);
 			
+			m_dSmelt_Time = 0;
+			m_iSmeltingTotal -= 1;
 			m_iResultTotal += 1;
 		}
 	}
+
+	if (m_iSmeltingTotal == 0)
+		m_iSmeltingID = 0;
+	if (m_iFuelTotal == 0)
+		m_iFuelID = 0;
+	if (m_iResultTotal == 0)
+		m_iResultID = 0;
+
 }
 
 void Furnace::AccessFurnace(double dt , PlayerInformation * player)
@@ -154,27 +179,88 @@ void Furnace::AccessFurnace(double dt , PlayerInformation * player)
 	}
 
 	//If player press enter , trying to add to current slot
-	if (m_iCurrentSlot == FUEL)
+	if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
 	{
-		if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
+		if (m_iCurrentSlot == FUEL)
 		{
 			//Check if there is already fuel. if dont have,
-			if (m_iFuelID == Item::ITEM_COAL || m_iFuelID == Item::ITEM_STICK || m_iFuelID == Item::ITEM_WOOD)
+			if (m_iFuelTotal > 0)
 			{
-				if (player->getItem(player->getCurrentSlot())->getID() == m_iFuelID)
+				for (int i = 0; i < Burnables.size(); ++i)
 				{
-					//Add 1 item from player slot
-					m_iFuelTotal += 1;
-					//Deduct 1 item from player slot
-					player->getItem(player->getCurrentSlot())->addQuantity(-1);
+					if (player->getItem(player->getCurrentSlot())->getID() == m_iFuelID)
+					{
+						//Add 1 item from player slot
+						m_iFuelTotal += 1;
+						//Deduct 1 item from player slot
+						player->getItem(player->getCurrentSlot())->addQuantity(-1);
+						break;
+					}
 				}
 			}
 			else
 			{
+				int x = player->getItem(player->getCurrentSlot())->getID();
 
+				for (int i = 0; i < Burnables.size(); ++i)
+				{
+					if (x == Burnables[i])
+					{
+						m_iFuelTotal += 1;
+						m_iFuelID = player->getItem(player->getCurrentSlot())->getID();
+						//Deduct 1 item from player slot
+						player->getItem(player->getCurrentSlot())->addQuantity(-1);
+						break;
+					}
+				}
 			}
-			m_dBounceTime = 0.2;
 		}
+		else if (m_iCurrentSlot == SMELTING)
+		{
+			//Check if there is already fuel. if dont have,
+			if (m_iSmeltingTotal > 0)
+			{
+				for (int i = 0; i < Smeltables.size(); ++i)
+				{
+					if (player->getItem(player->getCurrentSlot())->getID() == m_iSmeltingID)
+					{
+						//Add 1 item from player slot
+						m_iSmeltingTotal += 1;
+						//Deduct 1 item from player slot
+						player->getItem(player->getCurrentSlot())->addQuantity(-1);
+						break;
+					}
+				}
+			}
+			else
+			{
+				int x = player->getItem(player->getCurrentSlot())->getID();
+
+				for (int i = 0; i < Smeltables.size(); ++i)
+				{
+					if (x == Smeltables[i])
+					{
+						m_iSmeltingTotal += 1;
+						m_iSmeltingID = player->getItem(player->getCurrentSlot())->getID();
+						//Deduct 1 item from player slot
+						player->getItem(player->getCurrentSlot())->addQuantity(-1);
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			if (m_iResultTotal > 0)
+			{
+				player->addItem(new Item(m_iResultID, m_iResultTotal));
+				m_iResultTotal = 0;
+				m_iResultID = 0;
+			}
+		}
+
+	
+		m_dBounceTime = 0.2;
 	}
 }
 void Furnace::update(double dt , PlayerInformation * player)

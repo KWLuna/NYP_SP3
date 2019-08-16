@@ -96,6 +96,7 @@ class SP2 : public Scene
 		//2D Image Sprites
 		GEO_ITEMS_START,
 		GEO_MEAT,
+		GEO_COOKED_MEAT,
 		GEO_WOOD,
 		GEO_STICK,
 		GEO_COAL,

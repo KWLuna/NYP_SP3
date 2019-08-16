@@ -5,6 +5,7 @@ Item::Item()
 	m_iID = 0;
 	m_iQuantity = 0;
 
+	int x = ITEM_COAL;
 }
 
 Item::Item(char id, int quantity)
