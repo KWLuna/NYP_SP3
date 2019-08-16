@@ -120,9 +120,6 @@
     <ClCompile Include="Source\Season.cpp">
       <Filter>Season</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Sword.cpp">
-      <Filter>Weapons</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -214,9 +211,6 @@
     </ClInclude>
     <ClInclude Include="Source\Season.h">
       <Filter>Season</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Sword.h">
-      <Filter>Weapons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

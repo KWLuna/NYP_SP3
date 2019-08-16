@@ -142,9 +142,6 @@ class SP2 : public Scene
 		GEO_SMELTING_MENU,
 		GEO_EMPTY_CRAFTING,
 
-		//Weapons
-		GEO_SWORD,
-
 		//TSL
 		GEO_SPRITE_ANIMATION,
 		//Particles
