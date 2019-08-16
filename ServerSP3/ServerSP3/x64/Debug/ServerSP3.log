@@ -1,8 +1,13 @@
-﻿  Networking.cpp
-c:\users\180776n\desktop\serversp3\serversp3\networking.h(43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\180776n\desktop\serversp3\serversp3\networking.cpp(83): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+﻿  main.cpp
+c:\users\jagat\onedrive\desktop\backup\serversp3\serversp3\networking.h(43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\jagat\onedrive\desktop\backup\serversp3\serversp3\main.cpp(36): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Networking.cpp
+c:\users\jagat\onedrive\desktop\backup\serversp3\serversp3\networking.h(43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\jagat\onedrive\desktop\backup\serversp3\serversp3\networking.cpp(83): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
           with
           [
               _Ty=int
           ]
-  ServerSP3.vcxproj -> C:\Users\180776N\Desktop\ServerSP3\x64\Debug\ServerSP3.exe
+  Generating Code...
+c:\users\jagat\onedrive\desktop\backup\serversp3\serversp3\main.cpp(40): warning C4715: 'print': not all control paths return a value
+  ServerSP3.vcxproj -> C:\Users\jagat\OneDrive\Desktop\BACKUP\ServerSP3\x64\Debug\ServerSP3.exe
