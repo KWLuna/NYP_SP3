@@ -191,18 +191,51 @@ void SP2::Init()
 	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateOBJ("inversecube", "OBJ//skybox.obj");
-	meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox.tga");
+
+	meshList[GEO_SKYBOX_SPRING] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_SPRING", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_SPRING]->textureArray[0] = LoadTGA("Image//Skybox_Spring.tga");
+
+	meshList[GEO_SKYBOX_SUMMER] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_SUMMER", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_SUMMER]->textureArray[0] = LoadTGA("Image//Skybox_Summer.tga");
+
+	meshList[GEO_SKYBOX_FALL] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_FALL", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_FALL]->textureArray[0] = LoadTGA("Image//Skybox_Fall.tga");
+
+	meshList[GEO_SKYBOX_WINTER] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_WINTER", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_WINTER]->textureArray[0] = LoadTGA("Image//Skybox_Winter.tga");
+
 	//
-	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
-	meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
+	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3, 0.3, 0.3);
+
+	meshList[GEO_GRASS_SUMMER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_SUMMER]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
 	
-	meshList[GEO_GRASS]->material.kAmbient.Set(0.3, 0.3, 0.3);
+	meshList[GEO_GRASS_FALL] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_FALL]->textureArray[0] = LoadTGA("Image//Grass.tga");
+	
+	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
+	
 
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
 
-	meshList[GEO_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
-	meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
+	meshList[GEO_WATER_WINTER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
+	meshList[GEO_WATER_WINTER]->textureArray[0] = LoadTGA("Image//iced_water.tga");
+
+	meshList[GEO_TREE_SPRING] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_SPRING]->textureArray[0] = LoadTGA("Image//Tree_Spring.tga");
+
+	meshList[GEO_TREE_SUMMER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_SUMMER]->textureArray[0] = LoadTGA("Image//Tree_Summer.tga");
+
+	meshList[GEO_TREE_FALL] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_FALL]->textureArray[0] = LoadTGA("Image//Tree_Fall.tga");
+
+	meshList[GEO_TREE_WINTER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_WINTER]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
 
 	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
 	meshList[GEO_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
@@ -349,6 +382,8 @@ void SP2::Init()
 	}
 	m_NumOfAnimal = 0;
 
+	SP2_Seasons.setSeason(0);
+
 	//Temp furnace for testing , delete when raytrace is introduced.
 	//FurnaceList.push_back(new Furnace);
 	//FurnaceList[0]->SetStatus(true);
@@ -416,7 +451,7 @@ void SP2::RenderFurnace()
 			break;
 		}
 	}
-	SP2_Seasons.setSeason(0);
+	
 	m_fWindBounceTime = 0;
 	m_bTexChange = false;
 }
@@ -577,76 +612,57 @@ void SP2::SeasonChanger(double dt)
 	}
 	if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
 	{
-		//Fog is thicker, longer
-	
-		//Light should be slightly brighter than fall but darker than summer
-		lights[0].power = 1.5f;
-
-
 		if (m_bTexChange == false)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
-			meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//skybox_spring.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
-
-
+			
+			//Fog is thicker, longer
 			fogColor.Set(0.5f, 0.5f, 0.5f);
 			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
 
+
+			//Light should be slightly brighter than fall but darker than summer
+			lights[0].power = 1.5f;
 			m_bTexChange = true;
 		}
 	}
 	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
 	{
-		lights[0].power = 2.f;
 		if (m_bTexChange == false)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Summer.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox_summer.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
-
 
 			fogColor.Set(0.8f, 0.6f, 0.0f);
 			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
+
+			lights[0].power = 2.f;
 
 			m_bTexChange = true;
 		}
 	}
 	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
 	{
-		lights[0].power = 1.f;
 		if (m_bTexChange == false)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Fall.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
-
 			//fogColor.Set(0.8f, 0.4f, 0.0f);
 			fogColor.Set(0.5f, 0.5f, 0.5f);
 			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
+
+			lights[0].power = 1.f;
 
 			m_bTexChange = true;
 		}
 	}
 	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
 	{
-		lights[0].power = 0.5f;
-		//change water
-
 		if (m_bTexChange == false)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
-			meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//iced_lake.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox_winter.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
-
 			fogColor.Set(0.2f, 0.7f, 1.f);
 			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
+
+			lights[0].power = 0.5f;
 
 			m_bTexChange = true;
 		}
@@ -1137,7 +1153,24 @@ void SP2::RenderGroundObjects()
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						RenderMesh(meshList[GEO_TREE], true);
+						
+						switch (SP2_Seasons.getSeason())
+						{
+						case Season::TYPE_SEASON::SPRING:
+							RenderMesh(meshList[GEO_TREE_SPRING], true);
+							break;
+						case Season::TYPE_SEASON::SUMMER:
+							RenderMesh(meshList[GEO_TREE_SUMMER], true);
+							break;
+						case Season::TYPE_SEASON::FALL:
+							RenderMesh(meshList[GEO_TREE_FALL], true);
+							break;
+						case Season::TYPE_SEASON::WINTER:
+							RenderMesh(meshList[GEO_TREE_WINTER], true);
+							break;
+						default:
+							break;
+						}
 						modelStack.PopMatrix();
 						break;
 					case 'O':
@@ -1195,6 +1228,9 @@ void SP2::RenderGround()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						modelStack.Rotate(270, 1, 0, 0);
+						if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+							RenderMesh(meshList[GEO_WATER_WINTER], true);
+						else
 						RenderMesh(meshList[GEO_WATER], true);
 						modelStack.PopMatrix();
 						break;
@@ -1203,7 +1239,23 @@ void SP2::RenderGround()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						modelStack.Rotate(270, 1, 0, 0);
-						RenderMesh(meshList[GEO_GRASS], true);
+						switch (SP2_Seasons.getSeason())
+						{
+						case Season::TYPE_SEASON::SPRING:
+							RenderMesh(meshList[GEO_GRASS_SPRING], true);
+							break;
+						case Season::TYPE_SEASON::SUMMER:
+							RenderMesh(meshList[GEO_GRASS_SUMMER], true);
+							break;
+						case Season::TYPE_SEASON::FALL:
+							RenderMesh(meshList[GEO_GRASS_FALL], true);
+							break;
+						case Season::TYPE_SEASON::WINTER:
+							RenderMesh(meshList[GEO_GRASS_WINTER], true);
+							break;
+						default:
+							break;
+						}
 						modelStack.PopMatrix();
 						break;
 					}
@@ -1266,7 +1318,7 @@ void SP2::RenderWorld()
 	modelStack.PushMatrix();
 	modelStack.Translate(12500, 0, 12500);
 	modelStack.Scale(1000, 1000, 1000);
-	RenderMesh(meshList[GEO_CUBE], false);
+	//RenderMesh(meshList[GEO_CUBE], false);
 	modelStack.PopMatrix();
 	//
 
@@ -1370,7 +1422,25 @@ void SP2::RenderPassMain()
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Scale(3500, 3500, 3500);
-	RenderMesh(meshList[GEO_CUBE], false);
+	cout << SP2_Seasons.getSeason() << endl;
+
+	switch (SP2_Seasons.getSeason())
+	{
+	case Season::TYPE_SEASON::SPRING:
+		RenderMesh(meshList[GEO_SKYBOX_SPRING], false);
+		break;
+	case Season::TYPE_SEASON::SUMMER:
+		RenderMesh(meshList[GEO_SKYBOX_SUMMER], false);
+		break;
+	case Season::TYPE_SEASON::FALL:
+		RenderMesh(meshList[GEO_SKYBOX_FALL], false);
+		break;
+	case Season::TYPE_SEASON::WINTER:
+		RenderMesh(meshList[GEO_SKYBOX_WINTER], false);
+		break;
+	default:
+		break;
+	}
 	modelStack.PopMatrix();
 
 	//	Render Particles

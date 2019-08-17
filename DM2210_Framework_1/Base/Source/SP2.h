@@ -124,12 +124,25 @@ class SP2 : public Scene
 
 		//World
 			//Ground textures
-			GEO_GRASS,
+			GEO_GRASS_SPRING,
+			GEO_GRASS_SUMMER,
+			GEO_GRASS_FALL,
+			GEO_GRASS_WINTER,
 			GEO_WATER,
+			GEO_WATER_WINTER,
 			//Ground Objects
 			GEO_BERRY,
 			GEO_ORE,
-			GEO_TREE,
+			GEO_TREE_SPRING,
+			GEO_TREE_SUMMER,
+			GEO_TREE_FALL,
+			GEO_TREE_WINTER,
+			//Skybox
+			GEO_SKYBOX_SPRING,
+			GEO_SKYBOX_SUMMER,
+			GEO_SKYBOX_FALL,
+			GEO_SKYBOX_WINTER,
+			//
 		//
 		
 		//Animals
