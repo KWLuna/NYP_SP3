@@ -1470,7 +1470,6 @@ void SP2::RenderPassMain()
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Scale(3500, 3500, 3500);
-	cout << SP2_Seasons.getSeason() << endl;
 
 	switch (SP2_Seasons.getSeason())
 	{
