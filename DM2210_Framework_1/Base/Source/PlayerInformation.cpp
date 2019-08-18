@@ -24,6 +24,13 @@ PlayerInformation::PlayerInformation()
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 15; ++i)
 		ItemList.push_back(new Item(0, 0));
+
+	addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+	if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+	{
+		curtool = new Sword();
+		curtool->Init();
+	}
 }
 
 PlayerInformation::~PlayerInformation()
@@ -421,6 +428,9 @@ void PlayerInformation::update(double dt)
 				}
 			}
 		}
+
+		curtool->Update(dt);
+
 		if (Application::IsMousePressed(0))
 		{
 			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
@@ -429,6 +439,10 @@ void PlayerInformation::update(double dt)
 			}
 			else
 				std::cout << "lnotcollide";
+			if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+			{
+				curtool->SetCurSwing();
+			}
 		}
 		if (Application::IsMousePressed(1))
 		{
@@ -449,4 +463,9 @@ double PlayerInformation::getHunger()
 double PlayerInformation::getHP()
 {
 	return m_dHP;
+}
+
+Weapons * PlayerInformation::getcurtool()
+{
+	return curtool;
 }

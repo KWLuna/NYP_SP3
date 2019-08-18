@@ -18,6 +18,26 @@ protected:
 	float fRotation;
 	Vector3 vScale;
 	float m_range;
+
+	float leftmaxr;
+	float leftmaxt;
+	float rightmaxr;
+	float rightmaxt;
+	float attacktiltup;
+
+	float leftrestt;
+	float leftrestr;
+	float rightrestt;
+	float rightrestr;
+	float resttiltup;
+
+	float curr;
+	float curt;
+	float swingtime;
+
+	bool curswing;
+	bool side;
+
 public:
 	virtual void Init(void);
 	virtual void Update(const double dt);
@@ -34,5 +54,24 @@ public:
 	virtual void Render(void);
 
 	void PrintSelf(void);
+
+	float GetLeftMaxR();
+	float GetLeftMaxT();
+	float GetRightMaxR();
+	float GetRightMaxT();
+	float GetAttackUpTilt();
+
+	float GetLeftRestR();
+	float GetLeftRestT();
+	float GetRightRestR();
+	float GetRightRestT();
+	float GetRestUpTilt();
+
+	float GetCurT();
+	float GetCurR();
+
+	void SetCurSwing();
+	bool GetCurSwing();
+	bool GetSide();
 };
 

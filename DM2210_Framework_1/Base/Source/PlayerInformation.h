@@ -2,6 +2,8 @@
 #include "Camera3.h"
 #include "item.h"
 #include "Physics.h"
+#include "Weapons.h"
+#include "Sword.h"
 #include <vector>
 #include "Application.h"
 #include <string>
@@ -50,6 +52,8 @@ public:
 
 	double getHunger();
 	double getHP();
+
+	Weapons * getcurtool();
 private:
 	 
 	Camera3 * attachedCamera; // Attach camera to player
@@ -77,4 +81,5 @@ private:
 	double m_dHP;
 
 	Physics playerphysics;
+	Weapons * curtool;
 };

@@ -296,11 +296,17 @@ void SP2::Init()
 	meshList[GEO_WOODEN_SWORD] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_SWORD]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
 
+	meshList[GEO_WOODEN_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_WOODEN_SWORD_MODEL", "OBJ//sword.obj");
+	meshList[GEO_WOODEN_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
+
 	meshList[GEO_WOODEN_PICKAXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_PICKAXE]->textureArray[0] = LoadTGA("Image//Wooden_Pickaxe.tga");
 
 	meshList[GEO_STONE_SWORD] = MeshBuilder::GenerateQuad("GEO_STONE_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_SWORD]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
+
+	meshList[GEO_STONE_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_STONE_SWORD_MODEL", "OBJ//sword.obj");
+	meshList[GEO_STONE_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
 
 	meshList[GEO_STONE_PICKAXE] = MeshBuilder::GenerateQuad("GEO_STONE_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_PICKAXE]->textureArray[0] = LoadTGA("Image//Stone_Pickaxe.tga");
@@ -362,16 +368,16 @@ void SP2::Init()
 	translate_tex_coord = 0;
 
 	player->AttachCamera(&camera);
-
+	
 	//Test item stacking
-	player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+	/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 	player->addItem(new Item(Item::ITEM_STONE, 1));
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 	player->addItem(new Item(Item::ITEM_COAL, 100));
 	player->addItem(new Item(Item::ITEM_MEAT, 100));
 	player->addItem(new Item(Item::ITEM_CARROT, 10));
 	player->addItem(new Item(Item::ITEM_WHEAT, 10));
-	player->addItem(new Item(Item::ITEM_SEED, 10));
+	player->addItem(new Item(Item::ITEM_SEED, 10));*/
 
 
 
@@ -1321,6 +1327,48 @@ void SP2::RenderWorld()
 	//RenderMesh(meshList[GEO_CUBE], false);
 	modelStack.PopMatrix();
 	//
+
+	//testing 3d item
+	if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+	{
+		Vector3 weaponoffset(1, 1, 2);
+		Vector3 viewvector = (camera.target - camera.position);
+		modelStack.PushMatrix();
+		modelStack.Translate(camera.position.x + viewvector.x, camera.position.y + viewvector.y, camera.position.z + viewvector.z);
+			modelStack.PushMatrix();
+			// Rotate to correspond to the camera
+			modelStack.Rotate(Math::RadianToDegree(atan2(-viewvector.x, -viewvector.z)), 0, 1, 0);
+			modelStack.Rotate(Math::RadianToDegree(atan2(viewvector.y, camera.up.y)), 1, 0, 0);
+			if (player->getcurtool()->GetCurSwing())
+			{
+				modelStack.Translate(player->getcurtool()->GetCurT(), -0.3, -0.8); // Offset to draw the object
+				modelStack.Rotate(player->getcurtool()->GetCurR(), 0, 1, 0);
+			}
+			else if (player->getcurtool()->GetSide())
+			{
+				modelStack.Translate(player->getcurtool()->GetLeftRestT(), -0.2, -0.4);
+				modelStack.Rotate(player->getcurtool()->GetLeftRestR(), 0, 1, 0);
+			}
+			else
+			{
+				modelStack.Translate(player->getcurtool()->GetRightRestT(), -0.2, -0.4);
+				modelStack.Rotate(player->getcurtool()->GetRightRestR(), 0, 1, 0);
+			}
+			if (player->getcurtool()->GetCurSwing())
+			{
+				modelStack.Rotate(player->getcurtool()->GetAttackUpTilt(), 1, 0, 0);
+			}
+			else
+			{
+				modelStack.Rotate(player->getcurtool()->GetRestUpTilt(), 1, 0, 0);
+			}
+		
+			modelStack.Scale(2, 2, 2);
+			RenderMesh(meshList[GEO_STONE_SWORD_MODEL], false);
+			modelStack.PopMatrix();
+		modelStack.PopMatrix();
+		//
+	}
 
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
