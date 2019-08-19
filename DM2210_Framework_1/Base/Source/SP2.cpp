@@ -353,6 +353,8 @@ void SP2::Init()
 	meshList[GEO_PARTICLE_LEAF]->textureArray[0] = LoadTGA("Image//particle_leaf.tga");
 	meshList[GEO_PARTICLE_DEADLEAF] = MeshBuilder::GenerateQuad("GEO_PARTICLE_DEADLEAF", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE_DEADLEAF]->textureArray[0] = LoadTGA("Image//particle_deadleaf.tga");
+	meshList[GEO_PARTICLE_HEART] = MeshBuilder::GenerateQuad("GEO_PARTICLE_HEART", Color(1, 1, 1), 1.0f);
+	meshList[GEO_PARTICLE_HEART]->textureArray[0] = LoadTGA("Image//particle_heart.tga");
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -533,7 +535,8 @@ void SP2::Update(double dt)
 
 void SP2::AnimalChecker(double dt)
 {
-
+	const float m_cfMAXDISTANCE = 200;
+	const float m_cfMINDISTANCE = 50;
 	float MinX = camera.position.x - 1000;
 	float MaxX = camera.position.x + 1000;
 	float MinZ = camera.position.z - 1000;
@@ -547,19 +550,124 @@ void SP2::AnimalChecker(double dt)
 	{
 		CAnimal *go = (CAnimal *)*it;
 
-		if (go->m_bSpawned)
+		if (go->GetSpawned())
 		{
-			if (go->pos.x > MinX && go->pos.x < MaxX && go->pos.z > MinZ && go->pos.z < MaxZ)
+			if (go->GetPosition().x > MinX && go->GetPosition().x < MaxX && go->GetPosition().z > MinZ && go->GetPosition().z < MaxZ)
 			{
-				go->m_bActive = true;
+				go->SetActive(true);
 			}
 			else
-				go->m_bActive = false;
+				go->SetActive(false);
 
-			if (go->m_bActive)
+			if (go->GetActive())
 			{
+				switch (go->type)
+				{
+				case CAnimal::ANIMAL_TYPE::GO_PIG:
+					if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_CARROT)
+					{
+						if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+						{
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x , 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+							}
+						}
+					}
+					else
+						//If player switches item, have a cooldown system before they follow the player again.
+						if (go->GetCurrentBehaviour() == CAnimal::Behaviour::WANTFOOD)
+							go->SetDistracted(true);
+					break;
+				case CAnimal::ANIMAL_TYPE::GO_CHICKEN:
+					if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_SEED)
+					{
+						if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+						{
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x , 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+							}
+						}
+					}
+					else
+						//If player switches item, have a cooldown system before they follow the player again.
+						if (go->GetCurrentBehaviour() == CAnimal::Behaviour::WANTFOOD)
+							go->SetDistracted(true);
+					break;
+				case CAnimal::ANIMAL_TYPE::GO_COW:
+					if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WHEAT)
+					{
+						if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+						{
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+							}
+						}
+					}
+					else
+						//If player switches item, have a cooldown system before they follow the player again.
+						if (go->GetCurrentBehaviour() == CAnimal::Behaviour::WANTFOOD)
+							go->SetDistracted(true);
+					break;
+				default:
+					break;
+				}
+				if (go->GetCurrentBehaviour() == CAnimal::Behaviour::FOLLOWING && (go->GetPosition() - camera.position).Length() > m_cfMAXDISTANCE)
+				{
+					go->SetDistracted(true);
+					go->SetBehaviour(3);
+				}
 				go->Update(dt);
 				m_NumOfAnimal++;
+
+				//Breeding
+				if (go->GetFed() && !go->GetBreeded())
+					for (std::vector<CAnimal *>::iterator it2 = m_AnimalList.begin(); it2 != m_AnimalList.end(); ++it2)
+					{
+						CAnimal *go2 = (CAnimal *)*it2;
+						if (go2 != go && go2->type == go->type)
+							if (go2->GetActive())
+								if (go2->GetFed() && !go2->GetBreeded())
+								{
+									if ((go->GetPosition() - go2->GetPosition()).Length() < 5)
+									{
+										CAnimal *go3 = FetchGO();
+										go3->type = go->type;
+										go3->SetPosition((go->GetPosition() + go2->GetPosition()) * 0.5f);
+										go3->SetTargetPos(go->GetPosition());
+										go3->SetSpawned(true);
+										go3->SetIsBaby(true);
+										go->SetBreeded(true);
+										go2->SetBreeded(true);
+										break;
+									}
+									else
+									{
+										go->SetTargetPos((go->GetPosition() + go2->GetPosition()) * 0.5f);
+										go->SetBehaviour(1);
+										go2->SetTargetPos((go->GetPosition() + go2->GetPosition()) * 0.5f);
+										go2->SetBehaviour(1);
+
+									}
+								}
+					}
 			}
 		}
 	}
@@ -569,9 +677,9 @@ CAnimal* SP2::FetchGO()
 {
 	for (auto go : m_AnimalList)
 	{
-		if (!go->m_bSpawned)
+		if (!go->GetSpawned())
 		{
-			go->m_bSpawned = true;
+			go->SetSpawned(true);
 			return go;
 		}
 	}
@@ -582,7 +690,7 @@ CAnimal* SP2::FetchGO()
 	}
 
 	CAnimal *go = m_AnimalList.back();
-	go->m_bSpawned = true;
+	go->SetSpawned(true);
 	return go;
 }
 
@@ -619,10 +727,14 @@ void SP2::SpawningAnimal()
 						default:
 							break;
 						}
-						go->pos.Set(0 + i * scale, 0, 0 + k * scale);
-						go->Targetpos.Set(Math::RandFloatMinMax(go->pos.x - 400.f, go->pos.x + 400.f), 1, Math::RandFloatMinMax(go->pos.z - 400.f, go->pos.z + 400.f));
-						go->m_bSpawned = true;
-						go->scale.Set(5, 5, 5);
+						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
+						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+						go->SetSpawned(true);
+
+						//choice = Math::RandIntMinMax(0, 1);
+						//if (choice == 1)
+						//	go->SetFed(true);
+
 					}
 				}
 			}
@@ -740,6 +852,20 @@ void SP2::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
+		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+		{
+			CAnimal *go = (CAnimal *)*it;
+			if (go->GetActive() && go->GetFed() && !go->GetBreeded())
+			{
+				ParticleObject* particle = GetParticle();
+				particle->type = ParticleObject_TYPE::P_HEART;
+				particle->scale.Set(10, 10, 10);
+				particle->vel.Set(1, 1, 1);
+				particle->m_gravity.Set(0, 9.8f, 0);
+				//particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
+				particle->pos.Set(Math::RandFloatMinMax(go->GetPosition().x - 10, go->GetPosition().x + 10), 4, Math::RandFloatMinMax(go->GetPosition().z - 10, go->GetPosition().z + 10));
+			}
+		}
 	}
 
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
@@ -748,10 +874,21 @@ void SP2::UpdateParticles(double dt)
 		if (particle->active)
 		{
 			particle->Update(dt);
-			if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
+			if (particle->type == ParticleObject_TYPE::P_HEART)
 			{
-				particle->active = false;
-				m_particleCount--;
+				if (particle->pos.y > 10.f)
+				{
+					particle->active = false;
+					m_particleCount--;
+				}
+			}
+			else
+			{
+				if (particle->pos.y < -1)
+				{
+					particle->active = false;
+					m_particleCount--;
+				}
 			}
 		}
 	}
@@ -788,25 +925,25 @@ void SP2::RenderAnimal(CAnimal* animal)
 	{
 	case CAnimal::GO_PIG:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
-		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
-		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y, animal->GetPosition().z);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_PIG], false);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_COW:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z );
-		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
-		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y, animal->GetPosition().z );
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_COW], false);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
-		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
-		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y, animal->GetPosition().z);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_CHICKEN], false);
 		modelStack.PopMatrix();
 		break;
@@ -852,6 +989,15 @@ void SP2::RenderParticles(ParticleObject * particle)
 		modelStack.Rotate(particle->rotation, 0, 0, 1);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
 		RenderMesh(meshList[GEO_PARTICLE_DEADLEAF], false);
+		modelStack.PopMatrix();
+		break;
+	case ParticleObject_TYPE::P_HEART:
+		modelStack.PushMatrix();
+		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
+		modelStack.Rotate(particle->rotation, 0, 0, 1);
+		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
+		RenderMesh(meshList[GEO_PARTICLE_HEART], false);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -1354,7 +1500,7 @@ void SP2::RenderWorld()
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 	{
 		CAnimal *animal = (CAnimal *)*it;
-		if (animal->m_bActive)
+		if (animal->GetActive())
 		{
 			RenderAnimal(animal);
 		}
