@@ -43,6 +43,9 @@
     <Filter Include="Season">
       <UniqueIdentifier>{a883bd4f-9405-4ae2-9f51-c76fd96e56a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SP2\Crops">
+      <UniqueIdentifier>{91659d46-2011-4aac-89c1-c8499b97885f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -122,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="Source\Sword.cpp">
       <Filter>SP2\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Crops.cpp">
+      <Filter>SP2\Crops</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="Source\Sword.h">
       <Filter>SP2\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Crops.h">
+      <Filter>SP2\Crops</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

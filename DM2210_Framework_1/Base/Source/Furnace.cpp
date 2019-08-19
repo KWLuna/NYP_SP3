@@ -29,14 +29,14 @@ Furnace::~Furnace()
 	//Drop items in the furnace on the ground.
 
 	for (int i = 0; i < m_iFuelID; ++i)
-		cout << "drop m_iFuelID ";
+		std::cout << "drop m_iFuelID ";
 
-	cout << endl;
+	std::cout << std::endl;
 
 	for (int i = 0; i < m_iSmeltingID; ++i)
-		cout << "drop m_iSmeltingID ";
+		std::cout << "drop m_iSmeltingID ";
 
-	cout << endl;
+	std::cout << std::endl;
 }
 
 int Furnace::GetSmeltingID()
@@ -97,7 +97,7 @@ void Furnace::SmeltingProccess(double dt)
 {
 	m_dFuel_Time -= 0.01;
 
-	cout << m_dSmelt_Time << " " << m_dFuel_Time << endl;
+	std::cout << m_dSmelt_Time << " " << m_dFuel_Time << std::endl;
 
 	/*	If there is no conflict between what is in the smelting slot
 	*	Or if the smelting id is nothing

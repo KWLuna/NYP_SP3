@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include <iostream>
-using namespace std;
 
 SP2::SP2()
 {
@@ -475,7 +474,7 @@ void SP2::RenderFurnace()
 	m_bTexChange = false;
 }
 
-void SP2::Update(double dt)
+void SP2::UpdateWorldVars()
 {
 	scale = 100;
 
@@ -483,7 +482,8 @@ void SP2::Update(double dt)
 	pX = camera.position.x / scale;
 	pZ = camera.position.z / scale;
 
-	outwards = 20;
+	//Constant , dont need to edit.
+	//outwards = 20;
 
 	minOutwardsFromPlayerX = pX - outwards;
 	minOutwardsFromPlayerZ = pZ - outwards;
@@ -491,11 +491,19 @@ void SP2::Update(double dt)
 	maxOutwardsFromPlayerX = pX + outwards;
 	maxOutwardsFromPlayerZ = pZ + outwards;
 	//
-	
+}
+
+void SP2::Update(double dt)
+{
+	UpdateWorldVars();
 	UpdateParticles(dt);
 	player->update(dt);
 	
-	//update all the furnaces present in the level.
+	//Update all crops present in the world.
+	for (int i = 0; i < CropList.size(); ++i)
+		CropList[i]->update(dt);
+
+	//Update all the furnaces present in the level.
 	for (int i = 0; i < FurnaceList.size(); ++i)
 		FurnaceList[i]->update(dt, player);
 	
@@ -1495,7 +1503,7 @@ void SP2::RenderPassMain()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600 , 300  );
 
 	ss.str("");
-	ss << to_string(player->getItem(player->getCurrentSlot())->getQuantity());
+	ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
 }
 void SP2::Render()

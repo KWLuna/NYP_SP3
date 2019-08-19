@@ -17,6 +17,8 @@
 #include "CAnimal.h"
 #include "Physics.h"
 #include "Season.h"
+#include "Crops.h"
+
 
 class SP2 : public Scene
 {
@@ -204,6 +206,9 @@ public:
 
 	void RenderCrafting();
 	void RenderFurnace();
+	void UpdateWorldVars();
+	//
+	
 	Color fogColor;
 
 	//Ke Wei
@@ -257,6 +262,7 @@ private:
 	ParticleObject* GetParticle(void);
 	std::vector<ParticleObject*> particleList;
 	std::vector<Furnace*> FurnaceList;
+	std::vector<Crops*> CropList;
 	//Shadow
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
