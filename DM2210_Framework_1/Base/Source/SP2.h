@@ -148,7 +148,8 @@ class SP2 : public Scene
 			GEO_WATER_WINTER,
 			//Ground Objects
 			GEO_BERRY,
-			GEO_ORE,
+			GEO_GOLD_ORE,
+			GEO_COAL_ORE,
 			GEO_TREE_SPRING,
 			GEO_TREE_SUMMER,
 			GEO_TREE_FALL,
@@ -170,6 +171,7 @@ class SP2 : public Scene
 		GEO_CRAFTING_MENU,
 		GEO_SMELTING_MENU,
 		GEO_EMPTY_CRAFTING,
+		GEO_FURNACE,
 
 		//TSL
 		GEO_SPRITE_ANIMATION,
@@ -205,7 +207,6 @@ public:
 	void RenderMesh(Mesh *mesh, bool enableLight);
 	void RenderAnimation();
 	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY, float xPos, float yPos, float zPos);
-
 
 	void RenderItem(float posX , float posY , float posZ , float scaleX , float scaleY , int slot);
 	//Gary
@@ -301,6 +302,8 @@ private:
 
 	float maxOutwardsFromPlayerX;
 	float maxOutwardsFromPlayerZ;
+
+	//-----------------------------
 };
 
 #endif

@@ -53,6 +53,4 @@ void Crops::update(double dt)
 		m_iCropState = 1;
 		m_bFinishedGrowing = true;
 	}
-
-	std::cout << m_dTimeSincePlanted << " " << TIME_TO_GROW << std::endl;
 }

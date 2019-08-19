@@ -26,25 +26,44 @@ void SP2::InitGround()
 		{
 			float randVal = Math::RandFloatMinMax(0, 10);
 
-			if (randVal < 0.1)
+			if (randVal < 0.2)
 			{
 				world[i][j] = 'T'; // Tree generation
 			}
-			else if (randVal < 0.15)
-			{
-				world[i][j] = 'O'; // Ore generation
-			}
 			else if (randVal < 0.25)
+			{
+				world[i][j] = 'G'; // Ore generation
+			}
+			else if (randVal < 0.30)
+			{
+				world[i][j] = 'C'; // Ore generation
+			}
+			else if (randVal < 0.33)
 			{
 				if (i > 1 && i < 499 && j > 1 && j < 499)
 					world[i][j] = 'W'; // Water generation
 			}
-			else if (randVal < 0.3)
+			else if (randVal < 0.35)
 			{
 				world[i][j] = 'B'; // Berry generation
 			}
 			else
 				world[i][j] = 'G'; // Grass generation
+		}
+	}
+
+	for (int i = 0; i < 500; ++i)
+	{
+		for (int k = 0; k < 500; ++k)
+		{
+			if (i > 0 && i < 499 && k > 0 && k < 499)
+			{
+				if (world[i][k] == 'W')
+				{
+					world[i - 1][k] = 'W';
+					world[i][k - 1] = 'W';
+				}
+			}
 		}
 	}
 }
@@ -249,8 +268,11 @@ void SP2::Init()
 	meshList[GEO_TREE_WINTER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
 	meshList[GEO_TREE_WINTER]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
 
-	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
-	meshList[GEO_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
+	meshList[GEO_GOLD_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
+	meshList[GEO_GOLD_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
+
+	meshList[GEO_COAL_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
+	meshList[GEO_COAL_ORE]->textureArray[0] = LoadTGA("Image//Coal_Ore.tga");
 	
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
@@ -339,7 +361,10 @@ void SP2::Init()
 	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
 
 	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
-	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace_Menu.tga");
+
+	meshList[GEO_FURNACE] = MeshBuilder::GenerateOBJ("GEO_FURNACE", "OBJ//Ore.obj");
+	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
 
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
@@ -509,6 +534,14 @@ void SP2::UpdateWorldVars()
 
 void SP2::Update(double dt)
 {
+	if (Application::IsKeyPressed('H') && m_dDoubleBounceTime <= 0)
+	{
+		camera.up.Set(0, -1, 0);
+		m_dDoubleBounceTime = 1;
+	}
+
+	std::cout << camera.target << " " << camera.up << std::endl;
+
 	if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
 	if (Application::IsKeyPressed('2'))
@@ -1253,7 +1286,14 @@ void SP2::RenderGroundObjects()
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						RenderMesh(meshList[GEO_ORE], true);
+						RenderMesh(meshList[GEO_GOLD_ORE], true);
+						modelStack.PopMatrix();
+						break;
+					case 'C':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						RenderMesh(meshList[GEO_COAL_ORE], true);
 						modelStack.PopMatrix();
 						break;
 					case 'B':

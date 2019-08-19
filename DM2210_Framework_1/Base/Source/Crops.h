@@ -25,7 +25,7 @@ public:
 private:
 	bool m_bFinishedGrowing;
 	double m_dTimeSincePlanted;
-	const int TIME_TO_GROW = 100;
+	const int TIME_TO_GROW = 300;
 
 	//CROP_TYPE
 	int m_iCropType;
