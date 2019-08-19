@@ -100,7 +100,7 @@ class SP2 : public Scene
 		//2D Image Sprites 
 		GEO_ITEMS_START,
 		
-		//Make sure its symetrical with item.h
+		//Make sure its symetrical with item.h DONT TOUCH IF YOU DONT KNOW WHAT YOURE DOING
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
 
@@ -126,6 +126,14 @@ class SP2 : public Scene
 		GEO_GOLD_PICKAXE,
 		//End of symetry.
 
+		//Crop models
+		GEO_SPROUT_CROP,
+		
+		GEO_CARROT_CROP,
+
+		GEO_WHEAT_CROP,
+		//
+
 		GEO_WOODEN_SWORD_MODEL,
 		GEO_STONE_SWORD_MODEL,
 
@@ -140,7 +148,8 @@ class SP2 : public Scene
 			GEO_WATER_WINTER,
 			//Ground Objects
 			GEO_BERRY,
-			GEO_ORE,
+			GEO_GOLD_ORE,
+			GEO_COAL_ORE,
 			GEO_TREE_SPRING,
 			GEO_TREE_SUMMER,
 			GEO_TREE_FALL,
@@ -162,6 +171,7 @@ class SP2 : public Scene
 		GEO_CRAFTING_MENU,
 		GEO_SMELTING_MENU,
 		GEO_EMPTY_CRAFTING,
+		GEO_FURNACE,
 
 		//TSL
 		GEO_SPRITE_ANIMATION,
@@ -198,7 +208,6 @@ public:
 	void RenderAnimation();
 	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY, float xPos, float yPos, float zPos);
 
-
 	void RenderItem(float posX , float posY , float posZ , float scaleX , float scaleY , int slot);
 	//Gary
 	void RenderGroundObjects();
@@ -207,6 +216,7 @@ public:
 	void RenderCrafting();
 	void RenderFurnace();
 	void UpdateWorldVars();
+	void RenderCrops();
 	//
 	
 	Color fogColor;
@@ -225,6 +235,7 @@ public:
 	void RenderPassMain();
 	void RenderWorld();
 private:
+	double m_dDoubleBounceTime;
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
 	unsigned m_programID;
@@ -292,6 +303,8 @@ private:
 
 	float maxOutwardsFromPlayerX;
 	float maxOutwardsFromPlayerZ;
+
+	//-----------------------------
 };
 
 #endif
