@@ -1,8 +1,6 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
 class Item
 {
 public:
@@ -50,7 +48,7 @@ public:
 	void setQuantity(int quantity);
 
 private:
-	vector <int * > smeltables;
+	std::vector <int * > smeltables;
 
 	char m_iID;
 	int m_iQuantity;

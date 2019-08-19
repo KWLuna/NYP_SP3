@@ -5,7 +5,6 @@
 #include "MyMath.h"
 #include "LoadOBJ.h"
 #include <iostream>
-using namespace std;
 
 SpriteAnimation* MeshBuilder::GenerateSpriteAnimation(const std::string&meshName, unsigned numRow, unsigned numCol)
 {

@@ -17,6 +17,8 @@
 #include "CAnimal.h"
 #include "Physics.h"
 #include "Season.h"
+#include "Crops.h"
+
 
 class SP2 : public Scene
 {
@@ -95,8 +97,10 @@ class SP2 : public Scene
 		GEO_HIGHLIGHT_INVENTORY,
 		//
 
-		//2D Image Sprites
+		//2D Image Sprites 
 		GEO_ITEMS_START,
+		
+		//Make sure its symetrical with item.h
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
 
@@ -113,16 +117,18 @@ class SP2 : public Scene
 		GEO_TORCH,
 
 		GEO_WOODEN_SWORD,
-		GEO_WOODEN_SWORD_MODEL,
 		GEO_WOODEN_PICKAXE,
 
 		GEO_STONE_SWORD,
-		GEO_STONE_SWORD_MODEL,
 		GEO_STONE_PICKAXE,
 
 		GEO_GOLD_SWORD,
 		GEO_GOLD_PICKAXE,
-		//
+		//End of symetry.
+
+		GEO_WOODEN_SWORD_MODEL,
+		GEO_STONE_SWORD_MODEL,
+
 
 		//World
 			//Ground textures
@@ -200,6 +206,9 @@ public:
 
 	void RenderCrafting();
 	void RenderFurnace();
+	void UpdateWorldVars();
+	//
+	
 	Color fogColor;
 
 	//Ke Wei
@@ -253,6 +262,7 @@ private:
 	ParticleObject* GetParticle(void);
 	std::vector<ParticleObject*> particleList;
 	std::vector<Furnace*> FurnaceList;
+	std::vector<Crops*> CropList;
 	//Shadow
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
@@ -264,9 +274,23 @@ private:
 	std::vector<CAnimal *> m_AnimalList;
 	int m_NumOfAnimal;
 	//Season
-	Season SP2_Seasons;
+	Season* SP2_Seasons;
 	float m_fWindBounceTime;
 	bool m_bTexChange;
+
+	//World.
+	float scale ;
+
+	float pX;
+	float pZ;
+
+	float outwards;
+
+	float minOutwardsFromPlayerX;
+	float minOutwardsFromPlayerZ;
+
+	float maxOutwardsFromPlayerX;
+	float maxOutwardsFromPlayerZ;
 };
 
 #endif

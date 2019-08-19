@@ -1,8 +1,6 @@
 #include "SoundEngine.h"
 #include <iostream>
 
-using namespace std;
-
 // Constructor
 CSoundEngine::CSoundEngine()
 	: theSoundEngine(NULL)
@@ -49,7 +47,7 @@ ISoundEngine* CSoundEngine::GetSoundEngine(void)
 	{
 		if (Init() == false)
 		{
-			cout << "SoundEngine::GetSoundEngine() - The Sound Engine has not been initialised yet." << endl;
+			std::cout << "SoundEngine::GetSoundEngine() - The Sound Engine has not been initialised yet." << std::endl;
 			return NULL;
 		}
 	}
@@ -64,7 +62,7 @@ void CSoundEngine::AddSound(const std::string& _soundIndex, const std::string& _
 	{
 		if (Init() == false)
 		{
-			cout << "SoundEngine::AddSound() - The Sound Engine has not been initialised yet." << endl;
+			std::cout << "SoundEngine::AddSound() - The Sound Engine has not been initialised yet." << std::endl;
 			return;
 		}
 	}
@@ -83,7 +81,7 @@ std::string CSoundEngine::GetSound(const std::string& _soundIndex)
 	{
 		if (Init() == false)
 		{
-			cout << "SoundEngine::GetSound() - The Sound Engine has not been initialised yet." << endl;
+			std::cout << "SoundEngine::GetSound() - The Sound Engine has not been initialised yet." << std::endl;
 			return std::string();
 		}
 	}
@@ -103,7 +101,7 @@ bool CSoundEngine::RemoveSound(const std::string& _soundIndex)
 	{
 		if (Init() == false)
 		{
-			cout << "SoundEngine::RemoveSound() - The Sound Engine has not been initialised yet." << endl;
+			std::cout << "SoundEngine::RemoveSound() - The Sound Engine has not been initialised yet." << std::endl;
 			return NULL;
 		}
 	}

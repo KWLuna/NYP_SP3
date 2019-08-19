@@ -16,6 +16,7 @@
     <ClCompile Include="Source\Camera2.cpp" />
     <ClCompile Include="Source\Camera3.cpp" />
     <ClCompile Include="Source\CAnimal.cpp" />
+    <ClCompile Include="Source\Crops.cpp" />
     <ClCompile Include="Source\DepthFBO.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\Furnace.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="Source\Camera2.h" />
     <ClInclude Include="Source\Camera3.h" />
     <ClInclude Include="Source\CAnimal.h" />
+    <ClInclude Include="Source\Crops.h" />
     <ClInclude Include="Source\DepthFBO.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\Furnace.h" />
@@ -82,7 +84,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Base</RootNamespace>
     <ProjectName>Base</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
