@@ -95,7 +95,8 @@ int Furnace::GetResultTotal()
 
 void Furnace::SmeltingProccess(double dt)
 {
-	m_dFuel_Time -= 0.01;
+	if (m_dFuel_Time > 0)
+		m_dFuel_Time -= 0.01;
 
 	std::cout << m_dSmelt_Time << " " << m_dFuel_Time << std::endl;
 

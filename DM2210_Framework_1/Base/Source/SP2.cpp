@@ -268,7 +268,7 @@ void SP2::Init()
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
 
-	//
+	//Inventory meshes
 	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_MEAT]->textureArray[0] = LoadTGA("Image//Meat.tga");
 
@@ -343,7 +343,20 @@ void SP2::Init()
 
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
+	//
+	//Crops meshes
+	meshList[GEO_CARROT_CROP] = MeshBuilder::GenerateQuad("GEO_CARROT_CROP", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CARROT_CROP]->textureArray[0] = LoadTGA("Image//Carrot_Crop.tga");
 
+	meshList[GEO_WHEAT_CROP] = MeshBuilder::GenerateQuad("GEO_WHEAT_CROP", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WHEAT_CROP]->textureArray[0] = LoadTGA("Image//Wheat_Crop.tga");
+
+	meshList[GEO_SPROUT_CROP] = MeshBuilder::GenerateQuad("GEO_SPROUT_CROP", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SPROUT_CROP]->textureArray[0] = LoadTGA("Image//Sprout_Crop.tga");
+	//
+
+	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 	//Particles
 	meshList[GEO_PARTICLE_WATER] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE_WATER]->textureArray[0] = LoadTGA("Image//particle_water.tga");
@@ -391,9 +404,8 @@ void SP2::Init()
 	player->addItem(new Item(Item::ITEM_WHEAT, 10));
 	player->addItem(new Item(Item::ITEM_SEED, 10));
 
-
-
 	unsigned int NUMBEROFOBJECTS = 100;
+
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
 	{
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
@@ -405,6 +417,8 @@ void SP2::Init()
 	//Temp furnace for testing , delete when raytrace is introduced.
 	//FurnaceList.push_back(new Furnace);
 	//FurnaceList[0]->SetStatus(true);
+
+	CropList.push_back(new Crops(0 , 12500 , 12500));
 }
 
 void SP2::RenderFurnace()
@@ -495,6 +509,25 @@ void SP2::UpdateWorldVars()
 
 void SP2::Update(double dt)
 {
+	if (Application::IsKeyPressed('1'))
+		glEnable(GL_CULL_FACE);
+	if (Application::IsKeyPressed('2'))
+		glDisable(GL_CULL_FACE);
+	if (Application::IsKeyPressed('3'))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (Application::IsKeyPressed('4'))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	m_dDoubleBounceTime -= 1 * dt;
+
+	if (Application::IsKeyPressed('F') && m_dDoubleBounceTime <= 0)
+	{
+		FurnaceList.push_back(new Furnace);
+		FurnaceList[0]->SetStatus(true);
+
+		m_dDoubleBounceTime = 0.2;
+	}
+
 	UpdateWorldVars();
 	UpdateParticles(dt);
 	player->update(dt);
@@ -590,10 +623,51 @@ CAnimal* SP2::FetchGO()
 	return go;
 }
 
+void SP2::RenderCrops()
+{
+	for (int i = 0; i < CropList.size(); ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 3; ++k)
+			{
+				if (CropList[i]->GetState() == 0)
+				{
+					modelStack.PushMatrix();
+					modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+					modelStack.Scale(25, 50, 25);
+					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+					RenderMesh(meshList[GEO_SPROUT_CROP], false);
+					modelStack.PopMatrix();
+				}
+				else
+				{
+					if (CropList[i]->GetCropType() == 0)
+					{
+						modelStack.PushMatrix();
+						modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+						modelStack.Scale(25, 50, 25);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						RenderMesh(meshList[GEO_CARROT_CROP], false);
+						modelStack.PopMatrix();
+					}
+					else
+					{
+						modelStack.PushMatrix();
+						modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+						modelStack.Scale(25, 50, 25);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						RenderMesh(meshList[GEO_WHEAT_CROP], false);
+						modelStack.PopMatrix();
+					}
+				}
+			}
+		}
+	}
+}
+
 void SP2::SpawningAnimal()
 {
-	
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
@@ -792,21 +866,6 @@ ParticleObject* SP2::GetParticle(void)
 	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
 	{
 		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_WATER);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_SNOWFLAKE);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_LEAF);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_DEADLEAF);
 		particleList.push_back(particle);
 	}
 
@@ -1316,13 +1375,6 @@ void SP2::RenderCrafting()
 
 void SP2::RenderWorld()
 {
-	//for testing raytracing
-	modelStack.PushMatrix();
-	modelStack.Translate(12500, 0, 12500);
-	modelStack.Scale(1000, 1000, 1000);
-	//RenderMesh(meshList[GEO_CUBE], false);
-	modelStack.PopMatrix();
-	//
 
 	//testing 3d item
 	if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
@@ -1393,6 +1445,8 @@ void SP2::RenderWorld()
 			RenderAnimal(animal);
 		}
 	}
+
+
 }
 
 void SP2::RenderPassMain()
@@ -1496,6 +1550,7 @@ void SP2::RenderPassMain()
 
 	RenderCrafting();
 	RenderFurnace();
+	RenderCrops();
 
 	std::ostringstream ss;
 	ss.precision(5);
