@@ -391,16 +391,24 @@ void SP2::Init()
 	player->addItem(new Item(Item::ITEM_WHEAT, 10));
 	player->addItem(new Item(Item::ITEM_SEED, 10));
 
-
-
+	//Particle
+	for (unsigned int i = 0; i < MAX_PARTICLE; ++i)
+	{
+		particleList.push_back(new ParticleObject(ParticleObject_TYPE::P_WATER));
+	}
+	//Animals
 	unsigned int NUMBEROFOBJECTS = 100;
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
 	{
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
+	//Season
 	SP2_Seasons = new Season;
 	SP2_Seasons->setSeason(0);
+	WindAffecting = false;
+	m_fWindBounceTime = 0;
+	m_bTexChange = false;
 
 	//Temp furnace for testing , delete when raytrace is introduced.
 	//FurnaceList.push_back(new Furnace);
@@ -470,8 +478,6 @@ void SP2::RenderFurnace()
 		}
 	}
 	
-	m_fWindBounceTime = 0;
-	m_bTexChange = false;
 }
 
 void SP2::UpdateWorldVars()
@@ -574,16 +580,6 @@ CAnimal* SP2::FetchGO()
 		CAnimal *go = new CAnimal(CAnimal::GO_PIG);
 		m_AnimalList.push_back(go);
 	}
-	for (unsigned int i = 0; i < 5; ++i)
-	{
-		CAnimal *go = new CAnimal(CAnimal::GO_COW);
-		m_AnimalList.push_back(go);
-	}
-	for (unsigned int i = 0; i < 5; ++i)
-	{
-		CAnimal *go = new CAnimal(CAnimal::GO_CHICKEN);
-		m_AnimalList.push_back(go);
-	}
 
 	CAnimal *go = m_AnimalList.back();
 	go->m_bSpawned = true;
@@ -592,8 +588,6 @@ CAnimal* SP2::FetchGO()
 
 void SP2::SpawningAnimal()
 {
-	
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
@@ -642,14 +636,11 @@ void SP2::SeasonChanger(double dt)
 	{
 		m_bTexChange = false;
 	}
-	if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SPRING)
+	if (m_bTexChange == false)
 	{
-		if (m_bTexChange == false)
+		if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SPRING)
 		{
-			
 			//Fog is thicker, longer
-			fogColor.Set(0.5f, 0.5f, 0.5f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
 
 
@@ -657,41 +648,24 @@ void SP2::SeasonChanger(double dt)
 			lights[0].power = 1.5f;
 			m_bTexChange = true;
 		}
-	}
-	else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
-	{
-		if (m_bTexChange == false)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
-
-			fogColor.Set(0.8f, 0.6f, 0.0f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
 
 			lights[0].power = 2.f;
 
 			m_bTexChange = true;
 		}
-	}
-	else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::FALL)
-	{
-		if (m_bTexChange == false)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::FALL)
 		{
-			//fogColor.Set(0.8f, 0.4f, 0.0f);
-			fogColor.Set(0.5f, 0.5f, 0.5f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
 
 			lights[0].power = 1.f;
 
 			m_bTexChange = true;
 		}
-	}
-	else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
-	{
-		if (m_bTexChange == false)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 		{
-			fogColor.Set(0.2f, 0.7f, 1.f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
 
 			lights[0].power = 0.5f;
@@ -707,11 +681,18 @@ void SP2::UpdateParticles(double dt)
 	m_fWindBounceTime += 2 * dt;
 	if (m_fWindBounceTime > 10.f)
 	{
-		m_wind.Set(Math::RandFloatMinMax(1.f, 4.f), 1.f, Math::RandFloatMinMax(1.f, 4.f));
+		if (WindAffecting == false)
+		{
+			WindAffecting = true;
+			m_wind.Set(Math::RandFloatMinMax(1.f, 4.f), 1.f, Math::RandFloatMinMax(1.f, 4.f));
+		}
+		else
+		{
+			WindAffecting = false;
+			m_wind.Set(1.f, 1.f, 1.f);
+		}
 		m_fWindBounceTime = 0;
 	}
-	else
-		m_wind.Set(1.f, 1.f, 1.f);
 
 	if (m_particleCount < MAX_PARTICLE)
 	{
@@ -792,21 +773,6 @@ ParticleObject* SP2::GetParticle(void)
 	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
 	{
 		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_WATER);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_SNOWFLAKE);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_LEAF);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_DEADLEAF);
 		particleList.push_back(particle);
 	}
 

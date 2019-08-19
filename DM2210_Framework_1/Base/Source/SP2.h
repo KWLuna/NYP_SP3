@@ -277,6 +277,7 @@ private:
 	Season* SP2_Seasons;
 	float m_fWindBounceTime;
 	bool m_bTexChange;
+	bool WindAffecting;
 
 	//World.
 	float scale ;
