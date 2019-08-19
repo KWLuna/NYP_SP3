@@ -138,7 +138,17 @@ class SP2 : public Scene
 		GEO_STONE_SWORD_MODEL,
 
 
+
+
+	
 		//World
+			//Skybox
+			GEO_SKYBOX_SPRING,
+			GEO_SKYBOX_SUMMER,
+			GEO_SKYBOX_FALL,
+			GEO_SKYBOX_WINTER,
+			//
+			GEO_LIGHT_AFFECTED,
 			//Ground textures
 			GEO_GRASS_SPRING,
 			GEO_GRASS_SUMMER,
@@ -154,18 +164,14 @@ class SP2 : public Scene
 			GEO_TREE_SUMMER,
 			GEO_TREE_FALL,
 			GEO_TREE_WINTER,
-			//Skybox
-			GEO_SKYBOX_SPRING,
-			GEO_SKYBOX_SUMMER,
-			GEO_SKYBOX_FALL,
-			GEO_SKYBOX_WINTER,
-			//
 		//
 		
 		//Animals
 		GEO_PIG, 
 		GEO_CHICKEN,
 		GEO_COW,
+		
+		GEO_LIGHT_AFFECTED_END,
 
 		//Crafting
 		GEO_CRAFTING_MENU,
@@ -235,7 +241,7 @@ public:
 	void RenderPassMain();
 	void RenderWorld();
 private:
-	double m_dDoubleBounceTime;
+	double m_dBounceTime;
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
 	unsigned m_programID;

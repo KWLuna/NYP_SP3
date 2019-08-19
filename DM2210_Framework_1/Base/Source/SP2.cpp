@@ -542,10 +542,17 @@ void SP2::UpdateWorldVars()
 
 void SP2::Update(double dt)
 {
-	if (Application::IsKeyPressed('H') && m_dDoubleBounceTime <= 0)
+
+	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 	{
-		camera.up.Set(0, -1, 0);
-		m_dDoubleBounceTime = 1;
+		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		{
+			meshList[i]->material.kAmbient.Set(0.1, 0.1, 0.1);
+
+			lights[0].power = 0.3;
+			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		}
+		m_dBounceTime = 0.2;
 	}
 
 	std::cout << camera.target << " " << camera.up << std::endl;
@@ -559,14 +566,14 @@ void SP2::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	m_dDoubleBounceTime -= 1 * dt;
+	m_dBounceTime -= 1 * dt;
 
-	if (Application::IsKeyPressed('F') && m_dDoubleBounceTime <= 0)
+	if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 	{
 		FurnaceList.push_back(new Furnace);
 		FurnaceList[0]->SetStatus(true);
 
-		m_dDoubleBounceTime = 0.2;
+		m_dBounceTime = 0.2;
 	}
 
 	UpdateWorldVars();
