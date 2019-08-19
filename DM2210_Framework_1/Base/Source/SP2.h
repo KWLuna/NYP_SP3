@@ -310,6 +310,8 @@ private:
 	float maxOutwardsFromPlayerX;
 	float maxOutwardsFromPlayerZ;
 
+	float m_fAmbient;
+
 	//-----------------------------
 };
 
