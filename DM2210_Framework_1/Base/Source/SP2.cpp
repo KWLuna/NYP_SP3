@@ -542,20 +542,54 @@ void SP2::UpdateWorldVars()
 
 void SP2::Update(double dt)
 {
-	std::cout << m_fAmbient << std::endl;
-	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
+	if (m_fAmbient >= 0.1 && m_iDayNight == 1)
 	{
-		m_fAmbient -= 0.002;
+		m_fAmbient -= 0.002 * dt;
 
 		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
 		{
 			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-
 			lights[0].power = m_fAmbient;
 			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
 		}
-		m_dBounceTime = 0.2;
 	}
+	else if (m_iDayNight == 1)
+	{
+		//How long day or night lasts
+		m_fDayNightDuration -= 1 * dt;
+
+		//Can start transitioning to day
+		if (m_fDayNightDuration <= 0)
+		{
+			m_iDayNight *= -1;
+			m_fDayNightDuration = 120;
+		}
+	}
+
+	if (m_fAmbient <= 0.6 && m_iDayNight == -1)
+	{
+		m_fAmbient += 0.002 * dt;
+
+		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		{
+			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+			lights[0].power = m_fAmbient;
+			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		}
+	}
+	else if (m_iDayNight == -1)
+	{
+		//How long day or night lasts
+		m_fDayNightDuration -= 1 * dt;
+
+		//Can start transitioning to day
+		if (m_fDayNightDuration <= 0)
+		{
+			m_iDayNight *= -1;
+			m_fDayNightDuration = 120;
+		}
+	}
+		
 
 	if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);

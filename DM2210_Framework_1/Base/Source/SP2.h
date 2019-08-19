@@ -311,6 +311,8 @@ private:
 	float maxOutwardsFromPlayerZ;
 
 	float m_fAmbient;
+	float m_iDayNight = 1;
+	float m_fDayNightDuration = 120;
 
 	//-----------------------------
 };
