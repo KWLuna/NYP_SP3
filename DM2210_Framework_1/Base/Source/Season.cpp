@@ -3,6 +3,8 @@
 
 
 Season::Season()
+	: m_iSeasonChanger(0),
+	m_fSeasonTime (0)
 {
 }
 

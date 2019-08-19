@@ -268,7 +268,7 @@ private:
 	std::vector<CAnimal *> m_AnimalList;
 	int m_NumOfAnimal;
 	//Season
-	Season SP2_Seasons;
+	Season* SP2_Seasons;
 	float m_fWindBounceTime;
 	bool m_bTexChange;
 };
