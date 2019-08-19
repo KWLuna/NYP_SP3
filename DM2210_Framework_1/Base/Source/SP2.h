@@ -95,9 +95,10 @@ class SP2 : public Scene
 		GEO_HIGHLIGHT_INVENTORY,
 		//
 
-		//2D Image Sprites
+		//2D Image Sprites 
 		GEO_ITEMS_START,
 		
+		//Make sure its symetrical with item.h
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
 
@@ -121,7 +122,7 @@ class SP2 : public Scene
 
 		GEO_GOLD_SWORD,
 		GEO_GOLD_PICKAXE,
-		//
+		//End of symetry.
 
 		GEO_WOODEN_SWORD_MODEL,
 		GEO_STONE_SWORD_MODEL,
