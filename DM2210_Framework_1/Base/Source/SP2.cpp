@@ -53,6 +53,19 @@ void SP2::InitGround()
 void SP2::Init()
 {
 	player = new PlayerInformation;
+	
+	scale = 100;
+
+	pX = camera.position.x / scale;
+	pZ = camera.position.z / scale;
+
+	outwards = 20;
+
+	minOutwardsFromPlayerX = pX - outwards;
+	minOutwardsFromPlayerZ = pZ - outwards;
+
+	maxOutwardsFromPlayerX = pX + outwards;
+	maxOutwardsFromPlayerZ = pZ + outwards;
 
 	InitGround();
 
@@ -464,14 +477,29 @@ void SP2::RenderFurnace()
 
 void SP2::Update(double dt)
 {
+	scale = 100;
+
+	//World variables.
+	pX = camera.position.x / scale;
+	pZ = camera.position.z / scale;
+
+	outwards = 20;
+
+	minOutwardsFromPlayerX = pX - outwards;
+	minOutwardsFromPlayerZ = pZ - outwards;
+
+	maxOutwardsFromPlayerX = pX + outwards;
+	maxOutwardsFromPlayerZ = pZ + outwards;
+	//
+	
 	UpdateParticles(dt);
 	player->update(dt);
 	
 	//update all the furnaces present in the level.
 	for (int i = 0; i < FurnaceList.size(); ++i)
-	{
 		FurnaceList[i]->update(dt, player);
-	}
+	
+	//Rmb to update to pointer.
 	SP2_Seasons.Update(dt);
 	SeasonChanger(dt);
 
@@ -553,20 +581,10 @@ CAnimal* SP2::FetchGO()
 	go->m_bSpawned = true;
 	return go;
 }
+
 void SP2::SpawningAnimal()
 {
-	float scale = 100;
-
-	float pX = camera.position.x / scale;
-	float pZ = camera.position.z / scale;
-
-	float outwards = 20;
-
-	float minOutwardsFromPlayerX = pX - outwards;
-	float minOutwardsFromPlayerZ = pZ - outwards;
-
-	float maxOutwardsFromPlayerX = pX + outwards;
-	float maxOutwardsFromPlayerZ = pZ + outwards;
+	
 
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
@@ -1129,21 +1147,6 @@ void SP2::RenderPassGPass()
 
 void SP2::RenderGroundObjects()
 {
-	int x = 10, z = 10;
-
-	int scale = 100;
-
-	int pX = camera.position.x / scale;
-	int pZ = camera.position.z / scale;
-
-	int outwards = 10;
-
-	int minOutwardsFromPlayerX = pX - outwards;
-	int minOutwardsFromPlayerZ = pZ - outwards;
-
-	int maxOutwardsFromPlayerX = pX + outwards;
-	int maxOutwardsFromPlayerZ = pZ + outwards;
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
@@ -1203,21 +1206,6 @@ void SP2::RenderGroundObjects()
  
 void SP2::RenderGround()
 {
-	int x = 10, z = 10;
-
-	int scale = 100;
-
-	int pX = camera.position.x / scale;
-	int pZ = camera.position.z / scale;
-
-	int outwards = 10;
-
-	int minOutwardsFromPlayerX = pX - outwards;
-	int minOutwardsFromPlayerZ = pZ - outwards;
-
-	int maxOutwardsFromPlayerX = pX + outwards;
-	int maxOutwardsFromPlayerZ = pZ + outwards;
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
@@ -1385,8 +1373,6 @@ void SP2::RenderWorld()
 
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
 	}
-
-	
 
 	RenderGroundObjects();
 

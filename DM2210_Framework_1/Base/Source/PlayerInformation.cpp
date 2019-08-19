@@ -269,10 +269,8 @@ void PlayerInformation::update(double dt)
 
 				m_iCraftingSlotOne = -1;
 				m_iCraftingSlotTwo = -1;
-
 			}
-
-			if (m_iCraftingSlotOne == -1)
+			else if (m_iCraftingSlotOne == -1)
 			{
 				m_iCraftingSlotOne = m_iInventorySlot;
 

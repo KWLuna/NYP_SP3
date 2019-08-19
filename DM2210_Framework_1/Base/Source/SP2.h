@@ -271,6 +271,20 @@ private:
 	Season SP2_Seasons;
 	float m_fWindBounceTime;
 	bool m_bTexChange;
+
+	//World.
+	float scale ;
+
+	float pX;
+	float pZ;
+
+	float outwards;
+
+	float minOutwardsFromPlayerX;
+	float minOutwardsFromPlayerZ;
+
+	float maxOutwardsFromPlayerX;
+	float maxOutwardsFromPlayerZ;
 };
 
 #endif
