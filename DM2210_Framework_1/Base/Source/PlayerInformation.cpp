@@ -429,7 +429,9 @@ void PlayerInformation::update(double dt)
 			}
 		}
 
-		curtool->Update(dt);
+		Vector3 dir = attachedCamera->target - attachedCamera->position;
+		
+		curtool->Update(dt, dir,attachedCamera->position);
 
 		if (Application::IsMousePressed(0))
 		{

@@ -9,7 +9,7 @@ public:
 	virtual ~Sword();
 
 	void Init(void);
-	void Update(const double dt);
+	void Update(const double dt, Vector3 dir, Vector3 origin);
 	void Response();
 };
 

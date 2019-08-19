@@ -38,9 +38,11 @@ protected:
 	bool curswing;
 	bool side;
 
+	Physics weaponphysics;
+
 public:
 	virtual void Init(void);
-	virtual void Update(const double dt);
+	virtual void Update(const double dt, Vector3 dir, Vector3 origin);
 
 	void SetPosition(Vector3 vPosition);
 	Vector3 GetPosition(void) const;

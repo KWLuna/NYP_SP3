@@ -31,9 +31,9 @@ void Sword::Init()
 	std::cout << rightmaxt;
 }
 
-void Sword::Update(const double dt)
+void Sword::Update(const double dt, Vector3 dir, Vector3 origin)
 {
-	Weapons::Update(dt);
+	Weapons::Update(dt, dir, origin);
 	Response();
 }
 

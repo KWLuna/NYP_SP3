@@ -28,7 +28,7 @@ void Weapons::Init(void)
 	curt = rightmaxt;
 }
 
-void Weapons::Update(const double dt)
+void Weapons::Update(const double dt, Vector3 dir, Vector3 origin)
 {
 	if (type == MELEE)
 	{
@@ -47,6 +47,7 @@ void Weapons::Update(const double dt)
 					curr = leftmaxr;
 					curswing = false;
 				}
+				weaponphysics.RayTraceDist(dir, origin, Vector3(1,1,1), Vector3(1,1,1));
 			}
 			else
 			{
@@ -61,6 +62,7 @@ void Weapons::Update(const double dt)
 					curr = rightmaxr;
 					curswing = false;
 				}
+				weaponphysics.RayTraceDist(dir, origin, Vector3(1, 1, 1), Vector3(1, 1, 1));
 			}
 		}
 	}
