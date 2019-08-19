@@ -370,14 +370,14 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 	
 	//Test item stacking
-	/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+	player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 	player->addItem(new Item(Item::ITEM_STONE, 1));
 	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 	player->addItem(new Item(Item::ITEM_COAL, 100));
 	player->addItem(new Item(Item::ITEM_MEAT, 100));
 	player->addItem(new Item(Item::ITEM_CARROT, 10));
 	player->addItem(new Item(Item::ITEM_WHEAT, 10));
-	player->addItem(new Item(Item::ITEM_SEED, 10));*/
+	player->addItem(new Item(Item::ITEM_SEED, 10));
 
 
 

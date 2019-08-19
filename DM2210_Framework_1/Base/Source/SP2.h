@@ -97,6 +97,7 @@ class SP2 : public Scene
 
 		//2D Image Sprites
 		GEO_ITEMS_START,
+		
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
 
@@ -113,16 +114,18 @@ class SP2 : public Scene
 		GEO_TORCH,
 
 		GEO_WOODEN_SWORD,
-		GEO_WOODEN_SWORD_MODEL,
 		GEO_WOODEN_PICKAXE,
 
 		GEO_STONE_SWORD,
-		GEO_STONE_SWORD_MODEL,
 		GEO_STONE_PICKAXE,
 
 		GEO_GOLD_SWORD,
 		GEO_GOLD_PICKAXE,
 		//
+
+		GEO_WOODEN_SWORD_MODEL,
+		GEO_STONE_SWORD_MODEL,
+
 
 		//World
 			//Ground textures
