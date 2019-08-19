@@ -40,7 +40,7 @@
     <Filter Include="SP2\Weapons">
       <UniqueIdentifier>{a6a35f04-c66d-4ebc-ab88-adebb97756b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Season">
+    <Filter Include="SP2\Season">
       <UniqueIdentifier>{a883bd4f-9405-4ae2-9f51-c76fd96e56a5}</UniqueIdentifier>
     </Filter>
     <Filter Include="SP2\Crops">
@@ -121,7 +121,7 @@
       <Filter>SP2\PlayerInformation\Smelting</Filter>
     </ClCompile>
     <ClCompile Include="Source\Season.cpp">
-      <Filter>Season</Filter>
+      <Filter>SP2\Season</Filter>
     </ClCompile>
     <ClCompile Include="Source\Sword.cpp">
       <Filter>SP2\Weapons</Filter>
@@ -219,7 +219,7 @@
       <Filter>SP2\PlayerInformation\Smelting</Filter>
     </ClInclude>
     <ClInclude Include="Source\Season.h">
-      <Filter>Season</Filter>
+      <Filter>SP2\Season</Filter>
     </ClInclude>
     <ClInclude Include="Source\Sword.h">
       <Filter>SP2\Weapons</Filter>

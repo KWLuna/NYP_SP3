@@ -399,8 +399,8 @@ void SP2::Init()
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
-
-	SP2_Seasons.setSeason(0);
+	SP2_Seasons = new Season;
+	SP2_Seasons->setSeason(0);
 
 	//Temp furnace for testing , delete when raytrace is introduced.
 	//FurnaceList.push_back(new Furnace);
@@ -498,7 +498,7 @@ void SP2::Update(double dt)
 	UpdateWorldVars();
 	UpdateParticles(dt);
 	player->update(dt);
-	
+
 	//Update all crops present in the world.
 	for (int i = 0; i < CropList.size(); ++i)
 		CropList[i]->update(dt);
@@ -506,9 +506,9 @@ void SP2::Update(double dt)
 	//Update all the furnaces present in the level.
 	for (int i = 0; i < FurnaceList.size(); ++i)
 		FurnaceList[i]->update(dt, player);
-	
+
 	//Rmb to update to pointer.
-	SP2_Seasons.Update(dt);
+	SP2_Seasons->Update(dt);
 	SeasonChanger(dt);
 
 	//Sprite Animation
@@ -638,11 +638,11 @@ void SP2::SpawningAnimal()
 void SP2::SeasonChanger(double dt)
 {
 
-	if (SP2_Seasons.getTimer() == -1)
+	if (SP2_Seasons->getTimer() == -1)
 	{
 		m_bTexChange = false;
 	}
-	if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
+	if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SPRING)
 	{
 		if (m_bTexChange == false)
 		{
@@ -658,7 +658,7 @@ void SP2::SeasonChanger(double dt)
 			m_bTexChange = true;
 		}
 	}
-	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
+	else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 	{
 		if (m_bTexChange == false)
 		{
@@ -672,7 +672,7 @@ void SP2::SeasonChanger(double dt)
 			m_bTexChange = true;
 		}
 	}
-	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
+	else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::FALL)
 	{
 		if (m_bTexChange == false)
 		{
@@ -686,7 +686,7 @@ void SP2::SeasonChanger(double dt)
 			m_bTexChange = true;
 		}
 	}
-	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+	else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 	{
 		if (m_bTexChange == false)
 		{
@@ -715,7 +715,7 @@ void SP2::UpdateParticles(double dt)
 
 	if (m_particleCount < MAX_PARTICLE)
 	{
-		if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
+		if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SPRING)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_WATER;
@@ -726,7 +726,7 @@ void SP2::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
-		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_DEADLEAF;
@@ -737,7 +737,7 @@ void SP2::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 600.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
-		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::FALL)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_LEAF;
@@ -748,7 +748,7 @@ void SP2::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 600.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
-		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_SNOWFLAKE;
@@ -1171,7 +1171,7 @@ void SP2::RenderGroundObjects()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						
-						switch (SP2_Seasons.getSeason())
+						switch (SP2_Seasons->getSeason())
 						{
 						case Season::TYPE_SEASON::SPRING:
 							RenderMesh(meshList[GEO_TREE_SPRING], true);
@@ -1230,7 +1230,7 @@ void SP2::RenderGround()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						modelStack.Rotate(270, 1, 0, 0);
-						if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+						if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 							RenderMesh(meshList[GEO_WATER_WINTER], true);
 						else
 						RenderMesh(meshList[GEO_WATER], true);
@@ -1241,7 +1241,7 @@ void SP2::RenderGround()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						modelStack.Rotate(270, 1, 0, 0);
-						switch (SP2_Seasons.getSeason())
+						switch (SP2_Seasons->getSeason())
 						{
 						case Season::TYPE_SEASON::SPRING:
 							RenderMesh(meshList[GEO_GRASS_SPRING], true);
@@ -1465,7 +1465,7 @@ void SP2::RenderPassMain()
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
 	modelStack.Scale(3500, 3500, 3500);
 
-	switch (SP2_Seasons.getSeason())
+	switch (SP2_Seasons->getSeason())
 	{
 	case Season::TYPE_SEASON::SPRING:
 		RenderMesh(meshList[GEO_SKYBOX_SPRING], false);
