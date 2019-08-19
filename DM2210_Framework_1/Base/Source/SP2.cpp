@@ -26,26 +26,26 @@ void SP2::InitGround()
 		{
 			float randVal = Math::RandFloatMinMax(0, 10);
 
-			if (randVal < 0.2)
-			{
-				world[i][j] = 'T'; // Tree generation
-			}
-			else if (randVal < 0.25)
+			if (randVal < 0.01)
 			{
 				world[i][j] = 'G'; // Ore generation
 			}
-			else if (randVal < 0.30)
+			else if (randVal < 0.02)
 			{
 				world[i][j] = 'C'; // Ore generation
 			}
-			else if (randVal < 0.33)
+			else if (randVal < 0.04)
 			{
 				if (i > 1 && i < 499 && j > 1 && j < 499)
 					world[i][j] = 'W'; // Water generation
 			}
-			else if (randVal < 0.35)
+			else if (randVal < 0.05)
 			{
 				world[i][j] = 'B'; // Berry generation
+			}
+			else if (randVal < 0.3)
+			{
+				world[i][j] = 'T'; // Tree generation
 			}
 			else
 				world[i][j] = 'G'; // Grass generation
@@ -902,7 +902,7 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
 		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
 		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
-		RenderMesh(meshList[GEO_PIG], false);
+		RenderMesh(meshList[GEO_PIG], true);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_COW:
@@ -910,7 +910,7 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z );
 		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
 		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
-		RenderMesh(meshList[GEO_COW], false);
+		RenderMesh(meshList[GEO_COW], true);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_CHICKEN:
@@ -918,7 +918,7 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
 		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
 		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
-		RenderMesh(meshList[GEO_CHICKEN], false);
+		RenderMesh(meshList[GEO_CHICKEN], true);
 		modelStack.PopMatrix();
 		break;
 	default:
