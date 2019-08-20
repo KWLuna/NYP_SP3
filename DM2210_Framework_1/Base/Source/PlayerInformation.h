@@ -51,6 +51,9 @@ public:
 	double getHunger();
 	double getHP();
 
+	void SaveData();
+	void LoadData();
+
 	Weapons * getcurtool();
 private:
 
