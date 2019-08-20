@@ -105,6 +105,7 @@ class SP2 : public Scene
 		GEO_COOKED_MEAT,
 
 		GEO_WHEAT,
+		GEO_BREAD,
 		GEO_CARROT,
 		GEO_SEED,
 

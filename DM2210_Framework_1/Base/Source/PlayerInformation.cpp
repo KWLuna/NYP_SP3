@@ -145,6 +145,12 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 			return new Item(Item::ITEM_GOLD_SWORD, 1);
 	}
 
+	if (firstItem == Item::Item::ITEM_WHEAT)
+	{
+		if (secondItem == Item::Item::ITEM_WHEAT)
+			return new Item(Item::ITEM_BREAD, 1);
+	}
+
 	return new Item(-1, 0);
 }
 
