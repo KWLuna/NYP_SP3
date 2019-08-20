@@ -391,6 +391,26 @@ void SP2::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
+	//UI
+		//HEALTH
+		meshList[GEO_HEALTH_FULL] = MeshBuilder::GenerateQuad("GEO_HEALTH_FULL", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HEALTH_FULL]->textureArray[0] = LoadTGA("Image//health_full.tga");
+
+		meshList[GEO_HEALTH_HALF] = MeshBuilder::GenerateQuad("GEO_HEALTH_HALF", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HEALTH_HALF]->textureArray[0] = LoadTGA("Image//health_half.tga");
+
+		meshList[GEO_HEALTH_EMPTY] = MeshBuilder::GenerateQuad("GEO_HEALTH_EMPTY", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HEALTH_EMPTY]->textureArray[0] = LoadTGA("Image//health_empty.tga");
+		//HUNGER
+		meshList[GEO_HUNGER_FULL] = MeshBuilder::GenerateQuad("GEO_HUNGER_FULL", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HUNGER_FULL]->textureArray[0] = LoadTGA("Image//hunger_full.tga");
+	
+		meshList[GEO_HUNGER_HALF] = MeshBuilder::GenerateQuad("GEO_HUNGER_HALF", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HUNGER_HALF]->textureArray[0] = LoadTGA("Image//hunger_half.tga");
+
+		meshList[GEO_HUNGER_EMPTY] = MeshBuilder::GenerateQuad("GEO_HUNGER_EMPTY", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HUNGER_EMPTY]->textureArray[0] = LoadTGA("Image//hunger_empty.tga");
+	//
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
@@ -1555,7 +1575,45 @@ void SP2::RenderInventory()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2, 50, 50, player->getItem(i)->getID());
 	}
 }
-
+void SP2::RenderHPandHunger()
+{
+	//Health
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i < static_cast<int>(player->getHP() * 0.1f))
+		{
+			RenderImageToScreen(meshList[GEO_HEALTH_FULL], false, 40, 40,
+				120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+		else
+		{
+			if (static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
+				RenderImageToScreen(meshList[GEO_HEALTH_HALF], false, 40, 40,
+					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+			else
+				RenderImageToScreen(meshList[GEO_HEALTH_EMPTY], false, 40, 40,
+					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+	}
+	//Hunger
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i < static_cast<int>(player->getHunger() * 0.1f))
+		{
+			RenderImageToScreen(meshList[GEO_HUNGER_FULL], false, 40, 40,
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+		else
+		{
+			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
+				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+			else
+				RenderImageToScreen(meshList[GEO_HUNGER_EMPTY], false, 40, 40,
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+	}
+}
 void SP2::RenderWorld()
 {
 	RenderGroundObjects();
@@ -1706,6 +1764,8 @@ void SP2::RenderPassMain()
 	RenderCrafting();
 	RenderFurnace();
 	RenderCrops();
+
+	RenderHPandHunger();
 
 	std::ostringstream ss;
 	ss.precision(5);
