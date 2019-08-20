@@ -31,6 +31,7 @@ PlayerInformation::PlayerInformation()
 		curtool = new Sword();
 		curtool->Init();
 	}
+	action = STANDING;
 }
 
 PlayerInformation::~PlayerInformation()
@@ -230,7 +231,11 @@ void PlayerInformation::update(double dt)
 		if (m_iInventorySlot > 14)
 			m_iInventorySlot = 0;
 	}
-
+	if (action != PlayerInformation::STANDING)
+	{
+		walkingtime += dt;
+	}
+	
 	if (m_dHunger < 30)
 	{
 		m_fSpeed = 80;
@@ -242,6 +247,47 @@ void PlayerInformation::update(double dt)
 		{
 			m_dHP -= 3 * dt;
 		}
+	}
+	else
+	{
+		m_fSpeed = 100;
+		if (m_dHunger > 80)
+		{
+			if (m_dHP < 100)
+			{
+				m_dHP += 0.5 * dt;
+				m_dHunger -= 0.1 * dt;
+			}
+		}
+	}
+
+	switch (action)
+	{
+	case PlayerInformation::STANDING:
+		break;
+	case PlayerInformation::SPRINTING:
+		if (walkingtime > 10)
+		{
+			m_dHunger -= 0.1 * dt;
+		}
+		break;
+	case PlayerInformation::WALKING:
+		if (walkingtime > 10)
+		{
+			m_dHunger -= 0.05 * dt;
+		}
+		break;
+	case PlayerInformation::EATING:
+		if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT)
+			m_dHunger += 0.2f;
+		else if (getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT)
+			m_dHunger += 0.5f;
+
+		walkingtime = 0;
+		m_fSpeed *= 0.4f;
+		break;
+	default:
+		break;
 	}
 
 	if (m_bCrafting == true)
@@ -292,17 +338,6 @@ void PlayerInformation::update(double dt)
 			m_iCraftingSlotTwo = -1;
 		}
 	}
-
-		m_fSpeed = 100;
-		if (m_dHunger > 80)
-		{
-			if (m_dHP < 100)
-			{
-				m_dHP += 0.5 * dt;
-				m_dHunger -= 0.1 * dt;
-			}
-			
-		}
 
 	if (m_bCrafting == false && m_bFurnaceStatus == false)
 	{
@@ -376,61 +411,15 @@ void PlayerInformation::update(double dt)
 			action = STANDING;
 		}
 
-		if (action == NUM_ACTION)
-		{
-			action = STANDING;
-		}
-
-		switch (action)
-		{
-		case PlayerInformation::STANDING:
-			break;
-		case PlayerInformation::SPRINTING:
-			m_dHunger -= 0.1 * dt;
-			break;
-		case PlayerInformation::WALKING:
-			m_dHunger -= 0.05 * dt;
-			break;
-		case PlayerInformation::EATING:
-			m_dHunger += 0.5 * dt;
-			break;
-		case PlayerInformation::NUM_ACTION:
-			break;
-		default:
-			break;
-		}
-
-		if (m_dHunger < 30)
-		{
-			m_fSpeed = 80;
-			if (m_dHunger < 0)
-			{
-				m_dHunger = 0;
-			}
-			if (m_dHunger == 0)
-			{
-				m_dHP -= 3 * dt;
-			}
-		}
-		else
-		{
-			m_fSpeed = 100;
-			if (m_dHunger > 80)
-			{
-				if (m_dHP < 100)
-				{
-					m_dHP += 0.5 * dt;
-					m_dHunger -= 0.1 * dt;
-				}
-			}
-		}
-
 		Vector3 dir = attachedCamera->target - attachedCamera->position;
 		
 		curtool->Update(dt, dir,attachedCamera->position);
+		static bool bLButtonState = false;
 
-		if (Application::IsMousePressed(0))
+		if (!bLButtonState &&Application::IsMousePressed(0))
 		{
+			bLButtonState = true;
+
 			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
 			{
 				std::cout << "left " << playerphysics.GetDist();
@@ -442,14 +431,36 @@ void PlayerInformation::update(double dt)
 				curtool->SetCurSwing();
 			}
 		}
-		if (Application::IsMousePressed(1))
+		else if (bLButtonState && !Application::IsMousePressed(0))
 		{
+			bLButtonState = false;
+
+		}
+
+		static bool bRButtonState = false;
+		if (!bRButtonState && Application::IsMousePressed(1))
+		{
+			bRButtonState = true;
+
 			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
 			{
 				std::cout << "right " << playerphysics.GetDist();
 			}
 			else
 				std::cout << "rnotcollide";
+		}
+		else if (bRButtonState && !Application::IsMousePressed(1))
+		{
+			bRButtonState = false;
+
+			if (m_dHunger < 100)
+			{
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT)
+				{
+					action = PlayerInformation::EATING;
+					getItem(getCurrentSlot())->addQuantity(-1);
+				}
+			}
 		}
 	}
 }
