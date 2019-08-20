@@ -23,7 +23,6 @@ public:
 		SPRINTING,
 		WALKING,
 		EATING,
-		NUM_ACTION,
 	};
 
 	TYPE_ACTION action;
@@ -39,14 +38,14 @@ public:
 
 	int getTotalItems();
 	bool getIsCrafting();
-	
+
 	int getCurrentSlot();
 
 	int getCraftingSlotOne();
 	int getCraftingSlotTwo();
-	
+
 	void SetFurnaceStatus(bool condition);
-	
+
 	Item * craft(int firstItem, int secondItem);
 
 	double getHunger();
@@ -54,7 +53,7 @@ public:
 
 	Weapons * getcurtool();
 private:
-	 
+
 	Camera3 * attachedCamera; // Attach camera to player
 
 	bool m_bCrafting; // is the player in crafting mode
@@ -67,15 +66,17 @@ private:
 
 	double m_dBounceTime; // Bounce time
 
-	int m_iConstrainY; // Height which the player is limited to
+	double m_dConstrainY; // Height which the player is limited to
 	int m_iCurrentStance;
 
 	bool m_bSwitchStance;
 	bool m_bFurnaceStatus;
+	bool m_bJump;
+	bool m_bFall;
 
 	std::vector<Item*> ItemList;
 	float m_fSpeed;
-
+	float walkingtime;
 	double m_dHunger;
 	double m_dHP;
 
