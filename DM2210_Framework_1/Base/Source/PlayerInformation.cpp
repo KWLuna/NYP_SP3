@@ -4,7 +4,7 @@ PlayerInformation::PlayerInformation()
 {
 	m_dHP = 100;
 	m_dHunger = 100;
-	
+
 	m_fSpeed = 100.f;
 	m_dBounceTime = 0;
 
@@ -13,13 +13,14 @@ PlayerInformation::PlayerInformation()
 	m_iCurrentStance = STAND;
 
 	m_iInventorySlot = 0;
-	m_iConstrainY = 40;
+	m_dConstrainY = 40;
 	m_iCraftingSlotOne = -1;
 	m_iCraftingSlotTwo = -1;
 	m_iSwitchInventorySlot = -1;
 
 	m_bFurnaceStatus = false;
-
+	m_bJump = false;
+	m_bFall = false;
 	m_bSwitchStance = false;
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 15; ++i)
@@ -50,7 +51,9 @@ void PlayerInformation::Constrain()
 {
 	//Anchor player to the ground
 	Vector3 viewVector = attachedCamera->target - attachedCamera->position;
-	attachedCamera->position.y = m_iConstrainY;
+
+	attachedCamera->position.y = m_dConstrainY;
+
 	attachedCamera->target = attachedCamera->position + viewVector;
 	//
 }
@@ -124,7 +127,7 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	if (firstItem == Item::ITEM_STICK)
 	{
 		if (secondItem == Item::ITEM_COAL)
-			return new Item(Item::ITEM_TORCH , 4);
+			return new Item(Item::ITEM_TORCH, 4);
 	}
 
 	if (firstItem == Item::ITEM_COAL)
@@ -181,20 +184,20 @@ void PlayerInformation::update(double dt)
 		switch (m_iCurrentStance)
 		{
 		case STAND:
-			if (m_iConstrainY < 40)
-				m_iConstrainY += 10 * dt;
+			if (m_dConstrainY < 40)
+				m_dConstrainY += 50 * dt;
 			else
 				m_bSwitchStance = false;
 			break;
 		case CROUCH:
-			if (m_iConstrainY > 20)
-				m_iConstrainY -= 10 * dt;
+			if (m_dConstrainY > 20)
+				m_dConstrainY -= 50 * dt;
 			else
 				m_bSwitchStance = false;
 			break;
 		case PRONE:
-			if (m_iConstrainY > 5)
-				m_iConstrainY -= 10 * dt;
+			if (m_dConstrainY > 5)
+				m_dConstrainY -= 50 * dt;
 			else
 				m_bSwitchStance = false;
 			break;
@@ -217,7 +220,53 @@ void PlayerInformation::update(double dt)
 			m_dBounceTime = 0.2;
 		}
 	}
-	
+
+	if (Application::IsKeyPressed(VK_SPACE) && m_bJump == false && m_bFall == false)
+		m_bJump = true;
+
+	if (m_bJump == true && m_bSwitchStance == false)
+	{
+		if (m_iCurrentStance == STAND)
+		{
+			if (m_dConstrainY < 90)
+				m_dConstrainY += 150 * dt;
+			else
+			{
+				m_bFall = true;
+				m_bJump = false;
+			}
+		}
+		else if (m_iCurrentStance == CROUCH)
+		{
+			if (m_dConstrainY < 100)
+				m_dConstrainY += 200 * dt;
+			else
+			{
+				m_bFall = true;
+				m_bJump = false;
+			}
+		}
+		else
+			m_bJump = false;
+	}
+
+	if (m_bFall == true)
+	{
+		if (m_iCurrentStance == STAND)
+		{
+			if (m_dConstrainY > 40)
+				m_dConstrainY -= 150 * dt - 9.8 * dt;
+			else
+				m_bFall = false;
+		}
+		else if (m_iCurrentStance == CROUCH)
+		{
+			if (m_dConstrainY > 20)
+				m_dConstrainY -= 200 * dt - 9.8 * dt;
+			else
+				m_bFall = false;
+		}
+	}
 
 	if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
 	{
@@ -225,7 +274,7 @@ void PlayerInformation::update(double dt)
 		m_dBounceTime = 0.2;
 
 		if (m_iInventorySlot < 0)
-			m_iInventorySlot = 14;
+			m_iInventorySlot = ItemList.size() - 1;
 	}
 
 	if (Application::IsKeyPressed(VK_RIGHT) && m_dBounceTime <= 0)
@@ -233,7 +282,7 @@ void PlayerInformation::update(double dt)
 		m_iInventorySlot += 1;
 		m_dBounceTime = 0.2;
 
-		if (m_iInventorySlot > 14)
+		if (m_iInventorySlot > ItemList.size() - 1)
 			m_iInventorySlot = 0;
 	}
 
@@ -299,16 +348,15 @@ void PlayerInformation::update(double dt)
 		}
 	}
 
-		m_fSpeed = 100;
-		if (m_dHunger > 80)
+	m_fSpeed = 100;
+	if (m_dHunger > 80)
+	{
+		if (m_dHP < 100)
 		{
-			if (m_dHP < 100)
-			{
-				m_dHP += 0.5 * dt;
-				m_dHunger -= 0.1 * dt;
-			}
-			
+			m_dHP += 0.5 * dt;
+			m_dHunger -= 0.1 * dt;
 		}
+	}
 
 	if (m_bCrafting == false && m_bFurnaceStatus == false)
 	{
@@ -339,9 +387,9 @@ void PlayerInformation::update(double dt)
 			Vector3 rightUV;
 			if (Application::IsKeyPressed('W'))
 			{
-				if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT)))
+				if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT) && m_iCurrentStance == STAND))
 				{
-					attachedCamera->position += viewVector.Normalized() * m_fSpeed * 2.0f * (float)dt;
+					attachedCamera->position += viewVector.Normalized() * m_fSpeed * 3.0f * (float)dt;
 					action = SPRINTING;
 				}
 				else
@@ -373,7 +421,6 @@ void PlayerInformation::update(double dt)
 			}
 
 			// Constrain the position
-			Constrain();
 			// Update the target
 			attachedCamera->target = attachedCamera->position + viewVector;
 		}
@@ -386,6 +433,9 @@ void PlayerInformation::update(double dt)
 		{
 			action = STANDING;
 		}
+
+		Constrain();
+
 
 		switch (action)
 		{
@@ -432,8 +482,8 @@ void PlayerInformation::update(double dt)
 		}
 
 		Vector3 dir = attachedCamera->target - attachedCamera->position;
-		
-		curtool->Update(dt, dir,attachedCamera->position);
+
+		curtool->Update(dt, dir, attachedCamera->position);
 
 		if (Application::IsMousePressed(0))
 		{
