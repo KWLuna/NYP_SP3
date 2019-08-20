@@ -223,6 +223,7 @@ public:
 	void RenderFurnace();
 	void UpdateWorldVars();
 	void RenderCrops();
+	void RenderInventory();
 	//
 	
 	Color fogColor;
@@ -235,7 +236,9 @@ public:
 	void AnimalChecker(double dt);
 		//Season Changing
 	void SeasonChanger(double dt);
-
+	void RenderSkyBox();
+	//Yanson
+	void Render3DHandHeld();
 	//Shadow
 	void RenderPassGPass();
 	void RenderPassMain();

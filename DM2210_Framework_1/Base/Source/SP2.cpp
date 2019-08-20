@@ -166,7 +166,7 @@ void SP2::Init()
 	glUseProgram(m_programID);
 
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].position.Set(0, 100, 0);
+	lights[0].position.Set(12500, 100, 12500);
 	lights[0].color.Set(1, 1, 1);
 	lights[0].power = 1.f;
 	lights[0].kC = 1.f;
@@ -1439,51 +1439,8 @@ void SP2::RenderCrafting()
 	}
 }
 
-void SP2::RenderWorld()
+void SP2::RenderInventory()
 {
-
-	//testing 3d item
-	if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
-	{
-		Vector3 weaponoffset(1, 1, 2);
-		Vector3 viewvector = (camera.target - camera.position);
-		modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x + viewvector.x, camera.position.y + viewvector.y, camera.position.z + viewvector.z);
-			modelStack.PushMatrix();
-			// Rotate to correspond to the camera
-			modelStack.Rotate(Math::RadianToDegree(atan2(-viewvector.x, -viewvector.z)), 0, 1, 0);
-			modelStack.Rotate(Math::RadianToDegree(atan2(viewvector.y, camera.up.y)), 1, 0, 0);
-			if (player->getcurtool()->GetCurSwing())
-			{
-				modelStack.Translate(player->getcurtool()->GetCurT(), -0.3, -0.8); // Offset to draw the object
-				modelStack.Rotate(player->getcurtool()->GetCurR(), 0, 1, 0);
-			}
-			else if (player->getcurtool()->GetSide())
-			{
-				modelStack.Translate(player->getcurtool()->GetLeftRestT(), -0.2, -0.4);
-				modelStack.Rotate(player->getcurtool()->GetLeftRestR(), 0, 1, 0);
-			}
-			else
-			{
-				modelStack.Translate(player->getcurtool()->GetRightRestT(), -0.2, -0.4);
-				modelStack.Rotate(player->getcurtool()->GetRightRestR(), 0, 1, 0);
-			}
-			if (player->getcurtool()->GetCurSwing())
-			{
-				modelStack.Rotate(player->getcurtool()->GetAttackUpTilt(), 1, 0, 0);
-			}
-			else
-			{
-				modelStack.Rotate(player->getcurtool()->GetRestUpTilt(), 1, 0, 0);
-			}
-		
-			modelStack.Scale(2, 2, 2);
-			RenderMesh(meshList[GEO_STONE_SWORD_MODEL], false);
-			modelStack.PopMatrix();
-		modelStack.PopMatrix();
-		//
-	}
-
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
 
@@ -1497,9 +1454,12 @@ void SP2::RenderWorld()
 			RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 60, 60,
 				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
 
-		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
+		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2, 50, 50, player->getItem(i)->getID());
 	}
+}
 
+void SP2::RenderWorld()
+{
 	RenderGroundObjects();
 
 	//Render Animals
@@ -1511,10 +1471,77 @@ void SP2::RenderWorld()
 			RenderAnimal(animal);
 		}
 	}
-
-
 }
 
+void SP2::RenderSkyBox()
+{
+	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Scale(3500, 3500, 3500);
+
+	switch (SP2_Seasons->getSeason())
+	{
+	case Season::TYPE_SEASON::SPRING:
+		RenderMesh(meshList[GEO_SKYBOX_SPRING], false);
+		break;
+	case Season::TYPE_SEASON::SUMMER:
+		RenderMesh(meshList[GEO_SKYBOX_SUMMER], false);
+		break;
+	case Season::TYPE_SEASON::FALL:
+		RenderMesh(meshList[GEO_SKYBOX_FALL], false);
+		break;
+	case Season::TYPE_SEASON::WINTER:
+		RenderMesh(meshList[GEO_SKYBOX_WINTER], false);
+		break;
+	default:
+		break;
+	}
+	modelStack.PopMatrix();
+}
+
+void SP2::Render3DHandHeld()
+{
+	if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+	{
+		Vector3 weaponoffset(1, 1, 2);
+		Vector3 viewvector = (camera.target - camera.position);
+		modelStack.PushMatrix();
+		modelStack.Translate(camera.position.x + viewvector.x, camera.position.y + viewvector.y, camera.position.z + viewvector.z);
+		modelStack.PushMatrix();
+		// Rotate to correspond to the camera
+		modelStack.Rotate(Math::RadianToDegree(atan2(-viewvector.x, -viewvector.z)), 0, 1, 0);
+		modelStack.Rotate(Math::RadianToDegree(atan2(viewvector.y, camera.up.y)), 1, 0, 0);
+		if (player->getcurtool()->GetCurSwing())
+		{
+			modelStack.Translate(player->getcurtool()->GetCurT(), -0.3, -0.8); // Offset to draw the object
+			modelStack.Rotate(player->getcurtool()->GetCurR(), 0, 1, 0);
+		}
+		else if (player->getcurtool()->GetSide())
+		{
+			modelStack.Translate(player->getcurtool()->GetLeftRestT(), -0.2, -0.4);
+			modelStack.Rotate(player->getcurtool()->GetLeftRestR(), 0, 1, 0);
+		}
+		else
+		{
+			modelStack.Translate(player->getcurtool()->GetRightRestT(), -0.2, -0.4);
+			modelStack.Rotate(player->getcurtool()->GetRightRestR(), 0, 1, 0);
+		}
+		if (player->getcurtool()->GetCurSwing())
+		{
+			modelStack.Rotate(player->getcurtool()->GetAttackUpTilt(), 1, 0, 0);
+		}
+		else
+		{
+			modelStack.Rotate(player->getcurtool()->GetRestUpTilt(), 1, 0, 0);
+		}
+
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_STONE_SWORD_MODEL], false);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
+		//
+	}
+}
 void SP2::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
@@ -1561,48 +1588,15 @@ void SP2::RenderPassMain()
 
 	RenderMesh(meshList[GEO_AXES], false);
 	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
+	
+	Render3DHandHeld();
+	RenderInventory();
 
+	RenderSkyBox();
+	RenderGround();
 	RenderWorld();
 
-
-	//render light ball
-	modelStack.PushMatrix();
-	modelStack.Translate(lights[0].position.x, lights[0].position.y, lights[0].position.z);
-	RenderMesh(meshList[GEO_LIGHTBALL], false);
-	modelStack.PopMatrix();
-
-	//render GEO_LIGHT_DEPTH_QUAD
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 500, 0);
-	//modelStack.Scale(100, 100, 100);
-	RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
-	modelStack.PopMatrix();
-
-	RenderGround();
 	RenderAnimation();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Scale(3500, 3500, 3500);
-
-	switch (SP2_Seasons->getSeason())
-	{
-	case Season::TYPE_SEASON::SPRING:
-		RenderMesh(meshList[GEO_SKYBOX_SPRING], false);
-		break;
-	case Season::TYPE_SEASON::SUMMER:
-		RenderMesh(meshList[GEO_SKYBOX_SUMMER], false);
-		break;
-	case Season::TYPE_SEASON::FALL:
-		RenderMesh(meshList[GEO_SKYBOX_FALL], false);
-		break;
-	case Season::TYPE_SEASON::WINTER:
-		RenderMesh(meshList[GEO_SKYBOX_WINTER], false);
-		break;
-	default:
-		break;
-	}
-	modelStack.PopMatrix();
 
 	//	Render Particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
