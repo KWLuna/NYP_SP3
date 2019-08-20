@@ -52,7 +52,7 @@ float Physics::GetDist()
 	return m_dist;
 }
 
-Projection::Projection(float min, float max)
+Projection::Projection()
 {
 }
 

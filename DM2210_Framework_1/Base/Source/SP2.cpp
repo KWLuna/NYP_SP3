@@ -697,7 +697,7 @@ void SP2::Update(double dt)
 
 	UpdateWorldVars();
 	UpdateParticles(dt);
-	//player->update(dt);
+	player->update(dt);
 
 	//Update all crops present in the world.
 	for (int i = 0; i < CropList.size(); ++i)

@@ -1,1 +1,19 @@
-﻿
+﻿  Application.cpp
+  Physics.cpp
+d:\github\sp3\dm2210_framework_1\base\source\physics.cpp(60): error C2084: function 'Projection::Projection(float,float)' already has a body
+  d:\github\sp3\dm2210_framework_1\base\source\physics.cpp(55): note: see previous definition of '{ctor}'
+d:\github\sp3\dm2210_framework_1\base\source\physics.cpp(136): error C2264: 'Projection::Projection': error in function definition or declaration; function not called
+d:\github\sp3\dm2210_framework_1\base\source\physics.cpp(151): error C2264: 'Projection::Projection': error in function definition or declaration; function not called
+d:\github\sp3\dm2210_framework_1\base\source\physics.cpp(178): error C2264: 'Projection::Projection': error in function definition or declaration; function not called
+d:\github\sp3\dm2210_framework_1\base\source\physics.cpp(193): error C2264: 'Projection::Projection': error in function definition or declaration; function not called
+  PlayerInformation.cpp
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(56): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(59): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(82): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(88): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(119): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(145): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(156): warning C4018: '<': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(349): warning C4018: '>': signed/unsigned mismatch
+d:\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(354): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
