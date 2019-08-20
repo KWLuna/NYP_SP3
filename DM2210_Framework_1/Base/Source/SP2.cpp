@@ -242,7 +242,8 @@ void SP2::Init()
 	
 	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
-
+	
+	//Game Stuff
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
 
@@ -267,6 +268,10 @@ void SP2::Init()
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
+	meshList[GEO_FURNACE] = MeshBuilder::GenerateOBJ("GEO_FURNACE", "OBJ//Ore.obj");
+	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+	//
+
 	//Animals
 	meshList[GEO_PIG] = MeshBuilder::GenerateOBJ("Pig", "OBJ//Pig.obj");
 	meshList[GEO_PIG]->textureArray[0] = LoadTGA("Image//PIG.tga");
@@ -277,8 +282,25 @@ void SP2::Init()
 	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//cow.obj");
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
+	//GUI's
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
+
+	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
+
+	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
+
+	meshList[GEO_HIGHLIGHT_INVENTORY] = MeshBuilder::GenerateQuad("GEO_HIGHLIGHT_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_HIGHLIGHT_INVENTORY]->textureArray[0] = LoadTGA("Image//Highlight_Inventory.tga");
+
+	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
+
+	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace_Menu.tga");
+	//
 
 	//Inventory meshes
 	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
@@ -289,6 +311,9 @@ void SP2::Init()
 
 	meshList[GEO_WHEAT] = MeshBuilder::GenerateQuad("GEO_WHEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WHEAT]->textureArray[0] = LoadTGA("Image//Wheat.tga");
+
+	meshList[GEO_BREAD] = MeshBuilder::GenerateQuad("GEO_BREAD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_BREAD]->textureArray[0] = LoadTGA("Image//Bread.tga");
 
 	meshList[GEO_CARROT] = MeshBuilder::GenerateQuad("GEO_CARROT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CARROT]->textureArray[0] = LoadTGA("Image//Carrot.tga");
@@ -341,24 +366,8 @@ void SP2::Init()
 	meshList[GEO_GOLD_PICKAXE] = MeshBuilder::GenerateQuad("GEO_GOLD_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_PICKAXE]->textureArray[0] = LoadTGA("Image//Gold_Pickaxe.tga");
 
-	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
-
-	meshList[GEO_HIGHLIGHT_INVENTORY] = MeshBuilder::GenerateQuad("GEO_HIGHLIGHT_INVENTORY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_HIGHLIGHT_INVENTORY]->textureArray[0] = LoadTGA("Image//Highlight_Inventory.tga");
-
-	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
-
-	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
-	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace_Menu.tga");
-
-	meshList[GEO_FURNACE] = MeshBuilder::GenerateOBJ("GEO_FURNACE", "OBJ//Ore.obj");
-	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
-
-	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
-	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
 	//
+
 	//Crops meshes
 	meshList[GEO_CARROT_CROP] = MeshBuilder::GenerateQuad("GEO_CARROT_CROP", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CARROT_CROP]->textureArray[0] = LoadTGA("Image//Carrot_Crop.tga");
@@ -942,7 +951,7 @@ void SP2::UpdateParticles(double dt)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_WATER;
-			particle->scale.Set(10, 10, 10);
+			particle->scale.Set(2, 10, 2);
 			particle->vel.Set(1, 1, 1);
 			particle->m_gravity.Set(0, -9.8f, 0);
 			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
@@ -1237,14 +1246,14 @@ void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 		{
 			if (mesh->textureArray[i] > 0)
 			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 1);
+				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED
+					+ i], 1);
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
 				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
 			}
 			else
 				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
-
 		}
 		mesh->Render();
 		return;
@@ -1637,6 +1646,7 @@ void SP2::Render3DHandHeld()
 		//
 	}
 }
+
 void SP2::RenderPassMain()
 {
 	m_renderPass = RENDER_PASS_MAIN;
@@ -1682,13 +1692,24 @@ void SP2::RenderPassMain()
 	}
 
 	RenderMesh(meshList[GEO_AXES], false);
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 1.0f);
 	
+	RenderCrafting();
+	RenderFurnace();
+
 	Render3DHandHeld();
 	RenderInventory();
 
 	RenderSkyBox();
 	RenderGround();
+	
+	modelStack.PushMatrix();
+	modelStack.Translate(12550 , 10, 12550);
+	modelStack.Scale(10, 10, 10);
+	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - 12550, camera.position.z - 12550)), 0, 1, 0);
+	RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
+	modelStack.PopMatrix();
+	
 	RenderWorld();
 
 	RenderAnimation();
@@ -1703,8 +1724,6 @@ void SP2::RenderPassMain()
 		}
 	}
 
-	RenderCrafting();
-	RenderFurnace();
 	RenderCrops();
 
 	std::ostringstream ss;

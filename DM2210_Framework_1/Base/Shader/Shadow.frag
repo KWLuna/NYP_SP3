@@ -252,6 +252,4 @@ void main(){
 			color.xyz = mix(color.xyz, fogParam.color, fogFactor);
 		//color = mix(color, vec4(fogParam.color, 1), fogFactor);
 	}
-
-
 }

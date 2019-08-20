@@ -20,7 +20,7 @@ struct Material
 		kAmbient.Set(0.6f, 0.6f, 0.6f);
 		kDiffuse.Set(0.6f, 0.6f, 0.6f);
 		kSpecular.Set(0.3f, 0.3f, 0.3f);
-		kShininess = 5.f;
+		kShininess = 20.f;
 	}
 };
 
