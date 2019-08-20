@@ -16,7 +16,7 @@ Season::~Season()
 void Season::Update(double dt)
 {
 	m_fSeasonTime += 1 * dt;
-	if (m_fSeasonTime > 10)
+	if (m_fSeasonTime > 20)
 	{
 		switch (m_iSeasonChanger)
 		{
@@ -26,10 +26,7 @@ void Season::Update(double dt)
 		case 1: //summer
 			m_iSeasonChanger = 2;
 			break;
-		case 2: //fall
-			m_iSeasonChanger = 3;
-			break;
-		case 3: //winter
+		case 2: //winter
 			m_iSeasonChanger = 0;
 			break;
 		default:

@@ -329,8 +329,6 @@ void PlayerInformation::update(double dt)
 		//Movement
 		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
 		{
-			float m_fSpeed = 100;
-
 			Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 			Vector3 rightUV;
 			if (Application::IsKeyPressed('W'))

@@ -9,6 +9,7 @@ enum ParticleObject_TYPE
 	P_SNOWFLAKE,
 	P_LEAF,
 	P_DEADLEAF,
+	P_HEART,
 	P_TOTAL,
 };
 
