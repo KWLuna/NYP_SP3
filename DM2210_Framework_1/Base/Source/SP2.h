@@ -181,6 +181,16 @@ class SP2 : public Scene
 		GEO_PARTICLE_LEAF,
 		GEO_PARTICLE_HEART,
 
+		//UI
+			//HEALTH
+			GEO_HEALTH_FULL,
+			GEO_HEALTH_HALF,
+			GEO_HEALTH_EMPTY,
+			//HUNGER
+			GEO_HUNGER_FULL,
+			GEO_HUNGER_HALF,
+			GEO_HUNGER_EMPTY,
+		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		NUM_GEOMETRY,
 	};
@@ -231,6 +241,9 @@ public:
 		//Season Changing
 	void SeasonChanger(double dt);
 	void RenderSkyBox();
+
+	void RenderHPandHunger();
+	//
 	//Yanson
 	void Render3DHandHeld();
 	//Shadow

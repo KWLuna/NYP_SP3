@@ -23,7 +23,6 @@ public:
 		SPRINTING,
 		WALKING,
 		EATING,
-		NUM_ACTION,
 	};
 
 	TYPE_ACTION action;
@@ -77,7 +76,7 @@ private:
 
 	std::vector<Item*> ItemList;
 	float m_fSpeed;
-
+	float walkingtime;
 	double m_dHunger;
 	double m_dHP;
 
