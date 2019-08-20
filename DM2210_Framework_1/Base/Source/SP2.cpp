@@ -272,6 +272,10 @@ void SP2::Init()
 	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
 	//
 
+	//Player
+	meshList[GEO_PLAYER] = MeshBuilder::GenerateOBJ("GEO_PLAYER", "OBJ//Steve.obj");
+	meshList[GEO_PLAYER]->textureArray[0] = LoadTGA("Image//Steve.tga");
+	
 	//Animals
 	meshList[GEO_PIG] = MeshBuilder::GenerateOBJ("Pig", "OBJ//Pig.obj");
 	meshList[GEO_PIG]->textureArray[0] = LoadTGA("Image//PIG.tga");
@@ -1625,6 +1629,12 @@ void SP2::RenderHPandHunger()
 }
 void SP2::RenderWorld()
 {
+	modelStack.PushMatrix();
+	modelStack.Translate(12500, 0, 12500);
+	modelStack.Scale(6, 6, 6);
+	RenderMesh(meshList[GEO_PLAYER], false);
+	modelStack.PopMatrix();
+
 	RenderGroundObjects();
 
 	//Render Animals

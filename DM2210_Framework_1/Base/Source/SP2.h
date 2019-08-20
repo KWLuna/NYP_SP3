@@ -159,7 +159,7 @@ class SP2 : public Scene
 			GEO_TREE_SUMMER,
 			GEO_TREE_WINTER,
 		//
-		
+		GEO_PLAYER,
 		//Animals
 		GEO_PIG, 
 		GEO_CHICKEN,
