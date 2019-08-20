@@ -79,6 +79,10 @@
     <None Include="Shader\Shadow.frag" />
     <None Include="Shader\Shadow.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="PlayerSaveFile.txt" />
+    <Text Include="WorldSaveFile.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B172635-4E2B-46F1-A403-08F4194D00F5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

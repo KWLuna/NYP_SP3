@@ -46,6 +46,9 @@
     <Filter Include="SP2\Crops">
       <UniqueIdentifier>{91659d46-2011-4aac-89c1-c8499b97885f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SP2\TextFiles">
+      <UniqueIdentifier>{5a5f5a96-3dcb-42fd-b726-114ba31b63ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -241,5 +244,13 @@
     <None Include="Shader\Shadow.vert">
       <Filter>Shader</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="PlayerSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="WorldSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -228,6 +228,9 @@ public:
 	void UpdateWorldVars();
 	void RenderCrops();
 	void RenderInventory();
+	void LoadWorld();
+
+	void SaveWorld();
 	//
 	
 	Color fogColor;
