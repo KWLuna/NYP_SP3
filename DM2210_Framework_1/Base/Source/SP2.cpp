@@ -242,7 +242,6 @@ void SP2::Init()
 	
 	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
-	
 
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
@@ -1100,15 +1099,6 @@ void SP2::RenderParticles(ParticleObject * particle)
 		modelStack.Rotate(particle->rotation, 0, 0, 1);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
 		RenderMesh(meshList[GEO_PARTICLE_LEAF], false);
-		modelStack.PopMatrix();
-		break;
-	case ParticleObject_TYPE::P_DEADLEAF:
-		modelStack.PushMatrix();
-		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
-		modelStack.Rotate(particle->rotation, 0, 0, 1);
-		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		RenderMesh(meshList[GEO_PARTICLE_DEADLEAF], false);
 		modelStack.PopMatrix();
 		break;
 	case ParticleObject_TYPE::P_HEART:
