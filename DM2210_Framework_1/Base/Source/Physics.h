@@ -20,6 +20,7 @@ struct Projection
 	float min;
 	float max;
 
+	Projection();
 	Projection(float min, float max);
 	~Projection();
 };

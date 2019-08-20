@@ -453,6 +453,17 @@ void PlayerInformation::update(double dt)
 			else
 				std::cout << "rnotcollide";
 		}
+		Entity * test = new Entity;
+		test->active = true;
+		test->pos = Vector3(12530, 0, 12530);
+		test->scale = Vector3(50, 50, 50);
+		Entity * player = new Entity;
+		player->pos = Vector3(attachedCamera->position.x, attachedCamera->position.y, attachedCamera->position.z);
+		player->scale = Vector3(2, 2, 2);
+		if (playerphysics.intersects(player,test))
+		{
+			std::cout << "working";
+		}
 	}
 }
 

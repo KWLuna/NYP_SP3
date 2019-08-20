@@ -18,7 +18,7 @@ void Sword::Init()
 	leftmaxr = 40.5;
 	leftmaxt = -0.9;
 	attacktiltup = 29.0;
-	swingtime = 0.5;
+	swingtime = 0.3;
 	side = false;
 	rightrestr = -18.5;
 	rightrestt = 0.5;

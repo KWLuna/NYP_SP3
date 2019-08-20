@@ -1324,6 +1324,14 @@ void SP2::RenderWorld()
 	modelStack.PopMatrix();
 	//
 
+	//for testing OBB
+	modelStack.PushMatrix();
+	modelStack.Translate(12550, 0, 12550);
+	modelStack.Scale(50, 50, 50);
+	RenderMesh(meshList[GEO_CUBE], false);
+	modelStack.PopMatrix();
+	//
+
 	//testing 3d item
 	if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
 	{
