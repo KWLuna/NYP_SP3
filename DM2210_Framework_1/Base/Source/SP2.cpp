@@ -57,7 +57,7 @@ void SP2::LoadWorld()
 
 			for (int i = 0; i < row.size(); ++i)
 			{
-				world[i][level] = row[i];
+			//	world[i][level] = row[i];
 			}
 			level += 1;
 		}
@@ -69,6 +69,7 @@ void SP2::LoadWorld()
 
 void SP2::InitGround()
 {
+	std::cout << Math::RandFloatMinMax(0, 10) << std::endl;
 	int x = 250, z = 250;
 
 	for (int i = 0; i < x; ++i)
@@ -118,13 +119,69 @@ void SP2::InitGround()
 		}
 	}
 
+	world[125][125] = 'D';
+
+	int dungeonCentreX = 0;
+	int dungeonCentreZ = 0;
+
+	for (int i = 0; i < 250; ++i)
+	{
+		for (int j = 0; j < 250; ++j)
+		{
+			if (world[i][j] == 'D')
+			{
+				dungeonCentreX = i;
+				dungeonCentreZ = j;
+				break;
+			}
+		}
+	}
+
 	
 
+	int dungeonSize = 10;
+
+	for (int i = dungeonCentreX - dungeonSize; i < dungeonCentreX + dungeonSize; ++i)
+	{
+		for (int j = dungeonCentreZ - dungeonSize; j < dungeonCentreZ + dungeonSize; ++j)
+		{
+			world[i][j] = 'd';
+		}
+	}
+
+	for (int i = dungeonCentreX - dungeonSize; i < dungeonCentreX + dungeonSize; ++i)
+	{
+		world[i][dungeonCentreX - dungeonSize] = 'D';
+		world[i][dungeonCentreX + dungeonSize] = 'D';
+	}
+
+	for (int i = dungeonCentreZ - dungeonSize; i < dungeonCentreZ + dungeonSize; ++i)
+	{
+		world[dungeonCentreZ - dungeonSize][i] = 'D';
+		world[dungeonCentreZ + dungeonSize][i] = 'D';
+	}
+	
+	for (int i = dungeonCentreZ - dungeonSize + 1; i < dungeonCentreZ + dungeonSize - 1; ++i)
+	{
+		for (int j = dungeonCentreX - dungeonSize + 1; j < dungeonCentreX + dungeonSize - 1; j++)
+		{
+			int checker = Math::RandIntMinMax(0, 10);
+
+			if (checker > 2)
+			{
+				if (i % 2 != 0)
+					world[i][j] = 'D';
+			}
+		}
+	}
+
+	world[dungeonCentreX - dungeonSize][dungeonCentreZ] = 'd';
 }
 
 void SP2::Init()
 {
 //	LoadWorld();
+	srand(time(0));
 	player = new PlayerInformation;
 	
 	m_bRandLightning = true;
@@ -139,7 +196,8 @@ void SP2::Init()
 	pX = camera.position.x / scale;
 	pZ = camera.position.z / scale;
 
-	outwards = 20;
+	outwards = 25;
+
 	m_fAmbient = 0.6;
 	minOutwardsFromPlayerX = pX - outwards;
 	minOutwardsFromPlayerZ = pZ - outwards;
@@ -265,7 +323,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(6250, 50, 6250), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
@@ -305,7 +363,10 @@ void SP2::Init()
 
 	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
-
+	//
+	meshList[GEO_STONE_BRICK_FLOOR] = MeshBuilder::GenerateQuad("GEO_STONE_BRICK_FLOOR", Color(1, 1, 1), 1.f);
+	meshList[GEO_STONE_BRICK_FLOOR]->textureArray[0] = LoadTGA("Image//StoneBricks.tga");
+	
 	//Game Stuff
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
@@ -334,7 +395,8 @@ void SP2::Init()
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
-	
+	meshList[GEO_WALL] = MeshBuilder::GenerateOBJ("GEO_WALL", "OBJ//Wall.obj");
+	meshList[GEO_WALL]->textureArray[0] = LoadTGA("Image//Wall.tga");
 	//
 
 	//Player
@@ -417,17 +479,26 @@ void SP2::Init()
 	meshList[GEO_WOODEN_PICKAXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_PICKAXE]->textureArray[0] = LoadTGA("Image//Wooden_Pickaxe.tga");
 
+	meshList[GEO_WOODEN_AXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_AXE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WOODEN_AXE]->textureArray[0] = LoadTGA("Image//Wooden_Axe.tga");
+
 	meshList[GEO_STONE_SWORD] = MeshBuilder::GenerateQuad("GEO_STONE_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_SWORD]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
 
 	meshList[GEO_STONE_PICKAXE] = MeshBuilder::GenerateQuad("GEO_STONE_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_PICKAXE]->textureArray[0] = LoadTGA("Image//Stone_Pickaxe.tga");
 
+	meshList[GEO_STONE_AXE] = MeshBuilder::GenerateQuad("GEO_STONE_AXE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_STONE_AXE]->textureArray[0] = LoadTGA("Image//Stone_Axe.tga");
+
 	meshList[GEO_GOLD_SWORD] = MeshBuilder::GenerateQuad("GEO_GOLD_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_SWORD]->textureArray[0] = LoadTGA("Image//Gold_Sword.tga");
 
 	meshList[GEO_GOLD_PICKAXE] = MeshBuilder::GenerateQuad("GEO_GOLD_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_PICKAXE]->textureArray[0] = LoadTGA("Image//Gold_Pickaxe.tga");
+
+	meshList[GEO_GOLD_AXE] = MeshBuilder::GenerateQuad("GEO_GOLD_AXE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_GOLD_AXE]->textureArray[0] = LoadTGA("Image//Gold_Axe.tga");
 
 	meshList[GEO_FURNACE] = MeshBuilder::GenerateQuad("GEO_FURNACE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
@@ -542,7 +613,8 @@ void SP2::Init()
 	//FurnaceList.push_back(new Furnace);
 	//FurnaceList[0]->SetStatus(true);
 
-	CropList.push_back(new Crops(0 , 12250 , 12250));
+	//Crops assign to where the player plants it. so get the tile position and multiply by scale.
+	//CropList.push_back(new Crops(0 , 12250 , 12250));
 }
 
 void SP2::RenderFurnace()
@@ -639,10 +711,12 @@ char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
+//	std::cout << Math::RandFloatMinMax(0, 10) << std::endl;
 
 	// Duration of lightning strike = 0.12
 	if (m_fTimeTillLightning <= 0.2)
 	{
+		m_bLightningStrike = false;
 		if (m_bRandLightning == true)
 		{
 			lightningX = Math::RandFloatMinMax(camera.position.x - 500, camera.position.x + 500);
@@ -652,14 +726,14 @@ void SP2::Update(double dt)
 			lights[0].position.x = lightningX;
 			lights[0].position.z = lightningZ;
 		}
-		m_bLightningStrike = true;
 		if (m_fTimeTillLightning >= 0)
 		{
+			m_bLightningStrike = true;
 			//Flashing effect.
 			float x = Math::RandFloatMinMax(0, 1);
 
 			if (x > 0.1)
-				lights[0].power = 50;
+				lights[0].power = 10;
 			else
 				lights[0].power = 1;
 			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
@@ -668,16 +742,19 @@ void SP2::Update(double dt)
 	}
 	else
 	{
-		m_bLightningStrike = false;
 		lights[0].power = 1;
 		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
 		m_fTimeTillLightning = -0.3;
 		m_bRandLightning = true;
 	}
 
+
 	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 	{
-		player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+		std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
+		player->addItem(new Item(Item::ITEM_WOOD, 1));
+
+		/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 		player->addItem(new Item(Item::ITEM_STONE, 1));
 		player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 		player->addItem(new Item(Item::ITEM_COAL, 100));
@@ -685,7 +762,12 @@ void SP2::Update(double dt)
 		player->addItem(new Item(Item::ITEM_CARROT, 10));
 		player->addItem(new Item(Item::ITEM_WHEAT, 10));
 		player->addItem(new Item(Item::ITEM_SEED, 10));
-		player->addItem(new Item(Item::ITEM_STONE, 10));
+		player->addItem(new Item(Item::ITEM_STONE, 10));*/
+
+		/*std::cout << "converting a world tile ..." << std::endl;
+
+		world[125][125] = 'D';*/
+
 		m_dBounceTime = 0.5;
 	}
 
@@ -1056,24 +1138,16 @@ void SP2::SeasonChanger(double dt)
 		{
 			//Fog is thicker, longer
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
-
-			lights[0].power = 1.5f;
 			m_bTexChange = true;
 		}
 		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
-
-			lights[0].power = 2.f;
-
 			m_bTexChange = true;
 		}
 		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 		{
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
-
-			lights[0].power = 0.5f;
-
 			m_bTexChange = true;
 		}
 	}
@@ -1104,8 +1178,8 @@ void SP2::UpdateParticles(double dt)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_WATER;
-			particle->scale.Set(2, 10, 2);
-			particle->vel.Set(1, 1, 1);
+			particle->scale.Set(1, 10, 1);
+			particle->vel.Set(1, -100, 1);
 			particle->m_gravity.Set(0, -9.8f, 0);
 			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
@@ -1115,7 +1189,7 @@ void SP2::UpdateParticles(double dt)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_LEAF;
-			particle->scale.Set(10, 10, 10);
+			particle->scale.Set(1, 1, 1);
 			particle->vel.Set(1, 1, 1);
 			particle->m_gravity.Set(0, -9.8f, 0);
 			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
@@ -1591,6 +1665,14 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale, scale, scale);
 						RenderMesh(meshList[GEO_BERRY], true);
 						modelStack.PopMatrix();
+						break;
+					case 'D':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						RenderMesh(meshList[GEO_WALL], true);
+						modelStack.PopMatrix();
+						break;
 					default:
 						break;
 					}
@@ -1613,6 +1695,14 @@ void SP2::RenderGround()
 				{
 					switch (world[i][k])
 					{
+					case 'd':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_STONE_BRICK_FLOOR], true);
+						modelStack.PopMatrix();
+						break;
 					case 'W':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
@@ -1623,6 +1713,8 @@ void SP2::RenderGround()
 						else
 						RenderMesh(meshList[GEO_WATER], true);
 						modelStack.PopMatrix();
+						break;
+					case 'D':
 						break;
 					default:
 						modelStack.PushMatrix();

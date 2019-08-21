@@ -212,6 +212,30 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 			return new Item(Item::ITEM_GOLD_SWORD, 1);
 	}
 
+	if (firstItem == Item::ITEM_WOODEN_PICKAXE)
+	{
+		if (secondItem == Item::ITEM_STONE)
+			return new Item(Item::ITEM_STONE_PICKAXE, 1);
+	}
+
+	if (firstItem == Item::ITEM_STONE_PICKAXE)
+	{
+		if (secondItem == Item::ITEM_GOLD_NUGGET)
+			return new Item(Item::ITEM_GOLD_PICKAXE, 1);
+	}
+
+	if (firstItem == Item::ITEM_WOODEN_AXE)
+	{
+		if (secondItem == Item::ITEM_STONE)
+			return new Item(Item::ITEM_STONE_AXE, 1);
+	}
+
+	if (firstItem == Item::ITEM_STONE_AXE)
+	{
+		if (secondItem == Item::ITEM_GOLD_NUGGET)
+			return new Item(Item::ITEM_GOLD_AXE, 1);
+	}
+
 	if (firstItem == Item::Item::ITEM_WHEAT)
 	{
 		if (secondItem == Item::Item::ITEM_WHEAT)
@@ -224,6 +248,12 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 			return new Item(Item::ITEM_FURNACE, 1);
 	}
 
+	if (firstItem == Item::Item::ITEM_WOOD)
+	{
+		if (secondItem == Item::Item::ITEM_WOOD)
+			return new Item(Item::ITEM_STICK, 2);
+	}
+
 	return new Item(-1, 0);
 }
 
@@ -232,11 +262,14 @@ void PlayerInformation::update(double dt)
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
 
-	/*for (int i = 0; i < ItemList.size(); ++i)
+	for (int i = 0; i < ItemList.size(); ++i)
 	{
-		if (ItemList[i]->getQuantity() == 0)
+		if (ItemList[i]->getQuantity() <= 0)
+		{
 			ItemList[i]->setID(0);
-	}*/
+			ItemList[i]->setQuantity(0);
+		}
+	}
 
 	if (Application::IsKeyPressed('C') && m_bSwitchStance == false && m_dBounceTime <= 0)
 	{
