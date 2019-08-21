@@ -3,6 +3,7 @@
 PlayerInformation::PlayerInformation()
 {
 	m_dHP = 100;
+	m_dMaxHP = 100;
 	m_dHunger = 100;
 	
 	m_fSpeed = 100.f;
@@ -253,7 +254,7 @@ void PlayerInformation::update(double dt)
 		m_fSpeed = 100;
 		if (m_dHunger > 80)
 		{
-			if (m_dHP < 100)
+			if (m_dHP < m_dMaxHP)
 			{
 				m_dHP += 0.5 * dt;
 				m_dHunger -= 0.1 * dt;
@@ -473,7 +474,18 @@ double PlayerInformation::getHP()
 {
 	return m_dHP;
 }
-
+void PlayerInformation::SetHP(float m_dHP)
+{
+	this->m_dHP = m_dHP;
+}
+double PlayerInformation::getMaxHP()
+{
+	return m_dMaxHP;
+}
+void PlayerInformation::SetMaxHP(float m_dMaxHP)
+{
+	this->m_dMaxHP = m_dMaxHP;
+}
 Weapons * PlayerInformation::getcurtool()
 {
 	return curtool;

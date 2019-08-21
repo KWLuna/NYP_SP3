@@ -1,7 +1,6 @@
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\release\base.ipdb
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\release\base.iobj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\vc141.pdb
-c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\season.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\playerinformation.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\physics.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\particle.obj
@@ -16,6 +15,7 @@ c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\furnace.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\entity.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\depthfbo.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\crops.obj
+c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\cenemy.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\canimal.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\camera3.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\camera2.obj
@@ -28,6 +28,7 @@ c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\spriteanimat
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\shader.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\sp2.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\soundengine.obj
+c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\season.obj
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\release\base.exe
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\release\base.pdb
 c:\users\lkewe\documents\github\sp3\dm2210_framework_1\base\release\base.tlog\base.write.1u.tlog

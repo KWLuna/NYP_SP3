@@ -50,7 +50,9 @@ public:
 
 	double getHunger();
 	double getHP();
-
+	void SetHP(float m_dHP);
+	double getMaxHP();
+	void SetMaxHP(float m_dMaxHP);
 	Weapons * getcurtool();
 private:
 	 
@@ -77,6 +79,7 @@ private:
 	float walkingtime;
 	double m_dHunger;
 	double m_dHP;
+	double m_dMaxHP;
 
 	Physics playerphysics;
 	Weapons * curtool;
