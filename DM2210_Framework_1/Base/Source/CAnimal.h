@@ -21,7 +21,7 @@ public:
 		WANTFOOD,
 		ATTACKED,	//Knocked backed -> run away
 	};
-	
+
 	ANIMAL_TYPE type;
 
 	CAnimal(ANIMAL_TYPE typeValue = GO_PIG);
@@ -49,6 +49,7 @@ public:
 	void SetFed(bool m_bFed);
 	void SetIsBaby(bool m_bIsABaby);
 	void SetBreeded(bool m_bBreeded);
+	void SetAngle(float m_fAngle);
 private:
 	//Behaviour
 	Behaviour theCurrentBehaviour;
