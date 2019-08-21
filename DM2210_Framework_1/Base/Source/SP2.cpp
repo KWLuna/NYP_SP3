@@ -283,7 +283,7 @@ void SP2::Init()
 	meshList[GEO_CHICKEN] = MeshBuilder::GenerateOBJ("Chicken", "OBJ//chicken.obj");
 	meshList[GEO_CHICKEN]->textureArray[0] = LoadTGA("Image//chicken.tga");
 
-	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//cow.obj");
+	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//Cow2.obj");
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
 	//GUI's
@@ -635,7 +635,16 @@ void SP2::Update(double dt)
 
 	UpdateWorldVars();
 	UpdateParticles(dt);
-	player->update(dt);
+	//
+	/*CAnimal *go = FetchGO();
+	go->type = CAnimal::GO_COW;
+	go->SetActive(true);
+	go->SetPosition(Vector3(12550, 0, 12550));
+	go->SetAngle(40.0);
+	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+	go->SetSpawned(true);*/
+	//
+	player->update(dt, m_AnimalList);
 
 	//Update all crops present in the world.
 	for (int i = 0; i < CropList.size(); ++i)
@@ -661,6 +670,8 @@ void SP2::Update(double dt)
 	fps = (float)(1.f / dt);
 
 	AnimalChecker(dt);
+	
+	/*player->CheckHeldCollision(dt, m_AnimalList);*/
 }
 
 void SP2::AnimalChecker(double dt)
@@ -1073,6 +1084,9 @@ ParticleObject* SP2::GetParticle(void)
 
 void SP2::RenderAnimal(CAnimal* animal)
 {
+	Vector3 temp1;
+	Vector3 temptemp;
+	Vector3 temp2;
 	switch (animal->type)
 	{
 	case CAnimal::GO_PIG:
@@ -1082,6 +1096,15 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_PIG], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 11, animal->GetPosition().z+4);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(14, 22, 29);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
 		break;
 	case CAnimal::GO_COW:
 		modelStack.PushMatrix();
@@ -1090,6 +1113,42 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_COW], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 14, animal->GetPosition().z+3);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(15, 24, 30);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
+
+		
+		/*temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
+		temptemp = temp1;
+		temp1.x = cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp1.z = sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp1 += animal->GetPosition();
+		temp1.y += 14;
+		temp1.z += 3;
+		modelStack.PushMatrix();
+		modelStack.Translate(temp1.x, temp1.y, temp1.z);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_SPHERE], true);
+		modelStack.PopMatrix();
+
+		temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
+		temptemp = temp2;
+		temp2.x = cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp2.z = sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp2 += animal->GetPosition();
+		temp2.y += 14;
+		temp2.z += 3;
+		modelStack.PushMatrix();
+		modelStack.Translate(temp2.x, temp2.y, temp2.z);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_SPHERE], true);
+		modelStack.PopMatrix();*/
 		break;
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
@@ -1098,6 +1157,15 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_CHICKEN], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 8, animal->GetPosition().z+2);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(10, 12, 14);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
 		break;
 	default:
 		break;

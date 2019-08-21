@@ -9,7 +9,7 @@ public:
 	virtual ~Sword();
 
 	void Init(void);
-	void Update(const double dt, Vector3 dir, Vector3 origin);
+	void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist);
 	void Response();
 };
 

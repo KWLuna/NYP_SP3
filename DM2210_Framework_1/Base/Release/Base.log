@@ -1,14 +1,1 @@
-﻿  PlayerInformation.cpp
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(53): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(78): warning C4018: '<': signed/unsigned mismatch
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(89): warning C4018: '<': signed/unsigned mismatch
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(156): warning C4018: '<': signed/unsigned mismatch
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(179): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(185): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
-c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(191): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
-  Generating code
-  2 of 1442 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  Base.vcxproj -> C:\Users\yanny\OneDrive\Documents\GitHub\SP3\DM2210_Framework_1\Release\Base.exe
+﻿

@@ -1,1 +1,57 @@
-﻿
+﻿  SP2.cpp
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(81): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(238): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(456): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(484): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(491): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(490): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(495): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(497): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(502): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(504): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(509): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(511): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(520): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(523): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(526): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(570): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(582): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(594): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(606): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(650): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(654): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(840): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(849): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(860): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(869): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(967): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1073): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1482): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1486): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1545): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1549): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1608): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1607): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1612): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1616): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1622): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1626): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1632): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1635): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1644): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1643): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1651): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1654): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1656): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1667): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1673): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1676): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1685): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1691): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1694): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1756): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1761): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\sp2.cpp(1766): warning C4305: 'argument': truncation from 'double' to 'float'
+Application.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Base.vcxproj -> C:\Users\yanny\OneDrive\Documents\GitHub\SP3\DM2210_Framework_1\Debug\Base.exe
