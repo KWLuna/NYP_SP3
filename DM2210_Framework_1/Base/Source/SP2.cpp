@@ -352,6 +352,11 @@ void SP2::Init()
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
 	//GUI's
+	//Enemy
+	meshList[GEO_ZOMBIE] = MeshBuilder::GenerateOBJ("Zombie", "OBJ//zombie.obj");
+	//meshList[GEO_ZOMBIE]->textureArray[0] = LoadTGA("Image//cow.tga");
+	
+	//
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
 
@@ -498,7 +503,13 @@ void SP2::Init()
 
 		meshList[GEO_HUNGER_EMPTY] = MeshBuilder::GenerateQuad("GEO_HUNGER_EMPTY", Color(1, 1, 1), 1.0f);
 		meshList[GEO_HUNGER_EMPTY]->textureArray[0] = LoadTGA("Image//hunger_empty.tga");
-	//
+		//THIRST
+		meshList[GEO_THIRST_FULL] = MeshBuilder::GenerateQuad("GEO_THIRST_FULL", Color(1, 1, 1), 1.0f);
+		meshList[GEO_THIRST_FULL]->textureArray[0] = LoadTGA("Image//thirst_full.tga");
+
+		meshList[GEO_THIRST_EMPTY] = MeshBuilder::GenerateQuad("GEO_THIRST_EMPTY", Color(1, 1, 1), 1.0f);
+		meshList[GEO_THIRST_EMPTY]->textureArray[0] = LoadTGA("Image//thirst_empty.tga");
+		//
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
@@ -531,6 +542,14 @@ void SP2::Init()
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
+
+	//Enemy
+	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
+	{
+		m_EnemyList.push_back(new CEnemy(CEnemy::GO_ZOMBIE));
+	}
+	m_NumOfEnemy = 0;
+
 	//Season
 	SP2_Seasons = new Season;
 	SP2_Seasons->setSeason(0);
@@ -704,7 +723,7 @@ void SP2::Update(double dt)
 			}
 		}
 	}
-	else if (m_iDayNight == 1)
+	else if (m_iDayNight == -1)
 	{
 		//How long day or night lasts
 		m_fDayNightDuration -= 1 * dt;
@@ -790,8 +809,59 @@ void SP2::Update(double dt)
 	fps = (float)(1.f / dt);
 
 	AnimalChecker(dt);
+	EnemyChecker(dt);
 }
+void SP2::EnemyChecker(double dt)
+{
+	const float m_cfMAXDISTANCE = 200;
+	const float m_cfMINDISTANCE = 50;
 
+	float MinX = camera.position.x - 1000;
+	float MaxX = camera.position.x + 1000;
+	float MinZ = camera.position.z - 1000;
+	float MaxZ = camera.position.z + 1000;
+
+	if (m_NumOfEnemy < 15)
+		SpawningEnemy();
+
+	m_NumOfEnemy = 0;
+
+	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
+	{
+		CEnemy *go = (CEnemy *)*it;
+		if (go->GetSpawned())
+		{
+			if (go->GetPosition().x > MinX && go->GetPosition().x < MaxX && go->GetPosition().z > MinZ && go->GetPosition().z < MaxZ)
+			{
+				go->SetActive(true);
+			}
+			else
+				go->SetActive(false);
+
+			if (go->GetActive())
+			{
+				if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+				{
+					if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+					{
+						go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+						go->SetBehaviour(2);
+					}
+					else
+					{
+						go->SetBehaviour(3);
+						if (go->GetAttackedPlayer())
+						{
+							player->SetHP(player->getHP() - go->GetStrength());
+						}
+					}
+				}
+				go->Update(dt);
+				m_NumOfEnemy++;
+			}
+		}
+	}
+}
 void SP2::AnimalChecker(double dt)
 {
 	const float m_cfMAXDISTANCE = 200;
@@ -907,7 +977,7 @@ void SP2::AnimalChecker(double dt)
 								{
 									if ((go->GetPosition() - go2->GetPosition()).Length() < 5)
 									{
-										CAnimal *go3 = FetchGO();
+										CAnimal *go3 = AnimalFetchGO();
 										go3->type = go->type;
 										go3->SetPosition((go->GetPosition() + go2->GetPosition()) * 0.5f);
 										go3->SetTargetPos(go->GetPosition());
@@ -932,7 +1002,28 @@ void SP2::AnimalChecker(double dt)
 	}
 }
 
-CAnimal* SP2::FetchGO()
+CEnemy* SP2::EnemyFetchGO()
+{
+	for (auto go : m_EnemyList)
+	{
+		if (!go->GetSpawned())
+		{
+			go->SetSpawned(true);
+			return go;
+		}
+	}
+	for (unsigned int i = 0; i < 5; ++i)
+	{
+		CEnemy *go = new CEnemy(CEnemy::GO_ZOMBIE);
+		m_EnemyList.push_back(go);
+	}
+
+	CEnemy *go = m_EnemyList.back();
+	go->SetSpawned(true);
+	return go;
+}
+
+CAnimal* SP2::AnimalFetchGO()
 {
 	for (auto go : m_AnimalList)
 	{
@@ -996,6 +1087,37 @@ void SP2::RenderCrops()
 	}
 }
 
+void SP2::SpawningEnemy()
+{
+	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
+	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
+	{
+		if (i >= 0 && i <= 500)
+		{
+			for (float k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
+			{
+				if (k >= 0 && k <= 500)
+				{
+					int choice = Math::RandIntMinMax(0, 10);
+					if (choice == 1) //spawn in if it is 1
+					{
+						CEnemy *go = EnemyFetchGO();
+						go->type = CEnemy::GO_ZOMBIE;
+						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
+						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+						go->SetSpawned(true);
+						if (m_iDayNight == -1)
+						{
+							go->SetStrength(go->GetStrength() * 1.5f);
+							go->SetHP(go->GetHP() * 1.5f);
+							go->SetSpeed(Math::RandFloatMinMax(0.1f, 0.5f) * 1.5f);
+						}
+					}
+				}
+			}
+		}
+	}
+}
 void SP2::SpawningAnimal()
 {
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
@@ -1012,7 +1134,7 @@ void SP2::SpawningAnimal()
 					if (choice == 1) //spawn in if it is 1
 					{
 
-						CAnimal *go = FetchGO();
+						CAnimal *go = AnimalFetchGO();
 
 						choice = Math::RandIntMinMax(0, 2);
 						switch (choice)
@@ -1226,6 +1348,22 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_CHICKEN], true);
+		modelStack.PopMatrix();
+		break;
+	default:
+		break;
+	}
+}
+void SP2::RenderEnemy(CEnemy* enemy)
+{
+	switch (enemy->type)
+	{
+	case CEnemy::GO_ZOMBIE:
+		modelStack.PushMatrix();
+		modelStack.Translate(enemy->GetPosition().x, enemy->GetPosition().y, enemy->GetPosition().z);
+		modelStack.Rotate(enemy->GetAngle(), 0, 1, 0);
+		modelStack.Scale(enemy->GetScale().x, enemy->GetScale().y, enemy->GetScale().z);
+		RenderMesh(meshList[GEO_ZOMBIE], true);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -1717,13 +1855,12 @@ void SP2::RenderInventory()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2, 50, 50, player->getItem(i)->getID());
 	}
 }
-
-void SP2::RenderHPandHunger()
+void SP2::RenderPlayerInfo()
 {
 	//Health
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < static_cast<float>(player->getMaxHP()) * 0.1f; ++i)
 	{
-		if (i < static_cast<int>(player->getHP() * 0.1f))
+		if (i < static_cast<int>(player->getHP() * 0.1))
 		{
 			RenderImageToScreen(meshList[GEO_HEALTH_FULL], false, 40, 40,
 				120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
@@ -1744,16 +1881,30 @@ void SP2::RenderHPandHunger()
 		if (i < static_cast<int>(player->getHunger() * 0.1f))
 		{
 			RenderImageToScreen(meshList[GEO_HUNGER_FULL], false, 40, 40,
-				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
 		}
 		else
 		{
 			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
 				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
 			else
 				RenderImageToScreen(meshList[GEO_HUNGER_EMPTY], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
+		}
+	}
+	//Thirst
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i < static_cast<int>(player->getThirst() * 0.1f))
+		{
+			RenderImageToScreen(meshList[GEO_THIRST_FULL], false, 40, 40,
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 1);
+		}
+		else
+		{
+			RenderImageToScreen(meshList[GEO_THIRST_EMPTY], false, 40, 40,
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 1);
 		}
 	}
 }
@@ -1792,6 +1943,15 @@ void SP2::RenderWorld()
 		if (animal->GetActive())
 		{
 			RenderAnimal(animal);
+		}
+	}
+	//Render Enemys
+	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
+	{
+		CEnemy *enemy = (CEnemy *)*it;
+		if (enemy->GetActive())
+		{
+			RenderEnemy(enemy);
 		}
 	}
 }
@@ -1942,7 +2102,7 @@ void SP2::RenderPassMain()
 
 	RenderCrops();
 
-	RenderHPandHunger();
+	RenderPlayerInfo();
 
 	std::ostringstream ss;
 	ss.precision(5);

@@ -3,7 +3,6 @@
 
 #include "Vector3.h"
 #include "Vertex.h"
-#include "PlayerInformation.h"
 
 class CAnimal
 {

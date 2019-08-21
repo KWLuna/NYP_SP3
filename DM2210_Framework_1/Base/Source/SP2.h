@@ -15,6 +15,7 @@
 #include "Furnace.h"
 
 #include "CAnimal.h"
+#include "CEnemy.h"
 #include "Physics.h"
 #include "Season.h"
 #include "Crops.h"
@@ -169,6 +170,9 @@ class SP2 : public Scene
 		GEO_PIG, 
 		GEO_CHICKEN,
 		GEO_COW,
+
+		//Enemy
+		GEO_ZOMBIE,
 		
 
 		//BLOCKS PLACE
@@ -197,6 +201,9 @@ class SP2 : public Scene
 			GEO_HUNGER_FULL,
 			GEO_HUNGER_HALF,
 			GEO_HUNGER_EMPTY,
+			//Thirst
+			GEO_THIRST_FULL,
+			GEO_THIRST_EMPTY,
 		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		NUM_GEOMETRY,
@@ -246,15 +253,20 @@ public:
 
 	//Ke Wei
 		//Animal
-	CAnimal* FetchGO();
+	CAnimal* AnimalFetchGO();
 	void SpawningAnimal();
 	void RenderAnimal(CAnimal* animal);
 	void AnimalChecker(double dt);
 		//Season Changing
 	void SeasonChanger(double dt);
 	void RenderSkyBox();
-
-	void RenderHPandHunger();
+		//HP&Hunger&ThirstUI
+	void RenderPlayerInfo();
+		//Enemy
+	CEnemy* EnemyFetchGO();
+	void SpawningEnemy();
+	void RenderEnemy(CEnemy* enemy);
+	void EnemyChecker(double dt);
 	//
 	//Yanson
 	void Render3DHandHeld();
@@ -309,6 +321,9 @@ private:
 	Mtx44 m_lightDepthView;
 	RENDER_PASS m_renderPass;
 	
+	//Enemy
+	std::vector<CEnemy *> m_EnemyList;
+	int m_NumOfEnemy;
 	//Animal
 	std::vector<CAnimal *> m_AnimalList;
 	int m_NumOfAnimal;

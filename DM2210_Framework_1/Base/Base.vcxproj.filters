@@ -49,6 +49,9 @@
     <Filter Include="SP2\TextFiles">
       <UniqueIdentifier>{5a5f5a96-3dcb-42fd-b726-114ba31b63ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SP2\EnemyAI">
+      <UniqueIdentifier>{fd51c071-0d41-403a-9aa5-9b7a721c263b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -131,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="Source\Crops.cpp">
       <Filter>SP2\Crops</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CEnemy.cpp">
+      <Filter>SP2\EnemyAI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="Source\Crops.h">
       <Filter>SP2\Crops</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CEnemy.h">
+      <Filter>SP2\EnemyAI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

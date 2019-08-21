@@ -1,7 +1,5 @@
 #include "CAnimal.h"
 
-
-
 CAnimal::CAnimal(ANIMAL_TYPE typeValue)
 	: type(typeValue),
 	pos(1, 1, 1),
@@ -146,8 +144,6 @@ void CAnimal::Update(double dt)
 			}
 			else
 			{
-				m_fWalkingTarget += static_cast<float>(dt);
-
 				float m_fspeed = Math::RandFloatMinMax(0.1f, 0.5f);
 				Vector3 temp = (Targetpos - pos) * (m_fspeed / m_fMass);
 				Vector3 prevpos;
@@ -161,7 +157,6 @@ void CAnimal::Update(double dt)
 
 				m_fAngle = Math::RadianToDegree(Math::RandFloatMinMax(m_fAngle - 0.045f, m_fAngle + 0.04f));
 			}
-	
 		break;
 	case CAnimal::WANTFOOD: //3
 
