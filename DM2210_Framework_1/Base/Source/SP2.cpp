@@ -278,8 +278,8 @@ void SP2::Init()
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
 	//Enemy
-	meshList[GEO_ZOMBIE] = MeshBuilder::GenerateOBJ("Zombie", "OBJ//skybox.obj");
-	//meshList[GEO_ZOMBIE]->textureArray[0] = LoadTGA("I0n mage//cow.tga");
+	meshList[GEO_ZOMBIE] = MeshBuilder::GenerateOBJ("Zombie", "OBJ//zombie.obj");
+	//meshList[GEO_ZOMBIE]->textureArray[0] = LoadTGA("Image//cow.tga");
 	
 	//
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
@@ -415,7 +415,13 @@ void SP2::Init()
 
 		meshList[GEO_HUNGER_EMPTY] = MeshBuilder::GenerateQuad("GEO_HUNGER_EMPTY", Color(1, 1, 1), 1.0f);
 		meshList[GEO_HUNGER_EMPTY]->textureArray[0] = LoadTGA("Image//hunger_empty.tga");
-	//
+		//THIRST
+		meshList[GEO_THIRST_FULL] = MeshBuilder::GenerateQuad("GEO_THIRST_FULL", Color(1, 1, 1), 1.0f);
+		meshList[GEO_THIRST_FULL]->textureArray[0] = LoadTGA("Image//thirst_full.tga");
+
+		meshList[GEO_THIRST_EMPTY] = MeshBuilder::GenerateQuad("GEO_THIRST_EMPTY", Color(1, 1, 1), 1.0f);
+		meshList[GEO_THIRST_EMPTY]->textureArray[0] = LoadTGA("Image//thirst_empty.tga");
+		//
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
@@ -673,7 +679,7 @@ void SP2::EnemyChecker(double dt)
 	float MinZ = camera.position.z - 1000;
 	float MaxZ = camera.position.z + 1000;
 
-	if (m_NumOfEnemy < 20)
+	if (m_NumOfEnemy < 15)
 		SpawningEnemy();
 
 	m_NumOfEnemy = 0;
@@ -962,7 +968,7 @@ void SP2::SpawningEnemy()
 						{
 							go->SetStrength(go->GetStrength() * 1.5f);
 							go->SetHP(go->GetHP() * 1.5f);
-							go->SetSpeed(go->GetSpeed() * 1.5f);
+							go->SetSpeed(Math::RandFloatMinMax(0.1f, 0.5f) * 1.5f);
 						}
 					}
 				}
@@ -1707,7 +1713,7 @@ void SP2::RenderInventory()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2, 50, 50, player->getItem(i)->getID());
 	}
 }
-void SP2::RenderHPandHunger()
+void SP2::RenderPlayerInfo()
 {
 	//Health
 	for (int i = 0; i < static_cast<float>(player->getMaxHP()) * 0.1f; ++i)
@@ -1733,16 +1739,30 @@ void SP2::RenderHPandHunger()
 		if (i < static_cast<int>(player->getHunger() * 0.1f))
 		{
 			RenderImageToScreen(meshList[GEO_HUNGER_FULL], false, 40, 40,
-				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
 		}
 		else
 		{
 			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
 				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
 			else
 				RenderImageToScreen(meshList[GEO_HUNGER_EMPTY], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
+		}
+	}
+	//Thirst
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i < static_cast<int>(player->getThirst() * 0.1f))
+		{
+			RenderImageToScreen(meshList[GEO_THIRST_FULL], false, 40, 40,
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 1);
+		}
+		else
+		{
+			RenderImageToScreen(meshList[GEO_THIRST_EMPTY], false, 40, 40,
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 1);
 		}
 	}
 }
@@ -1906,7 +1926,7 @@ void SP2::RenderPassMain()
 	RenderFurnace();
 	RenderCrops();
 
-	RenderHPandHunger();
+	RenderPlayerInfo();
 
 	std::ostringstream ss;
 	ss.precision(5);

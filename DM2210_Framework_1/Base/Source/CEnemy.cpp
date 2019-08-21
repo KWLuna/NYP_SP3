@@ -13,7 +13,7 @@ CEnemy::CEnemy(ENEMY_TYPE typeValue)
 	m_fHP(100),
 	m_iCurrentBehaviour(0),
 	m_fStrength(5.f),
-	m_fAttackingTime(10.f),
+	m_fAttackingTime(0.f),
 	m_bAttacked(false)
 {
 	m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);

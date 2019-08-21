@@ -193,6 +193,9 @@ class SP2 : public Scene
 			GEO_HUNGER_FULL,
 			GEO_HUNGER_HALF,
 			GEO_HUNGER_EMPTY,
+			//Thirst
+			GEO_THIRST_FULL,
+			GEO_THIRST_EMPTY,
 		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		NUM_GEOMETRY,
@@ -244,8 +247,8 @@ public:
 		//Season Changing
 	void SeasonChanger(double dt);
 	void RenderSkyBox();
-		//HP&HungerUI
-	void RenderHPandHunger();
+		//HP&Hunger&ThirstUI
+	void RenderPlayerInfo();
 		//Enemy
 	CEnemy* EnemyFetchGO();
 	void SpawningEnemy();

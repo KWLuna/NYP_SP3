@@ -49,6 +49,8 @@ public:
 	Item * craft(int firstItem, int secondItem);
 
 	double getHunger();
+	double getThirst();
+	void SetThirst(double m_dThirst);
 	double getHP();
 	void SetHP(float m_dHP);
 	double getMaxHP();
@@ -80,7 +82,8 @@ private:
 	double m_dHunger;
 	double m_dHP;
 	double m_dMaxHP;
-
+	double m_dThirst;
+	float ThirstyOrHungry;
 	Physics playerphysics;
 	Weapons * curtool;
 };

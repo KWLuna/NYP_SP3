@@ -5,10 +5,10 @@ PlayerInformation::PlayerInformation()
 	m_dHP = 100;
 	m_dMaxHP = 100;
 	m_dHunger = 100;
-	
+	m_dThirst = 100.f;
 	m_fSpeed = 100.f;
 	m_dBounceTime = 0;
-
+	ThirstyOrHungry = 5;
 	m_bCrafting = false;
 
 	m_iCurrentStance = STAND;
@@ -237,27 +237,46 @@ void PlayerInformation::update(double dt)
 		walkingtime += dt;
 	}
 	
-	if (m_dHunger < 30)
+	if (m_dHunger < 30 || m_dThirst < 30)
 	{
 		m_fSpeed = 80;
 		if (m_dHunger < 0)
 		{
 			m_dHunger = 0;
 		}
+		if (m_dThirst < 0)
+		{
+			m_dThirst = 0;
+		}
 		if (m_dHunger == 0)
 		{
-			m_dHP -= 3 * dt;
+			ThirstyOrHungry -= dt;
+			if (ThirstyOrHungry < 0)
+			{
+				ThirstyOrHungry = 5;
+				m_dHP -= 2;
+			}
+		}
+		if (m_dThirst == 0)
+		{
+			ThirstyOrHungry -= dt;
+			if (ThirstyOrHungry < 0)
+			{
+				ThirstyOrHungry = 5;
+				m_dHP -= 1;
+			}
 		}
 	}
 	else
 	{
 		m_fSpeed = 100;
-		if (m_dHunger > 80)
+		if (m_dHunger > 80 && m_dThirst > 80)
 		{
 			if (m_dHP < m_dMaxHP)
 			{
-				m_dHP += 0.5 * dt;
-				m_dHunger -= 0.1 * dt;
+				m_dHP += 0.5f;
+				m_dHunger -= 0.5f;
+				m_dThirst -= 0.5f;
 			}
 		}
 	}
@@ -267,20 +286,27 @@ void PlayerInformation::update(double dt)
 	case PlayerInformation::STANDING:
 		break;
 	case PlayerInformation::SPRINTING:
-		if (walkingtime > 10)
+		if (walkingtime > 5)
 		{
-			m_dHunger -= 0.1 * dt;
+			m_dHunger -= 0.1f;
+			m_dThirst -= 0.1f;
+			walkingtime = 0;
 		}
 		break;
 	case PlayerInformation::WALKING:
-		if (walkingtime > 10)
+		if (walkingtime > 5)
 		{
-			m_dHunger -= 0.05 * dt;
+			m_dHunger -= 0.05f;
+			m_dThirst -= 0.05f;
+			walkingtime = 0;
 		}
 		break;
 	case PlayerInformation::EATING:
 		if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT)
+		{
 			m_dHunger += 0.2f;
+			m_dThirst -= 0.2f;
+		}
 		else if (getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT)
 			m_dHunger += 0.5f;
 
@@ -489,4 +515,12 @@ void PlayerInformation::SetMaxHP(float m_dMaxHP)
 Weapons * PlayerInformation::getcurtool()
 {
 	return curtool;
+}
+void PlayerInformation::SetThirst(double m_dThirst)
+{
+	this->m_dThirst = m_dThirst;
+}
+double PlayerInformation::getThirst()
+{
+	return m_dThirst;
 }
