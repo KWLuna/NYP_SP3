@@ -138,6 +138,9 @@ class SP2 : public Scene
 		GEO_WOODEN_SWORD_MODEL,
 		GEO_STONE_SWORD_MODEL,
 
+		//
+		GEO_LIGHTNING,
+
 		//World
 			//Skybox
 			GEO_SKYBOX_SPRING,
@@ -321,6 +324,8 @@ private:
 	bool m_bLightningStrike;
 	bool m_bRandTimeTillLightning;
 
+	bool m_bRandLightning;
+
 	float m_fTimeTillLightning;
 	float m_fLightningDuration;
 	
@@ -334,6 +339,9 @@ private:
 	float m_fAmbient;
 	float m_iDayNight = 1;
 	float m_fDayNightDuration = 120;
+
+	float lightningX;
+	float lightningZ;
 
 	//-----------------------------
 };

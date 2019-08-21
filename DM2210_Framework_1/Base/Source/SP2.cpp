@@ -127,6 +127,8 @@ void SP2::Init()
 //	LoadWorld();
 	player = new PlayerInformation;
 
+	m_bRandLightning = true;
+
 	m_bLightningStrike = false;
 	m_bRandTimeTillLightning = true;
 	m_fTimeTillLightning = 0; 
@@ -263,7 +265,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(12250, 50, 12250), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(6250, 50, 6250), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
@@ -432,6 +434,7 @@ void SP2::Init()
 	meshList[GEO_GOLD_PICKAXE]->textureArray[0] = LoadTGA("Image//Gold_Pickaxe.tga");
 
 	//
+	meshList[GEO_LIGHTNING] = MeshBuilder::GenerateQuad("GEO_LIGHTNING", Color(1, 1, 1), 1.0f);
 
 	//Crops meshes
 	meshList[GEO_CARROT_CROP] = MeshBuilder::GenerateQuad("GEO_CARROT_CROP", Color(1, 1, 1), 1.0f);
@@ -504,7 +507,6 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
-	
 
 	//Particle
 	for (unsigned int i = 0; i < MAX_PARTICLE; ++i)
@@ -627,34 +629,70 @@ char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
-	m_fTimeTillLightning -= 1 * dt;
 
-	//Random the next time before lightning hits.
-	if (m_bRandTimeTillLightning == true)
+	// Duration of lightning strike = 0.12
+	if (m_fTimeTillLightning <= 0.2)
 	{
-		m_fTimeTillLightning = Math::RandFloatMinMax(0, 10);
-		m_bRandTimeTillLightning = false;
-		m_bLightningStrike = true;
-	}
-
-	//Test whether to render the lightning.
-	if (m_fTimeTillLightning <= 0 && m_bLightningStrike == false)
-	{
-		m_bLightningStrike = true;
-		m_fLightningDuration = 1;
-	}
-
-	if (m_bLightningStrike == true)
-	{
-		m_fLightningDuration -= 1 * dt;
-		if (m_fLightningDuration <= 0)
+		if (m_bRandLightning == true)
 		{
-			m_bLightningStrike = false;
-			m_bRandTimeTillLightning = true;
+			lightningX = Math::RandFloatMinMax(camera.position.x - 500, camera.position.x + 500);
+			lightningZ = Math::RandFloatMinMax(camera.position.z - 500, camera.position.z + 500);
+			m_bRandLightning = false;
+
+			lights[0].position.x = lightningX;
+			lights[0].position.z = lightningZ;
 		}
+		m_bLightningStrike = true;
+		if (m_fTimeTillLightning >= 0)
+		{
+			//Flashing effect.
+			float x = Math::RandFloatMinMax(0, 1);
+
+			if (x > 0.1)
+				lights[0].power = 50;
+			else
+				lights[0].power = 1;
+			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		}
+		m_fTimeTillLightning += 0.1 * dt;
+	}
+	else
+	{
+		m_bLightningStrike = false;
+		lights[0].power = 1;
+		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		m_fTimeTillLightning = -0.3;
+		m_bRandLightning = true;
 	}
 
-	std::cout << m_fTimeTillLightning << " " << m_fLightningDuration << std::endl;
+	std::cout << m_fTimeTillLightning << " " << lights[0].power << std::endl;
+	//
+
+	////Random the next time before lightning hits.
+	//if (m_bRandTimeTillLightning == true)
+	//{
+	//	m_fTimeTillLightning = Math::RandFloatMinMax(0, 10);
+	//	m_bRandTimeTillLightning = false;
+	//	m_bLightningStrike = true;
+	//}
+
+	////Test whether to render the lightning.
+	//if (m_fTimeTillLightning <= 0 && m_bLightningStrike == false)
+	//{
+	//	m_bLightningStrike = true;
+	//	m_fLightningDuration = 1;
+	//}
+
+	//if (m_bLightningStrike == true)
+	//{
+	//	m_fLightningDuration -= 1 * dt;
+	//	if (m_fLightningDuration <= 0)
+	//	{
+	//		m_bLightningStrike = false;
+	//		m_bRandTimeTillLightning = true;
+	//	}
+	//}
+
 	//std::cout << lights[0].power << std::endl;
 	
 	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
@@ -1745,6 +1783,26 @@ void SP2::RenderWorld()
 	modelStack.Scale(6, 6, 6);
 	RenderMesh(meshList[GEO_PLAYER], false);
 	modelStack.PopMatrix();
+
+	for (int i = 0; i < 15; ++i)
+	{
+		//Interval between drawing of each line that makes up the lightning
+		if (m_fTimeTillLightning >= i * 0.008)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(lightningX + 50, 1440 - i * 96, lightningZ);
+			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - lightningX, camera.position.z - lightningZ)), 0, 1, 0);
+			if (i % 2 == 0)
+				modelStack.Rotate(15, 0, 0, 1);
+			else
+				modelStack.Rotate(345, 0, 0, 1);
+			modelStack.Scale(1, 100, 1);
+			RenderMesh(meshList[GEO_LIGHTNING], false);
+			modelStack.PopMatrix();
+		}
+	}
+
+	
 
 	RenderGroundObjects();
 
