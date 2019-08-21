@@ -230,6 +230,8 @@ public:
 	void RenderInventory();
 	void LoadWorld();
 
+	char GetPlayerCurrentTile(float xPos , float yPos);
+
 	void SaveWorld();
 	//
 	
@@ -316,6 +318,12 @@ private:
 	float pZ;
 
 	float outwards;
+	bool m_bLightningStrike;
+	bool m_bRandTimeTillLightning;
+
+	float m_fTimeTillLightning;
+	float m_fLightningDuration;
+	
 
 	float minOutwardsFromPlayerX;
 	float minOutwardsFromPlayerZ;

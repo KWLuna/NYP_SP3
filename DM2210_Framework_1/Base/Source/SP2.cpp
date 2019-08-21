@@ -127,8 +127,13 @@ void SP2::Init()
 //	LoadWorld();
 	player = new PlayerInformation;
 
-	scale = 100;
+	m_bLightningStrike = false;
+	m_bRandTimeTillLightning = true;
+	m_fTimeTillLightning = 0; 
+	m_fLightningDuration = 2;
 
+	scale = 100;
+	
 	pX = camera.position.x / scale;
 	pZ = camera.position.z / scale;
 
@@ -612,10 +617,46 @@ void SP2::UpdateWorldVars()
 	//
 }
 
+char SP2::GetPlayerCurrentTile(float xPos , float yPos)
+{
+	int x = xPos / 500;
+	int y = yPos / 500;
+	return world[x][y];
+}
+
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
+	m_fTimeTillLightning -= 1 * dt;
 
+	//Random the next time before lightning hits.
+	if (m_bRandTimeTillLightning == true)
+	{
+		m_fTimeTillLightning = Math::RandFloatMinMax(0, 10);
+		m_bRandTimeTillLightning = false;
+		m_bLightningStrike = true;
+	}
+
+	//Test whether to render the lightning.
+	if (m_fTimeTillLightning <= 0 && m_bLightningStrike == false)
+	{
+		m_bLightningStrike = true;
+		m_fLightningDuration = 1;
+	}
+
+	if (m_bLightningStrike == true)
+	{
+		m_fLightningDuration -= 1 * dt;
+		if (m_fLightningDuration <= 0)
+		{
+			m_bLightningStrike = false;
+			m_bRandTimeTillLightning = true;
+		}
+	}
+
+	std::cout << m_fTimeTillLightning << " " << m_fLightningDuration << std::endl;
+	//std::cout << lights[0].power << std::endl;
+	
 	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 	{
 		player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
@@ -628,53 +669,61 @@ void SP2::Update(double dt)
 		player->addItem(new Item(Item::ITEM_SEED, 10));
 		m_dBounceTime = 0.5;
 	}
-	if (m_fAmbient >= 0.1 && m_iDayNight == 1)
-	{
-		m_fAmbient -= 0.002 * dt;
 
-		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		if (m_fAmbient >= 0.1 && m_iDayNight == 1)
 		{
-			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-			lights[0].power = m_fAmbient;
-			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-		}
-	}
-	else if (m_iDayNight == 1)
-	{
-		//How long day or night lasts
-		m_fDayNightDuration -= 1 * dt;
+			m_fAmbient -= 0.002 * dt;
 
-		//Can start transitioning to day
-		if (m_fDayNightDuration <= 0)
+			for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+			{
+				meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+			
+				if (m_bLightningStrike == false)
+				{
+					lights[0].power = m_fAmbient;
+					glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+				}
+			}
+		}
+		else if (m_iDayNight == 1)
 		{
-			m_iDayNight *= -1;
-			m_fDayNightDuration = 120;
+			//How long day or night lasts
+			m_fDayNightDuration -= 1 * dt;
+
+			//Can start transitioning to day
+			if (m_fDayNightDuration <= 0)
+			{
+				m_iDayNight *= -1;
+				m_fDayNightDuration = 120;
+			}
 		}
-	}
 
-	if (m_fAmbient <= 0.6 && m_iDayNight == -1)
-	{
-		m_fAmbient += 0.002 * dt;
-
-		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		if (m_fAmbient <= 0.6 && m_iDayNight == -1)
 		{
-			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-			lights[0].power = m_fAmbient;
-			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-		}
-	}
-	else if (m_iDayNight == -1)
-	{
-		//How long day or night lasts
-		m_fDayNightDuration -= 1 * dt;
+			m_fAmbient += 0.002 * dt;
 
-		//Can start transitioning to day
-		if (m_fDayNightDuration <= 0)
-		{
-			m_iDayNight *= -1;
-			m_fDayNightDuration = 120;
+			for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+			{
+				meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+				if (m_bLightningStrike == false)
+				{
+					lights[0].power = m_fAmbient;
+					glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+				}
+			}
 		}
-	}
+		else if (m_iDayNight == -1)
+		{
+			//How long day or night lasts
+			m_fDayNightDuration -= 1 * dt;
+
+			//Can start transitioning to day
+			if (m_fDayNightDuration <= 0)
+			{
+				m_iDayNight *= -1;
+				m_fDayNightDuration = 120;
+			}
+		}
 
 
 	if (Application::IsKeyPressed('1'))
