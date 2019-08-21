@@ -125,6 +125,8 @@ class SP2 : public Scene
 
 		GEO_GOLD_SWORD,
 		GEO_GOLD_PICKAXE,
+
+		GEO_FURNACE,
 		//End of symetry.
 
 		//Crop models
@@ -137,6 +139,9 @@ class SP2 : public Scene
 
 		GEO_WOODEN_SWORD_MODEL,
 		GEO_STONE_SWORD_MODEL,
+
+		//
+		GEO_LIGHTNING,
 
 		//World
 			//Skybox
@@ -165,13 +170,15 @@ class SP2 : public Scene
 		GEO_CHICKEN,
 		GEO_COW,
 		
+
+		//BLOCKS PLACE
+		GEO_FURNACE_BLOCK,
 		GEO_LIGHT_AFFECTED_END,
 
 		//Crafting
 		GEO_CRAFTING_MENU,
 		GEO_SMELTING_MENU,
 		GEO_EMPTY_CRAFTING,
-		GEO_FURNACE,
 
 		//TSL
 		GEO_SPRITE_ANIMATION,
@@ -229,6 +236,8 @@ public:
 	void RenderCrops();
 	void RenderInventory();
 	void LoadWorld();
+
+	char GetPlayerCurrentTile(float xPos , float yPos);
 
 	void SaveWorld();
 	//
@@ -316,7 +325,14 @@ private:
 	float pZ;
 
 	float outwards;
+	bool m_bLightningStrike;
+	bool m_bRandTimeTillLightning;
 
+	bool m_bRandLightning;
+
+	float m_fTimeTillLightning;
+	float m_fLightningDuration;
+	
 	float minOutwardsFromPlayerX;
 	float minOutwardsFromPlayerZ;
 
@@ -327,7 +343,8 @@ private:
 	float m_iDayNight = 1;
 	float m_fDayNightDuration = 120;
 
-	//-----------------------------
+	float lightningX;
+	float lightningZ;
 };
 
 #endif

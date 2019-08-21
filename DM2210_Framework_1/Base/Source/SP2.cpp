@@ -126,9 +126,16 @@ void SP2::Init()
 {
 //	LoadWorld();
 	player = new PlayerInformation;
+	
+	m_bRandLightning = true;
+
+	m_bLightningStrike = false;
+	m_bRandTimeTillLightning = true;
+	m_fTimeTillLightning = 0; 
+	m_fLightningDuration = 2;
 
 	scale = 100;
-
+	
 	pX = camera.position.x / scale;
 	pZ = camera.position.z / scale;
 
@@ -258,7 +265,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(12250, 50, 12250), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(6250, 50, 6250), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
@@ -315,6 +322,9 @@ void SP2::Init()
 	meshList[GEO_TREE_WINTER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
 	meshList[GEO_TREE_WINTER]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
 
+	meshList[GEO_TREE_WINTER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_WINTER]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
+
 	meshList[GEO_GOLD_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
 	meshList[GEO_GOLD_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
 
@@ -324,8 +334,7 @@ void SP2::Init()
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
-	meshList[GEO_FURNACE] = MeshBuilder::GenerateOBJ("GEO_FURNACE", "OBJ//Ore.obj");
-	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+	
 	//
 
 	//Player
@@ -405,17 +414,11 @@ void SP2::Init()
 	meshList[GEO_WOODEN_SWORD] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_SWORD]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
 
-	meshList[GEO_WOODEN_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_WOODEN_SWORD_MODEL", "OBJ//sword.obj");
-	meshList[GEO_WOODEN_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
-
 	meshList[GEO_WOODEN_PICKAXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_PICKAXE]->textureArray[0] = LoadTGA("Image//Wooden_Pickaxe.tga");
 
 	meshList[GEO_STONE_SWORD] = MeshBuilder::GenerateQuad("GEO_STONE_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_SWORD]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
-
-	meshList[GEO_STONE_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_STONE_SWORD_MODEL", "OBJ//sword.obj");
-	meshList[GEO_STONE_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
 
 	meshList[GEO_STONE_PICKAXE] = MeshBuilder::GenerateQuad("GEO_STONE_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_PICKAXE]->textureArray[0] = LoadTGA("Image//Stone_Pickaxe.tga");
@@ -426,8 +429,24 @@ void SP2::Init()
 	meshList[GEO_GOLD_PICKAXE] = MeshBuilder::GenerateQuad("GEO_GOLD_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_PICKAXE]->textureArray[0] = LoadTGA("Image//Gold_Pickaxe.tga");
 
+	meshList[GEO_FURNACE] = MeshBuilder::GenerateQuad("GEO_FURNACE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+
+	//World Objects
+	meshList[GEO_FURNACE_BLOCK] = MeshBuilder::GenerateOBJ("GEO_FURNACE_BLOCK", "OBJ//Ore.obj");
+	meshList[GEO_FURNACE_BLOCK]->textureArray[0] = LoadTGA("Image//Furnace.tga");
 	//
 
+	//Yansons models
+	meshList[GEO_WOODEN_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_WOODEN_SWORD_MODEL", "OBJ//sword.obj");
+	meshList[GEO_WOODEN_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
+
+	meshList[GEO_STONE_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_STONE_SWORD_MODEL", "OBJ//sword.obj");
+	meshList[GEO_STONE_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
+	
+	//Lightning model
+	meshList[GEO_LIGHTNING] = MeshBuilder::GenerateQuad("GEO_LIGHTNING", Color(1, 1, 1), 1.0f);
+	
 	//Crops meshes
 	meshList[GEO_CARROT_CROP] = MeshBuilder::GenerateQuad("GEO_CARROT_CROP", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CARROT_CROP]->textureArray[0] = LoadTGA("Image//Carrot_Crop.tga");
@@ -499,8 +518,6 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
-	
-
 	//Particle
 	for (unsigned int i = 0; i < MAX_PARTICLE; ++i)
 	{
@@ -612,9 +629,51 @@ void SP2::UpdateWorldVars()
 	//
 }
 
+char SP2::GetPlayerCurrentTile(float xPos , float yPos)
+{
+	int x = xPos / 250;
+	int y = yPos / 250;
+	return world[x][y];
+}
+
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
+
+	// Duration of lightning strike = 0.12
+	if (m_fTimeTillLightning <= 0.2)
+	{
+		if (m_bRandLightning == true)
+		{
+			lightningX = Math::RandFloatMinMax(camera.position.x - 500, camera.position.x + 500);
+			lightningZ = Math::RandFloatMinMax(camera.position.z - 500, camera.position.z + 500);
+			m_bRandLightning = false;
+
+			lights[0].position.x = lightningX;
+			lights[0].position.z = lightningZ;
+		}
+		m_bLightningStrike = true;
+		if (m_fTimeTillLightning >= 0)
+		{
+			//Flashing effect.
+			float x = Math::RandFloatMinMax(0, 1);
+
+			if (x > 0.1)
+				lights[0].power = 50;
+			else
+				lights[0].power = 1;
+			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		}
+		m_fTimeTillLightning += 0.1 * dt;
+	}
+	else
+	{
+		m_bLightningStrike = false;
+		lights[0].power = 1;
+		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		m_fTimeTillLightning = -0.3;
+		m_bRandLightning = true;
+	}
 
 	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 	{
@@ -626,8 +685,10 @@ void SP2::Update(double dt)
 		player->addItem(new Item(Item::ITEM_CARROT, 10));
 		player->addItem(new Item(Item::ITEM_WHEAT, 10));
 		player->addItem(new Item(Item::ITEM_SEED, 10));
+		player->addItem(new Item(Item::ITEM_STONE, 10));
 		m_dBounceTime = 0.5;
 	}
+
 	if (m_fAmbient >= 0.1 && m_iDayNight == 1)
 	{
 		m_fAmbient -= 0.002 * dt;
@@ -635,8 +696,12 @@ void SP2::Update(double dt)
 		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
 		{
 			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-			lights[0].power = m_fAmbient;
-			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		
+			if (m_bLightningStrike == false)
+			{
+				lights[0].power = m_fAmbient;
+				glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+			}
 		}
 	}
 	else if (m_iDayNight == 1)
@@ -659,8 +724,11 @@ void SP2::Update(double dt)
 		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
 		{
 			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-			lights[0].power = m_fAmbient;
-			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+			if (m_bLightningStrike == false)
+			{
+				lights[0].power = m_fAmbient;
+				glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+			}
 		}
 	}
 	else if (m_iDayNight == -1)
@@ -675,7 +743,6 @@ void SP2::Update(double dt)
 			m_fDayNightDuration = 120;
 		}
 	}
-
 
 	if (Application::IsKeyPressed('1'))
 		glEnable(GL_CULL_FACE);
@@ -1650,6 +1717,7 @@ void SP2::RenderInventory()
 		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2, 50, 50, player->getItem(i)->getID());
 	}
 }
+
 void SP2::RenderHPandHunger()
 {
 	//Health
@@ -1697,6 +1765,24 @@ void SP2::RenderWorld()
 	RenderMesh(meshList[GEO_PLAYER], false);
 	modelStack.PopMatrix();
 
+	for (int i = 0; i < 15; ++i)
+	{
+		//Interval between drawing of each line that makes up the lightning
+		if (m_fTimeTillLightning >= i * 0.008)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(lightningX + 50, 1440 - i * 96, lightningZ);
+			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - lightningX, camera.position.z - lightningZ)), 0, 1, 0);
+			if (i % 2 == 0)
+				modelStack.Rotate(15, 0, 0, 1);
+			else
+				modelStack.Rotate(345, 0, 0, 1);
+			modelStack.Scale(1, 100, 1);
+			RenderMesh(meshList[GEO_LIGHTNING], false);
+			modelStack.PopMatrix();
+		}
+	}
+	
 	RenderGroundObjects();
 
 	//Render Animals
