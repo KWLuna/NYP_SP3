@@ -49,6 +49,7 @@ public:
 	void SetFed(bool m_bFed);
 	void SetIsBaby(bool m_bIsABaby);
 	void SetBreeded(bool m_bBreeded);
+	void SetAngle(float m_fAngle);
 private:
 	//Behaviour
 	Behaviour theCurrentBehaviour;

@@ -228,7 +228,7 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	return new Item(-1, 0);
 }
 
-void PlayerInformation::update(double dt)
+void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist)
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
@@ -563,7 +563,7 @@ void PlayerInformation::update(double dt)
 		Constrain();
 
 		Vector3 dir = attachedCamera->target - attachedCamera->position;
-		curtool->Update(dt, dir, attachedCamera->position);
+		curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist);
 
 		static bool bLButtonState = false;
 
