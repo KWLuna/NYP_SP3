@@ -1892,3 +1892,10 @@ void SP2::Exit()
 
 	glDeleteProgram(m_gPassShaderID);
 }
+
+char SP2::GetPlayerCurrentTile(float xPos, float yPos)
+{
+	int x = xPos / 500;
+	int y = yPos / 500;
+	return world[x][y];
+}

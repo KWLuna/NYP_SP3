@@ -209,6 +209,8 @@ public:
 	virtual void Render();
 	virtual void Exit();
 
+	char GetPlayerCurrentTile(float xPos, float yPos);
+
 	void InitGround();
 
 	void RenderText(Mesh* mesh, std::string text, Color color);
