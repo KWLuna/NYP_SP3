@@ -7,8 +7,6 @@
 #include "LoadTGA.h"
 #include <sstream>
 
-#include <string>
-#include <fstream>
 #include <iostream>
 
 SP2::SP2()
@@ -19,58 +17,9 @@ SP2::~SP2()
 {
 }
 
-void SP2::SaveWorld()
-{
-	//By default , when open you clear it.
-	std::ofstream saveFile("WorldSaveFile.txt");
-	if (saveFile.is_open())
-	{
-		for (int i = 0; i < 250; ++i)
-		{
-			std::string tmp;
-			for (int j = 0; j < 250; ++j)
-			{
-				tmp.push_back(world[i][j]);
-			}
-			saveFile << tmp << std::endl;
-		}
-
-		saveFile.close();
-	}
-	else
-	{
-		std::cout << " cant save !" << std::endl;
-	}
-}
-
-void SP2::LoadWorld()
-{
-	std::ifstream saveFiler("WorldSaveFile.txt"); //Open text file to read
-	std::string row;
-	int tmp;
-	int level = 0;
-	if (saveFiler.is_open())
-	{
-		while (!saveFiler.eof())
-		{
-			saveFiler >> row;
-
-			for (int i = 0; i < row.size(); ++i)
-			{
-				world[i][level] = row[i];
-			}
-			level += 1;
-		}
-		saveFiler.close();
-	}
-	else
-		std::cout << "Impossible to open save file!" << std::endl;
-}
-
 void SP2::InitGround()
 {
-	int x = 250, z = 250;
-
+	int x = 500, z = 500;
 	for (int i = 0; i < x; ++i)
 	{
 		for (int j = 0; j < z; ++j)
@@ -87,7 +36,7 @@ void SP2::InitGround()
 			}
 			else if (randVal < 0.04)
 			{
-				if (i > 1 && i < 249 && j > 1 && j < 249)
+				if (i > 1 && i < 499 && j > 1 && j < 499)
 					world[i][j] = 'W'; // Water generation
 			}
 			else if (randVal < 0.05)
@@ -103,11 +52,11 @@ void SP2::InitGround()
 		}
 	}
 
-	for (int i = 0; i < 250; ++i)
+	for (int i = 0; i < 500; ++i)
 	{
-		for (int k = 0; k < 250; ++k)
+		for (int k = 0; k < 500; ++k)
 		{
-			if (i > 0 && i < 249 && k > 0 && k < 249)
+			if (i > 0 && i < 499 && k > 0 && k < 499)
 			{
 				if (world[i][k] == 'W')
 				{
@@ -117,14 +66,10 @@ void SP2::InitGround()
 			}
 		}
 	}
-
-	
-
 }
 
 void SP2::Init()
 {
-//	LoadWorld();
 	player = new PlayerInformation;
 
 	scale = 100;
@@ -221,7 +166,7 @@ void SP2::Init()
 	glUseProgram(m_programID);
 
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].position.Set(12250, 100, 12250);
+	lights[0].position.Set(12500, 100, 12500);
 	lights[0].color.Set(1, 1, 1);
 	lights[0].power = 1.f;
 	lights[0].kC = 1.f;
@@ -258,13 +203,12 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(12250, 50, 12250), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
-
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
@@ -339,7 +283,7 @@ void SP2::Init()
 	meshList[GEO_CHICKEN] = MeshBuilder::GenerateOBJ("Chicken", "OBJ//chicken.obj");
 	meshList[GEO_CHICKEN]->textureArray[0] = LoadTGA("Image//chicken.tga");
 
-	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//cow.obj");
+	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//Cow2.obj");
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
 	//GUI's
@@ -499,7 +443,14 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
-	
+	player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+	player->addItem(new Item(Item::ITEM_STONE, 1));
+	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+	player->addItem(new Item(Item::ITEM_COAL, 100));
+	player->addItem(new Item(Item::ITEM_MEAT, 100));
+	player->addItem(new Item(Item::ITEM_CARROT, 10));
+	player->addItem(new Item(Item::ITEM_WHEAT, 10));
+	player->addItem(new Item(Item::ITEM_SEED, 10));
 
 	//Particle
 	for (unsigned int i = 0; i < MAX_PARTICLE; ++i)
@@ -525,7 +476,7 @@ void SP2::Init()
 	//FurnaceList.push_back(new Furnace);
 	//FurnaceList[0]->SetStatus(true);
 
-	CropList.push_back(new Crops(0 , 12250 , 12250));
+	CropList.push_back(new Crops(0 , 12500 , 12500));
 }
 
 void SP2::RenderFurnace()
@@ -614,20 +565,6 @@ void SP2::UpdateWorldVars()
 
 void SP2::Update(double dt)
 {
-	m_dBounceTime -= 1 * dt;
-
-	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
-	{
-		player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
-		player->addItem(new Item(Item::ITEM_STONE, 1));
-		player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
-		player->addItem(new Item(Item::ITEM_COAL, 100));
-		player->addItem(new Item(Item::ITEM_MEAT, 100));
-		player->addItem(new Item(Item::ITEM_CARROT, 10));
-		player->addItem(new Item(Item::ITEM_WHEAT, 10));
-		player->addItem(new Item(Item::ITEM_SEED, 10));
-		m_dBounceTime = 0.5;
-	}
 	if (m_fAmbient >= 0.1 && m_iDayNight == 1)
 	{
 		m_fAmbient -= 0.002 * dt;
@@ -686,6 +623,7 @@ void SP2::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	m_dBounceTime -= 1 * dt;
 
 	if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 	{
@@ -697,7 +635,16 @@ void SP2::Update(double dt)
 
 	UpdateWorldVars();
 	UpdateParticles(dt);
-	player->update(dt);
+	//
+	/*CAnimal *go = FetchGO();
+	go->type = CAnimal::GO_COW;
+	go->SetActive(true);
+	go->SetPosition(Vector3(12550, 0, 12550));
+	go->SetAngle(40.0);
+	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+	go->SetSpawned(true);*/
+	//
+	player->update(dt, m_AnimalList);
 
 	//Update all crops present in the world.
 	for (int i = 0; i < CropList.size(); ++i)
@@ -723,6 +670,8 @@ void SP2::Update(double dt)
 	fps = (float)(1.f / dt);
 
 	AnimalChecker(dt);
+	
+	/*player->CheckHeldCollision(dt, m_AnimalList);*/
 }
 
 void SP2::AnimalChecker(double dt)
@@ -934,11 +883,11 @@ void SP2::SpawningAnimal()
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 250)
+		if (i >= 0 && i <= 500)
 		{
 			for (float k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 250)
+				if (k >= 0 && k <= 500)
 				{
 					int choice = Math::RandIntMinMax(0, 10);
 
@@ -1135,6 +1084,9 @@ ParticleObject* SP2::GetParticle(void)
 
 void SP2::RenderAnimal(CAnimal* animal)
 {
+	Vector3 temp1;
+	Vector3 temptemp;
+	Vector3 temp2;
 	switch (animal->type)
 	{
 	case CAnimal::GO_PIG:
@@ -1144,6 +1096,15 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_PIG], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 11, animal->GetPosition().z+4);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(14, 22, 29);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
 		break;
 	case CAnimal::GO_COW:
 		modelStack.PushMatrix();
@@ -1152,6 +1113,42 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_COW], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 14, animal->GetPosition().z+3);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(15, 24, 30);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
+
+		
+		/*temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
+		temptemp = temp1;
+		temp1.x = cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp1.z = sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp1 += animal->GetPosition();
+		temp1.y += 14;
+		temp1.z += 3;
+		modelStack.PushMatrix();
+		modelStack.Translate(temp1.x, temp1.y, temp1.z);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_SPHERE], true);
+		modelStack.PopMatrix();
+
+		temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
+		temptemp = temp2;
+		temp2.x = cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp2.z = sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
+		temp2 += animal->GetPosition();
+		temp2.y += 14;
+		temp2.z += 3;
+		modelStack.PushMatrix();
+		modelStack.Translate(temp2.x, temp2.y, temp2.z);
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_SPHERE], true);
+		modelStack.PopMatrix();*/
 		break;
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
@@ -1160,6 +1157,15 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_CHICKEN], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 8, animal->GetPosition().z+2);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(10, 12, 14);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
 		break;
 	default:
 		break;
@@ -1475,11 +1481,11 @@ void SP2::RenderGroundObjects()
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 250)
+		if (i >= 0 && i <= 500)
 		{
 			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 250)
+				if (k >= 0 && k <= 500)
 				{
 					switch (world[i][k])
 					{
@@ -1538,11 +1544,11 @@ void SP2::RenderGround()
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 250)
+		if (i >= 0 && i <= 500)
 		{
 			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 250)
+				if (k >= 0 && k <= 500)
 				{
 					switch (world[i][k])
 					{
@@ -1714,7 +1720,7 @@ void SP2::RenderSkyBox()
 {
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Scale(3250, 3250, 3250);
+	modelStack.Scale(3500, 3500, 3500);
 
 	switch (SP2_Seasons->getSeason())
 	{
@@ -1881,8 +1887,6 @@ void SP2::Exit()
 		if (meshList[i])
 			delete meshList[i];
 	}
-
-	delete player;
 	glDeleteProgram(m_programID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 

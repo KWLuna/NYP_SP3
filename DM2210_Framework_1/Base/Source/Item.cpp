@@ -4,9 +4,11 @@ Item::Item()
 {
 	m_iID = 0;
 	m_iQuantity = 0;
+
+	int x = ITEM_COAL;
 }
 
-Item::Item(int id, int quantity)
+Item::Item(char id, int quantity)
 {
 	m_iID = id;
 	m_iQuantity = quantity;
@@ -22,12 +24,12 @@ void Item::setQuantity(int quantity)
 	m_iQuantity = quantity;
 }
 
-int Item::getID()
+char Item::getID()
 {
 	return m_iID;
 }
 
-void Item::setID(int id)
+void Item::setID(char id)
 {
 	m_iID = id;
 }

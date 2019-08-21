@@ -10,7 +10,7 @@ class Physics
 public:
 	Physics();
 	~Physics();
-	bool RayTraceDist(Vector3 obj1a, Vector3 obj1b, Vector3 obj2a, Vector3 obj2b);\
+	bool RayTraceDist(Vector3 obj1a, Vector3 obj1b, Vector3 obj2a, Vector3 obj2b);
 	bool intersects(Entity* shape1, Entity* shape2);
 	float GetDist();
 };
