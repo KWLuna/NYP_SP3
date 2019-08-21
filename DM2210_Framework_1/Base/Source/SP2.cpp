@@ -7,8 +7,9 @@
 #include "LoadTGA.h"
 #include <sstream>
 
+#include <string>
+#include <fstream>
 #include <iostream>
-using namespace std;
 
 SP2::SP2()
 {
@@ -18,41 +19,126 @@ SP2::~SP2()
 {
 }
 
+void SP2::SaveWorld()
+{
+	//By default , when open you clear it.
+	std::ofstream saveFile("WorldSaveFile.txt");
+	if (saveFile.is_open())
+	{
+		for (int i = 0; i < 250; ++i)
+		{
+			std::string tmp;
+			for (int j = 0; j < 250; ++j)
+			{
+				tmp.push_back(world[i][j]);
+			}
+			saveFile << tmp << std::endl;
+		}
+
+		saveFile.close();
+	}
+	else
+	{
+		std::cout << " cant save !" << std::endl;
+	}
+}
+
+void SP2::LoadWorld()
+{
+	std::ifstream saveFiler("WorldSaveFile.txt"); //Open text file to read
+	std::string row;
+	int tmp;
+	int level = 0;
+	if (saveFiler.is_open())
+	{
+		while (!saveFiler.eof())
+		{
+			saveFiler >> row;
+
+			for (int i = 0; i < row.size(); ++i)
+			{
+				world[i][level] = row[i];
+			}
+			level += 1;
+		}
+		saveFiler.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+}
+
 void SP2::InitGround()
 {
-	int x = 500, z = 500;
+	int x = 250, z = 250;
+
 	for (int i = 0; i < x; ++i)
 	{
 		for (int j = 0; j < z; ++j)
 		{
 			float randVal = Math::RandFloatMinMax(0, 10);
 
-			if (randVal < 0.1)
+			if (randVal < 0.01)
 			{
-				world[i][j] = 'T'; // Tree generation
+				world[i][j] = 'G'; // Ore generation
 			}
-			else if (randVal < 0.15)
+			else if (randVal < 0.02)
 			{
-				world[i][j] = 'O'; // Ore generation
+				world[i][j] = 'C'; // Ore generation
 			}
-			else if (randVal < 0.25)
+			else if (randVal < 0.04)
 			{
-				if (i > 1 && i < 499 && j > 1 && j < 499)
+				if (i > 1 && i < 249 && j > 1 && j < 249)
 					world[i][j] = 'W'; // Water generation
+			}
+			else if (randVal < 0.05)
+			{
+				world[i][j] = 'B'; // Berry generation
 			}
 			else if (randVal < 0.3)
 			{
-				world[i][j] = 'B'; // Berry generation
+				world[i][j] = 'T'; // Tree generation
 			}
 			else
 				world[i][j] = 'G'; // Grass generation
 		}
 	}
+
+	for (int i = 0; i < 250; ++i)
+	{
+		for (int k = 0; k < 250; ++k)
+		{
+			if (i > 0 && i < 249 && k > 0 && k < 249)
+			{
+				if (world[i][k] == 'W')
+				{
+					world[i - 1][k] = 'W';
+					world[i][k - 1] = 'W';
+				}
+			}
+		}
+	}
+
+	
+
 }
 
 void SP2::Init()
 {
+//	LoadWorld();
 	player = new PlayerInformation;
+
+	scale = 100;
+
+	pX = camera.position.x / scale;
+	pZ = camera.position.z / scale;
+
+	outwards = 20;
+	m_fAmbient = 0.6;
+	minOutwardsFromPlayerX = pX - outwards;
+	minOutwardsFromPlayerZ = pZ - outwards;
+
+	maxOutwardsFromPlayerX = pX + outwards;
+	maxOutwardsFromPlayerZ = pZ + outwards;
 
 	InitGround();
 
@@ -135,7 +221,7 @@ void SP2::Init()
 	glUseProgram(m_programID);
 
 	lights[0].type = Light::LIGHT_DIRECTIONAL;
-	lights[0].position.Set(0, 100, 0);
+	lights[0].position.Set(12250, 100, 12250);
 	lights[0].color.Set(1, 1, 1);
 	lights[0].power = 1.f;
 	lights[0].kC = 1.f;
@@ -148,7 +234,7 @@ void SP2::Init()
 
 	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-	
+
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
 	glUniform3fv(m_parameters[U_LIGHT0_COLOR], 1, &lights[0].color.r);
 	glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
@@ -172,12 +258,13 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(12250, 50, 12250), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
 	}
+
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference");
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
@@ -191,39 +278,91 @@ void SP2::Init()
 	meshList[GEO_CONE]->material.kDiffuse.Set(0.99f, 0.99f, 0.99f);
 	meshList[GEO_CONE]->material.kSpecular.Set(0.f, 0.f, 0.f);
 	meshList[GEO_CUBE] = MeshBuilder::GenerateOBJ("inversecube", "OBJ//skybox.obj");
-	meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox.tga");
-	//
-	meshList[GEO_GRASS] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
-	meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
-	
-	meshList[GEO_GRASS]->material.kAmbient.Set(0.3, 0.3, 0.3);
 
+	meshList[GEO_SKYBOX_SPRING] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_SPRING", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_SPRING]->textureArray[0] = LoadTGA("Image//Skybox_Spring.tga");
+
+	meshList[GEO_SKYBOX_SUMMER] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_SUMMER", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_SUMMER]->textureArray[0] = LoadTGA("Image//Skybox_Summer.tga");
+
+	meshList[GEO_SKYBOX_WINTER] = MeshBuilder::GenerateOBJ("GEO_SKYBOX_WINTER", "OBJ//skybox.obj");
+	meshList[GEO_SKYBOX_WINTER]->textureArray[0] = LoadTGA("Image//Skybox_Winter.tga");
+
+	//
+	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3, 0.3, 0.3);
+
+	meshList[GEO_GRASS_SUMMER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_SUMMER]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
+
+	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
+
+	//Game Stuff
 	meshList[GEO_WATER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
 	meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
 
-	meshList[GEO_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
-	meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
+	meshList[GEO_WATER_WINTER] = MeshBuilder::GenerateQuad("Water", Color(1, 1, 1), 1.f);
+	meshList[GEO_WATER_WINTER]->textureArray[0] = LoadTGA("Image//iced_water.tga");
 
-	meshList[GEO_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
-	meshList[GEO_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
-	
+	meshList[GEO_TREE_SPRING] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_SPRING]->textureArray[0] = LoadTGA("Image//Tree_Spring.tga");
+
+	meshList[GEO_TREE_SUMMER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_SUMMER]->textureArray[0] = LoadTGA("Image//Tree_Summer.tga");
+
+	meshList[GEO_TREE_WINTER] = MeshBuilder::GenerateOBJ("Tree", "OBJ//Tree.obj");
+	meshList[GEO_TREE_WINTER]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
+
+	meshList[GEO_GOLD_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
+	meshList[GEO_GOLD_ORE]->textureArray[0] = LoadTGA("Image//Gold_Ore.tga");
+
+	meshList[GEO_COAL_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
+	meshList[GEO_COAL_ORE]->textureArray[0] = LoadTGA("Image//Coal_Ore.tga");
+
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
+	meshList[GEO_FURNACE] = MeshBuilder::GenerateOBJ("GEO_FURNACE", "OBJ//Ore.obj");
+	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+	//
+
+	//Player
+	meshList[GEO_PLAYER] = MeshBuilder::GenerateOBJ("GEO_PLAYER", "OBJ//Steve.obj");
+	meshList[GEO_PLAYER]->textureArray[0] = LoadTGA("Image//Steve.tga");
+	
 	//Animals
 	meshList[GEO_PIG] = MeshBuilder::GenerateOBJ("Pig", "OBJ//Pig.obj");
 	meshList[GEO_PIG]->textureArray[0] = LoadTGA("Image//PIG.tga");
-	
+
 	meshList[GEO_CHICKEN] = MeshBuilder::GenerateOBJ("Chicken", "OBJ//chicken.obj");
 	meshList[GEO_CHICKEN]->textureArray[0] = LoadTGA("Image//chicken.tga");
-	
+
 	meshList[GEO_COW] = MeshBuilder::GenerateOBJ("Cow", "OBJ//cow.obj");
 	meshList[GEO_COW]->textureArray[0] = LoadTGA("Image//cow.tga");
 
+	//GUI's
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
 	meshList[GEO_INVENTORY]->textureArray[0] = LoadTGA("Image//Inventory.tga");
 
+	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
+
+	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
+
+	meshList[GEO_HIGHLIGHT_INVENTORY] = MeshBuilder::GenerateQuad("GEO_HIGHLIGHT_INVENTORY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_HIGHLIGHT_INVENTORY]->textureArray[0] = LoadTGA("Image//Highlight_Inventory.tga");
+
+	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
+	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
+
+	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace_Menu.tga");
 	//
+
+	//Inventory meshes
 	meshList[GEO_MEAT] = MeshBuilder::GenerateQuad("GEO_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_MEAT]->textureArray[0] = LoadTGA("Image//Meat.tga");
 
@@ -232,6 +371,9 @@ void SP2::Init()
 
 	meshList[GEO_WHEAT] = MeshBuilder::GenerateQuad("GEO_WHEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WHEAT]->textureArray[0] = LoadTGA("Image//Wheat.tga");
+
+	meshList[GEO_BREAD] = MeshBuilder::GenerateQuad("GEO_BREAD", Color(1, 1, 1), 1.0f);
+	meshList[GEO_BREAD]->textureArray[0] = LoadTGA("Image//Bread.tga");
 
 	meshList[GEO_CARROT] = MeshBuilder::GenerateQuad("GEO_CARROT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CARROT]->textureArray[0] = LoadTGA("Image//Carrot.tga");
@@ -253,7 +395,7 @@ void SP2::Init()
 
 	meshList[GEO_GOLD_NUGGET] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_NUGGET]->textureArray[0] = LoadTGA("Image//Gold_Nugget.tga");
-	
+
 	meshList[GEO_GOLD_NUGGET] = MeshBuilder::GenerateQuad("GEO_GOLD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_NUGGET]->textureArray[0] = LoadTGA("Image//Gold_Nugget.tga");
 
@@ -263,11 +405,17 @@ void SP2::Init()
 	meshList[GEO_WOODEN_SWORD] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_SWORD]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
 
+	meshList[GEO_WOODEN_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_WOODEN_SWORD_MODEL", "OBJ//sword.obj");
+	meshList[GEO_WOODEN_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Wooden_Sword.tga");
+
 	meshList[GEO_WOODEN_PICKAXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_PICKAXE]->textureArray[0] = LoadTGA("Image//Wooden_Pickaxe.tga");
 
 	meshList[GEO_STONE_SWORD] = MeshBuilder::GenerateQuad("GEO_STONE_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_SWORD]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
+
+	meshList[GEO_STONE_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_STONE_SWORD_MODEL", "OBJ//sword.obj");
+	meshList[GEO_STONE_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
 
 	meshList[GEO_STONE_PICKAXE] = MeshBuilder::GenerateQuad("GEO_STONE_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_PICKAXE]->textureArray[0] = LoadTGA("Image//Stone_Pickaxe.tga");
@@ -278,21 +426,21 @@ void SP2::Init()
 	meshList[GEO_GOLD_PICKAXE] = MeshBuilder::GenerateQuad("GEO_GOLD_PICKAXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_PICKAXE]->textureArray[0] = LoadTGA("Image//Gold_Pickaxe.tga");
 
-	meshList[GEO_EMPTY_INVENTORY] = MeshBuilder::GenerateQuad("GEO_EMPTY_INVENTORY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_EMPTY_INVENTORY]->textureArray[0] = LoadTGA("Image//Empty_Inventory.tga");
+	//
 
-	meshList[GEO_HIGHLIGHT_INVENTORY] = MeshBuilder::GenerateQuad("GEO_HIGHLIGHT_INVENTORY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_HIGHLIGHT_INVENTORY]->textureArray[0] = LoadTGA("Image//Highlight_Inventory.tga");
+	//Crops meshes
+	meshList[GEO_CARROT_CROP] = MeshBuilder::GenerateQuad("GEO_CARROT_CROP", Color(1, 1, 1), 1.0f);
+	meshList[GEO_CARROT_CROP]->textureArray[0] = LoadTGA("Image//Carrot_Crop.tga");
 
-	meshList[GEO_EMPTY_CRAFTING] = MeshBuilder::GenerateQuad("GEO_EMPTY", Color(1, 1, 1), 1.0f);
-	meshList[GEO_EMPTY_CRAFTING]->textureArray[0] = LoadTGA("Image//Empty_Crafting.tga");
+	meshList[GEO_WHEAT_CROP] = MeshBuilder::GenerateQuad("GEO_WHEAT_CROP", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WHEAT_CROP]->textureArray[0] = LoadTGA("Image//Wheat_Crop.tga");
 
-	meshList[GEO_SMELTING_MENU] = MeshBuilder::GenerateQuad("GEO_SMELTING_MENU", Color(1, 1, 1), 1.0f);
-	meshList[GEO_SMELTING_MENU]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+	meshList[GEO_SPROUT_CROP] = MeshBuilder::GenerateQuad("GEO_SPROUT_CROP", Color(1, 1, 1), 1.0f);
+	meshList[GEO_SPROUT_CROP]->textureArray[0] = LoadTGA("Image//Sprout_Crop.tga");
+	//
 
 	meshList[GEO_CRAFTING_MENU] = MeshBuilder::GenerateQuad("GEO_CRAFTING_MENU", Color(1, 1, 1), 1.0f);
 	meshList[GEO_CRAFTING_MENU]->textureArray[0] = LoadTGA("Image//Crafting.tga");
-
 	//Particles
 	meshList[GEO_PARTICLE_WATER] = MeshBuilder::GenerateQuad("GEO_PARTICLE_WATER", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE_WATER]->textureArray[0] = LoadTGA("Image//particle_water.tga");
@@ -300,8 +448,8 @@ void SP2::Init()
 	meshList[GEO_PARTICLE_SNOWFLAKE]->textureArray[0] = LoadTGA("Image//particle_snow.tga");
 	meshList[GEO_PARTICLE_LEAF] = MeshBuilder::GenerateQuad("GEO_PARTICLE_LEAF", Color(1, 1, 1), 1.0f);
 	meshList[GEO_PARTICLE_LEAF]->textureArray[0] = LoadTGA("Image//particle_leaf.tga");
-	meshList[GEO_PARTICLE_DEADLEAF] = MeshBuilder::GenerateQuad("GEO_PARTICLE_DEADLEAF", Color(1, 1, 1), 1.0f);
-	meshList[GEO_PARTICLE_DEADLEAF]->textureArray[0] = LoadTGA("Image//particle_deadleaf.tga");
+	meshList[GEO_PARTICLE_HEART] = MeshBuilder::GenerateQuad("GEO_PARTICLE_HEART", Color(1, 1, 1), 1.0f);
+	meshList[GEO_PARTICLE_HEART]->textureArray[0] = LoadTGA("Image//particle_heart.tga");
 
 	m_particleCount = 0;
 	MAX_PARTICLE = 1000;
@@ -312,6 +460,26 @@ void SP2::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
+	//UI
+		//HEALTH
+		meshList[GEO_HEALTH_FULL] = MeshBuilder::GenerateQuad("GEO_HEALTH_FULL", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HEALTH_FULL]->textureArray[0] = LoadTGA("Image//health_full.tga");
+
+		meshList[GEO_HEALTH_HALF] = MeshBuilder::GenerateQuad("GEO_HEALTH_HALF", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HEALTH_HALF]->textureArray[0] = LoadTGA("Image//health_half.tga");
+
+		meshList[GEO_HEALTH_EMPTY] = MeshBuilder::GenerateQuad("GEO_HEALTH_EMPTY", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HEALTH_EMPTY]->textureArray[0] = LoadTGA("Image//health_empty.tga");
+		//HUNGER
+		meshList[GEO_HUNGER_FULL] = MeshBuilder::GenerateQuad("GEO_HUNGER_FULL", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HUNGER_FULL]->textureArray[0] = LoadTGA("Image//hunger_full.tga");
+
+		meshList[GEO_HUNGER_HALF] = MeshBuilder::GenerateQuad("GEO_HUNGER_HALF", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HUNGER_HALF]->textureArray[0] = LoadTGA("Image//hunger_half.tga");
+
+		meshList[GEO_HUNGER_EMPTY] = MeshBuilder::GenerateQuad("GEO_HUNGER_EMPTY", Color(1, 1, 1), 1.0f);
+		meshList[GEO_HUNGER_EMPTY]->textureArray[0] = LoadTGA("Image//hunger_empty.tga");
+	//
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
@@ -320,7 +488,7 @@ void SP2::Init()
 		//Startframe, endframe, repeat, time, active
 	}
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
+	// Projection matrix : 45ï¿½ Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
 	Mtx44 perspective;
 	perspective.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	//perspective.SetToOrtho(-80, 80, -60, 60, -1000, 1000);
@@ -331,27 +499,33 @@ void SP2::Init()
 	player->AttachCamera(&camera);
 
 	//Test item stacking
-	player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
-	player->addItem(new Item(Item::ITEM_STONE, 1));
-	player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
-	player->addItem(new Item(Item::ITEM_COAL, 100));
-	player->addItem(new Item(Item::ITEM_MEAT, 100));
-	player->addItem(new Item(Item::ITEM_CARROT, 10));
-	player->addItem(new Item(Item::ITEM_WHEAT, 10));
-	player->addItem(new Item(Item::ITEM_SEED, 10));
+	
 
-
-
+	//Particle
+	for (unsigned int i = 0; i < MAX_PARTICLE; ++i)
+	{
+		particleList.push_back(new ParticleObject(ParticleObject_TYPE::P_WATER));
+	}
+	//Animals
 	unsigned int NUMBEROFOBJECTS = 100;
+
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
 	{
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 	}
 	m_NumOfAnimal = 0;
+	//Season
+	SP2_Seasons = new Season;
+	SP2_Seasons->setSeason(0);
+	WindAffecting = false;
+	m_fWindBounceTime = 0;
+	m_bTexChange = false;
 
 	//Temp furnace for testing , delete when raytrace is introduced.
 	//FurnaceList.push_back(new Furnace);
 	//FurnaceList[0]->SetStatus(true);
+
+	CropList.push_back(new Crops(0 , 12250 , 12250));
 }
 
 void SP2::RenderFurnace()
@@ -383,7 +557,7 @@ void SP2::RenderFurnace()
 			RenderImageToScreen(meshList[GEO_EMPTY_CRAFTING], false, 175, 175,
 				Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
 
-			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2 
+			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
 				, 2, 150, 150, FurnaceList[i]->GetResultID());
 
 		/*	RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
@@ -416,22 +590,125 @@ void SP2::RenderFurnace()
 			break;
 		}
 	}
-	SP2_Seasons.setSeason(0);
-	m_fWindBounceTime = 0;
-	m_bTexChange = false;
+
+}
+
+void SP2::UpdateWorldVars()
+{
+	scale = 100;
+
+	//World variables.
+	pX = camera.position.x / scale;
+	pZ = camera.position.z / scale;
+
+	//Constant , dont need to edit.
+	//outwards = 20;
+
+	minOutwardsFromPlayerX = pX - outwards;
+	minOutwardsFromPlayerZ = pZ - outwards;
+
+	maxOutwardsFromPlayerX = pX + outwards;
+	maxOutwardsFromPlayerZ = pZ + outwards;
+	//
 }
 
 void SP2::Update(double dt)
 {
+	m_dBounceTime -= 1 * dt;
+
+	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
+	{
+		player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+		player->addItem(new Item(Item::ITEM_STONE, 1));
+		player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+		player->addItem(new Item(Item::ITEM_COAL, 100));
+		player->addItem(new Item(Item::ITEM_MEAT, 100));
+		player->addItem(new Item(Item::ITEM_CARROT, 10));
+		player->addItem(new Item(Item::ITEM_WHEAT, 10));
+		player->addItem(new Item(Item::ITEM_SEED, 10));
+		m_dBounceTime = 0.5;
+	}
+	if (m_fAmbient >= 0.1 && m_iDayNight == 1)
+	{
+		m_fAmbient -= 0.002 * dt;
+
+		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		{
+			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+			lights[0].power = m_fAmbient;
+			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		}
+	}
+	else if (m_iDayNight == 1)
+	{
+		//How long day or night lasts
+		m_fDayNightDuration -= 1 * dt;
+
+		//Can start transitioning to day
+		if (m_fDayNightDuration <= 0)
+		{
+			m_iDayNight *= -1;
+			m_fDayNightDuration = 120;
+		}
+	}
+
+	if (m_fAmbient <= 0.6 && m_iDayNight == -1)
+	{
+		m_fAmbient += 0.002 * dt;
+
+		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		{
+			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+			lights[0].power = m_fAmbient;
+			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+		}
+	}
+	else if (m_iDayNight == -1)
+	{
+		//How long day or night lasts
+		m_fDayNightDuration -= 1 * dt;
+
+		//Can start transitioning to day
+		if (m_fDayNightDuration <= 0)
+		{
+			m_iDayNight *= -1;
+			m_fDayNightDuration = 120;
+		}
+	}
+
+
+	if (Application::IsKeyPressed('1'))
+		glEnable(GL_CULL_FACE);
+	if (Application::IsKeyPressed('2'))
+		glDisable(GL_CULL_FACE);
+	if (Application::IsKeyPressed('3'))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (Application::IsKeyPressed('4'))
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+	if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
+	{
+		FurnaceList.push_back(new Furnace);
+		FurnaceList[0]->SetStatus(true);
+
+		m_dBounceTime = 0.2;
+	}
+
+	UpdateWorldVars();
 	UpdateParticles(dt);
 	player->update(dt);
-	
-	//update all the furnaces present in the level.
+
+	//Update all crops present in the world.
+	for (int i = 0; i < CropList.size(); ++i)
+		CropList[i]->update(dt);
+
+	//Update all the furnaces present in the level.
 	for (int i = 0; i < FurnaceList.size(); ++i)
-	{
 		FurnaceList[i]->update(dt, player);
-	}
-	SP2_Seasons.Update(dt);
+
+	//Rmb to update to pointer.
+	SP2_Seasons->Update(dt);
 	SeasonChanger(dt);
 
 	//Sprite Animation
@@ -450,7 +727,8 @@ void SP2::Update(double dt)
 
 void SP2::AnimalChecker(double dt)
 {
-
+	const float m_cfMAXDISTANCE = 200;
+	const float m_cfMINDISTANCE = 50;
 	float MinX = camera.position.x - 1000;
 	float MaxX = camera.position.x + 1000;
 	float MinZ = camera.position.z - 1000;
@@ -464,19 +742,124 @@ void SP2::AnimalChecker(double dt)
 	{
 		CAnimal *go = (CAnimal *)*it;
 
-		if (go->m_bSpawned)
+		if (go->GetSpawned())
 		{
-			if (go->pos.x > MinX && go->pos.x < MaxX && go->pos.z > MinZ && go->pos.z < MaxZ)
+			if (go->GetPosition().x > MinX && go->GetPosition().x < MaxX && go->GetPosition().z > MinZ && go->GetPosition().z < MaxZ)
 			{
-				go->m_bActive = true;
+				go->SetActive(true);
 			}
 			else
-				go->m_bActive = false;
+				go->SetActive(false);
 
-			if (go->m_bActive)
+			if (go->GetActive())
 			{
+				switch (go->type)
+				{
+				case CAnimal::ANIMAL_TYPE::GO_PIG:
+					if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_CARROT)
+					{
+						if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+						{
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x , 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+							}
+						}
+					}
+					else
+						//If player switches item, have a cooldown system before they follow the player again.
+						if (go->GetCurrentBehaviour() == CAnimal::Behaviour::WANTFOOD)
+							go->SetDistracted(true);
+					break;
+				case CAnimal::ANIMAL_TYPE::GO_CHICKEN:
+					if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_SEED)
+					{
+						if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+						{
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x , 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+							}
+						}
+					}
+					else
+						//If player switches item, have a cooldown system before they follow the player again.
+						if (go->GetCurrentBehaviour() == CAnimal::Behaviour::WANTFOOD)
+							go->SetDistracted(true);
+					break;
+				case CAnimal::ANIMAL_TYPE::GO_COW:
+					if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WHEAT)
+					{
+						if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+						{
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+							}
+						}
+					}
+					else
+						//If player switches item, have a cooldown system before they follow the player again.
+						if (go->GetCurrentBehaviour() == CAnimal::Behaviour::WANTFOOD)
+							go->SetDistracted(true);
+					break;
+				default:
+					break;
+				}
+				if (go->GetCurrentBehaviour() == CAnimal::Behaviour::FOLLOWING && (go->GetPosition() - camera.position).Length() > m_cfMAXDISTANCE)
+				{
+					go->SetDistracted(true);
+					go->SetBehaviour(3);
+				}
 				go->Update(dt);
 				m_NumOfAnimal++;
+
+				//Breeding
+				if (go->GetFed() && !go->GetBreeded())
+					for (std::vector<CAnimal *>::iterator it2 = m_AnimalList.begin(); it2 != m_AnimalList.end(); ++it2)
+					{
+						CAnimal *go2 = (CAnimal *)*it2;
+						if (go2 != go && go2->type == go->type)
+							if (go2->GetActive())
+								if (go2->GetFed() && !go2->GetBreeded())
+								{
+									if ((go->GetPosition() - go2->GetPosition()).Length() < 5)
+									{
+										CAnimal *go3 = FetchGO();
+										go3->type = go->type;
+										go3->SetPosition((go->GetPosition() + go2->GetPosition()) * 0.5f);
+										go3->SetTargetPos(go->GetPosition());
+										go3->SetSpawned(true);
+										go3->SetIsBaby(true);
+										go->SetBreeded(true);
+										go2->SetBreeded(true);
+										break;
+									}
+									else
+									{
+										go->SetTargetPos((go->GetPosition() + go2->GetPosition()) * 0.5f);
+										go->SetBehaviour(1);
+										go2->SetTargetPos((go->GetPosition() + go2->GetPosition()) * 0.5f);
+										go2->SetBehaviour(1);
+
+									}
+								}
+					}
 			}
 		}
 	}
@@ -486,9 +869,9 @@ CAnimal* SP2::FetchGO()
 {
 	for (auto go : m_AnimalList)
 	{
-		if (!go->m_bSpawned)
+		if (!go->GetSpawned())
 		{
-			go->m_bSpawned = true;
+			go->SetSpawned(true);
 			return go;
 		}
 	}
@@ -497,44 +880,65 @@ CAnimal* SP2::FetchGO()
 		CAnimal *go = new CAnimal(CAnimal::GO_PIG);
 		m_AnimalList.push_back(go);
 	}
-	for (unsigned int i = 0; i < 5; ++i)
-	{
-		CAnimal *go = new CAnimal(CAnimal::GO_COW);
-		m_AnimalList.push_back(go);
-	}
-	for (unsigned int i = 0; i < 5; ++i)
-	{
-		CAnimal *go = new CAnimal(CAnimal::GO_CHICKEN);
-		m_AnimalList.push_back(go);
-	}
 
 	CAnimal *go = m_AnimalList.back();
-	go->m_bSpawned = true;
+	go->SetSpawned(true);
 	return go;
 }
+
+void SP2::RenderCrops()
+{
+	for (int i = 0; i < CropList.size(); ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			for (int k = 0; k < 3; ++k)
+			{
+				if (CropList[i]->GetState() == 0)
+				{
+					modelStack.PushMatrix();
+					modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+					modelStack.Scale(25, 50, 25);
+					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+					RenderMesh(meshList[GEO_SPROUT_CROP], false);
+					modelStack.PopMatrix();
+				}
+				else
+				{
+					if (CropList[i]->GetCropType() == 0)
+					{
+						modelStack.PushMatrix();
+						modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+						modelStack.Scale(25, 50, 25);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						RenderMesh(meshList[GEO_CARROT_CROP], false);
+						modelStack.PopMatrix();
+					}
+					else
+					{
+						modelStack.PushMatrix();
+						modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+						modelStack.Scale(25, 50, 25);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						RenderMesh(meshList[GEO_WHEAT_CROP], false);
+						modelStack.PopMatrix();
+					}
+				}
+			}
+		}
+	}
+}
+
 void SP2::SpawningAnimal()
 {
-	float scale = 100;
-
-	float pX = camera.position.x / scale;
-	float pZ = camera.position.z / scale;
-
-	float outwards = 20;
-
-	float minOutwardsFromPlayerX = pX - outwards;
-	float minOutwardsFromPlayerZ = pZ - outwards;
-
-	float maxOutwardsFromPlayerX = pX + outwards;
-	float maxOutwardsFromPlayerZ = pZ + outwards;
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 500)
+		if (i >= 0 && i <= 250)
 		{
 			for (float k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 500)
+				if (k >= 0 && k <= 250)
 				{
 					int choice = Math::RandIntMinMax(0, 10);
 
@@ -558,10 +962,14 @@ void SP2::SpawningAnimal()
 						default:
 							break;
 						}
-						go->pos.Set(0 + i * scale, 0, 0 + k * scale);
-						go->Targetpos.Set(Math::RandFloatMinMax(go->pos.x - 400.f, go->pos.x + 400.f), 1, Math::RandFloatMinMax(go->pos.z - 400.f, go->pos.z + 400.f));
-						go->m_bSpawned = true;
-						go->scale.Set(5, 5, 5);
+						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
+						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+						go->SetSpawned(true);
+
+						//choice = Math::RandIntMinMax(0, 1);
+						//if (choice == 1)
+						//	go->SetFed(true);
+
 					}
 				}
 			}
@@ -571,82 +979,33 @@ void SP2::SpawningAnimal()
 void SP2::SeasonChanger(double dt)
 {
 
-	if (SP2_Seasons.getTimer() == -1)
+	if (SP2_Seasons->getTimer() == -1)
 	{
 		m_bTexChange = false;
 	}
-	if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
+	if (m_bTexChange == false)
 	{
-		//Fog is thicker, longer
-	
-		//Light should be slightly brighter than fall but darker than summer
-		lights[0].power = 1.5f;
-
-
-		if (m_bTexChange == false)
+		if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SPRING)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree.tga");
-			meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//Water.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//skybox_spring.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
-
-
-			fogColor.Set(0.5f, 0.5f, 0.5f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
+			//Fog is thicker, longer
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
 
+			lights[0].power = 1.5f;
 			m_bTexChange = true;
 		}
-	}
-	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
-	{
-		lights[0].power = 2.f;
-		if (m_bTexChange == false)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Summer.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox_summer.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
-
-
-			fogColor.Set(0.8f, 0.6f, 0.0f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
 
-			m_bTexChange = true;
-		}
-	}
-	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
-	{
-		lights[0].power = 1.f;
-		if (m_bTexChange == false)
-		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Fall.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass.tga");
-
-			//fogColor.Set(0.8f, 0.4f, 0.0f);
-			fogColor.Set(0.5f, 0.5f, 0.5f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
-			glUniform1f(m_parameters[U_FOG_DENSITY], 0.00001f);
+			lights[0].power = 2.f;
 
 			m_bTexChange = true;
 		}
-	}
-	else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
-	{
-		lights[0].power = 0.5f;
-		//change water
-
-		if (m_bTexChange == false)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 		{
-			meshList[GEO_TREE]->textureArray[0] = LoadTGA("Image//Tree_Winter.tga");
-			meshList[GEO_WATER]->textureArray[0] = LoadTGA("Image//iced_lake.tga");
-			meshList[GEO_CUBE]->textureArray[0] = LoadTGA("Image//Skybox_winter.tga");
-			meshList[GEO_GRASS]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
-
-			fogColor.Set(0.2f, 0.7f, 1.f);
-			glUniform3fv(m_parameters[U_FOG_COLOR], 1, &fogColor.r);
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
+
+			lights[0].power = 0.5f;
 
 			m_bTexChange = true;
 		}
@@ -659,37 +1018,33 @@ void SP2::UpdateParticles(double dt)
 	m_fWindBounceTime += 2 * dt;
 	if (m_fWindBounceTime > 10.f)
 	{
-		m_wind.Set(Math::RandFloatMinMax(1.f, 4.f), 1.f, Math::RandFloatMinMax(1.f, 4.f));
+		if (WindAffecting == false)
+		{
+			WindAffecting = true;
+			m_wind.Set(Math::RandFloatMinMax(1.f, 4.f), 1.f, Math::RandFloatMinMax(1.f, 4.f));
+		}
+		else
+		{
+			WindAffecting = false;
+			m_wind.Set(1.f, 1.f, 1.f);
+		}
 		m_fWindBounceTime = 0;
 	}
-	else
-		m_wind.Set(1.f, 1.f, 1.f);
 
 	if (m_particleCount < MAX_PARTICLE)
 	{
-		if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SPRING)
+		if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SPRING)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_WATER;
-			particle->scale.Set(10, 10, 10);
+			particle->scale.Set(2, 10, 2);
 			particle->vel.Set(1, 1, 1);
 			particle->m_gravity.Set(0, -9.8f, 0);
 			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
-		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::SUMMER)
-		{
-			ParticleObject* particle = GetParticle();
-			particle->type = ParticleObject_TYPE::P_DEADLEAF;
-			particle->scale.Set(10, 10, 10);
-			particle->vel.Set(1, 1, 1);
-			particle->m_gravity.Set(0, -9.8f, 0);
-			particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
-			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 600.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
-			particle->wind = m_wind;
-		}
-		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::FALL)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_LEAF;
@@ -700,7 +1055,7 @@ void SP2::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 600.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
-		else if (SP2_Seasons.getSeason() == Season::TYPE_SEASON::WINTER)
+		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
 		{
 			ParticleObject* particle = GetParticle();
 			particle->type = ParticleObject_TYPE::P_SNOWFLAKE;
@@ -711,6 +1066,20 @@ void SP2::UpdateParticles(double dt)
 			particle->pos.Set(Math::RandFloatMinMax(camera.position.x - 1000, camera.position.x + 1700), 1200.f, Math::RandFloatMinMax(camera.position.z - 1700, camera.position.z + 1700));
 			particle->wind = m_wind;
 		}
+		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+		{
+			CAnimal *go = (CAnimal *)*it;
+			if (go->GetActive() && go->GetFed() && !go->GetBreeded())
+			{
+				ParticleObject* particle = GetParticle();
+				particle->type = ParticleObject_TYPE::P_HEART;
+				particle->scale.Set(10, 10, 10);
+				particle->vel.Set(1, 1, 1);
+				particle->m_gravity.Set(0, 9.8f, 0);
+				//particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
+				particle->pos.Set(Math::RandFloatMinMax(go->GetPosition().x - 10, go->GetPosition().x + 10), 4, Math::RandFloatMinMax(go->GetPosition().z - 10, go->GetPosition().z + 10));
+			}
+		}
 	}
 
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
@@ -719,10 +1088,21 @@ void SP2::UpdateParticles(double dt)
 		if (particle->active)
 		{
 			particle->Update(dt);
-			if (particle->pos.y < (ReadHeightMap(m_heightMap, particle->pos.x / 4000.f, particle->pos.z / 4000.f) * 350.f))
+			if (particle->type == ParticleObject_TYPE::P_HEART)
 			{
-				particle->active = false;
-				m_particleCount--;
+				if (particle->pos.y > 10.f)
+				{
+					particle->active = false;
+					m_particleCount--;
+				}
+			}
+			else
+			{
+				if (particle->pos.y < -1)
+				{
+					particle->active = false;
+					m_particleCount--;
+				}
 			}
 		}
 	}
@@ -746,21 +1126,6 @@ ParticleObject* SP2::GetParticle(void)
 		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_WATER);
 		particleList.push_back(particle);
 	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_SNOWFLAKE);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_LEAF);
-		particleList.push_back(particle);
-	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
-	{
-		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_DEADLEAF);
-		particleList.push_back(particle);
-	}
 
 	ParticleObject *particle = particleList.back();
 	particle->active = true;
@@ -774,26 +1139,26 @@ void SP2::RenderAnimal(CAnimal* animal)
 	{
 	case CAnimal::GO_PIG:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
-		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
-		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
-		RenderMesh(meshList[GEO_PIG], false);
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y, animal->GetPosition().z);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
+		RenderMesh(meshList[GEO_PIG], true);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_COW:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z );
-		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
-		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
-		RenderMesh(meshList[GEO_COW], false);
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y, animal->GetPosition().z );
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
+		RenderMesh(meshList[GEO_COW], true);
 		modelStack.PopMatrix();
 		break;
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
-		modelStack.Translate(animal->pos.x, animal->pos.y, animal->pos.z);
-		modelStack.Rotate(animal->m_fAngle, 0, 1, 0);
-		modelStack.Scale(animal->scale.x, animal->scale.y, animal->scale.z);
-		RenderMesh(meshList[GEO_CHICKEN], false);
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y, animal->GetPosition().z);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
+		RenderMesh(meshList[GEO_CHICKEN], true);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -831,13 +1196,13 @@ void SP2::RenderParticles(ParticleObject * particle)
 		RenderMesh(meshList[GEO_PARTICLE_LEAF], false);
 		modelStack.PopMatrix();
 		break;
-	case ParticleObject_TYPE::P_DEADLEAF:
+	case ParticleObject_TYPE::P_HEART:
 		modelStack.PushMatrix();
 		modelStack.Translate(particle->pos.x, particle->pos.y, particle->pos.z);
 		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - particle->pos.x, camera.position.z - particle->pos.z)), 0, 1, 0);
 		modelStack.Rotate(particle->rotation, 0, 0, 1);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
-		RenderMesh(meshList[GEO_PARTICLE_DEADLEAF], false);
+		RenderMesh(meshList[GEO_PARTICLE_HEART], false);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -890,7 +1255,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	modelStack.LoadIdentity();
 	modelStack.Translate(Application::GetWindowWidth() / 2 + x ,Application::GetWindowHeight() / 2 + y, 0);
 	modelStack.Scale(size, size, 1);
-	
+
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 1);
 	glUniform3fv(m_parameters[U_TEXT_COLOR], 1, &color.r);
 	glUniform1i(m_parameters[U_LIGHTENABLED], 0);
@@ -967,14 +1332,14 @@ void SP2::RenderMesh(Mesh *mesh, bool enableLight)
 		{
 			if (mesh->textureArray[i] > 0)
 			{
-				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 1);
+				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED
+					+ i], 1);
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, mesh->textureArray[i]);
 				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE + i], i);
 			}
 			else
 				glUniform1i(m_parameters[U_SHADOW_COLOR_TEXTURE_ENABLED + i], 0);
-
 		}
 		mesh->Render();
 		return;
@@ -1107,29 +1472,14 @@ void SP2::RenderPassGPass()
 
 void SP2::RenderGroundObjects()
 {
-	int x = 10, z = 10;
-
-	int scale = 100;
-
-	int pX = camera.position.x / scale;
-	int pZ = camera.position.z / scale;
-
-	int outwards = 10;
-
-	int minOutwardsFromPlayerX = pX - outwards;
-	int minOutwardsFromPlayerZ = pZ - outwards;
-
-	int maxOutwardsFromPlayerX = pX + outwards;
-	int maxOutwardsFromPlayerZ = pZ + outwards;
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 500)
+		if (i >= 0 && i <= 250)
 		{
 			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 500)
+				if (k >= 0 && k <= 250)
 				{
 					switch (world[i][k])
 					{
@@ -1137,14 +1487,35 @@ void SP2::RenderGroundObjects()
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						RenderMesh(meshList[GEO_TREE], true);
+
+						switch (SP2_Seasons->getSeason())
+						{
+						case Season::TYPE_SEASON::SPRING:
+							RenderMesh(meshList[GEO_TREE_SPRING], true);
+							break;
+						case Season::TYPE_SEASON::SUMMER:
+							RenderMesh(meshList[GEO_TREE_SUMMER], true);
+							break;
+						case Season::TYPE_SEASON::WINTER:
+							RenderMesh(meshList[GEO_TREE_WINTER], true);
+							break;
+						default:
+							break;
+						}
 						modelStack.PopMatrix();
 						break;
 					case 'O':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						RenderMesh(meshList[GEO_ORE], true);
+						RenderMesh(meshList[GEO_GOLD_ORE], true);
+						modelStack.PopMatrix();
+						break;
+					case 'C':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						RenderMesh(meshList[GEO_COAL_ORE], true);
 						modelStack.PopMatrix();
 						break;
 					case 'B':
@@ -1161,32 +1532,17 @@ void SP2::RenderGroundObjects()
 		}
 	}
 }
- 
+
 void SP2::RenderGround()
 {
-	int x = 10, z = 10;
-
-	int scale = 100;
-
-	int pX = camera.position.x / scale;
-	int pZ = camera.position.z / scale;
-
-	int outwards = 10;
-
-	int minOutwardsFromPlayerX = pX - outwards;
-	int minOutwardsFromPlayerZ = pZ - outwards;
-
-	int maxOutwardsFromPlayerX = pX + outwards;
-	int maxOutwardsFromPlayerZ = pZ + outwards;
-
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 500)
+		if (i >= 0 && i <= 250)
 		{
 			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 500)
+				if (k >= 0 && k <= 250)
 				{
 					switch (world[i][k])
 					{
@@ -1195,6 +1551,9 @@ void SP2::RenderGround()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						modelStack.Rotate(270, 1, 0, 0);
+						if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::WINTER)
+							RenderMesh(meshList[GEO_WATER_WINTER], true);
+						else
 						RenderMesh(meshList[GEO_WATER], true);
 						modelStack.PopMatrix();
 						break;
@@ -1203,11 +1562,24 @@ void SP2::RenderGround()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						modelStack.Rotate(270, 1, 0, 0);
-						RenderMesh(meshList[GEO_GRASS], true);
+						switch (SP2_Seasons->getSeason())
+						{
+						case Season::TYPE_SEASON::SPRING:
+							RenderMesh(meshList[GEO_GRASS_SPRING], true);
+							break;
+						case Season::TYPE_SEASON::SUMMER:
+							RenderMesh(meshList[GEO_GRASS_SUMMER], true);
+							break;
+						case Season::TYPE_SEASON::WINTER:
+							RenderMesh(meshList[GEO_GRASS_WINTER], true);
+							break;
+						default:
+							break;
+						}
 						modelStack.PopMatrix();
 						break;
 					}
-					
+
 				}
 			}
 		}
@@ -1225,7 +1597,7 @@ void SP2::RenderCrafting()
 	//Crafting Interface
 	if (player->getIsCrafting() == true)
 	{
-		
+
 		RenderImageToScreen(meshList[GEO_CRAFTING_MENU], false, Application::GetWindowWidth() / 2, Application::GetWindowWidth() / 2,
 			Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 0);
 
@@ -1234,7 +1606,7 @@ void SP2::RenderCrafting()
 			Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2, 1);
 
 		if (player->getCraftingSlotOne() != -1)
-			//Render the id of whatever belongs to the first crafting slot 
+			//Render the id of whatever belongs to the first crafting slot
 			RenderItem(Application::GetWindowWidth() / 2 - 150, Application::GetWindowHeight() / 2
 				, 2, 150, 150, player->getItem(player->getCraftingSlotOne())->getID());
 		//
@@ -1244,7 +1616,7 @@ void SP2::RenderCrafting()
 			Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2, 1);
 
 		if (player->getCraftingSlotTwo() != -1)
-			//Render the id of whatever belongs to the second crafting slot 
+			//Render the id of whatever belongs to the second crafting slot
 			RenderItem(Application::GetWindowWidth() / 2 + 150, Application::GetWindowHeight() / 2
 				, 2, 150, 150, player->getItem(player->getCraftingSlotTwo())->getID());
 		//
@@ -1260,7 +1632,7 @@ void SP2::RenderCrafting()
 	}
 }
 
-void SP2::RenderWorld()
+void SP2::RenderInventory()
 {
 	RenderImageToScreen(meshList[GEO_INVENTORY], false, Application::GetWindowWidth(), Application::GetWindowHeight() / 10,
 		Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2 - 360, 0);
@@ -1275,10 +1647,55 @@ void SP2::RenderWorld()
 			RenderImageToScreen(meshList[GEO_HIGHLIGHT_INVENTORY], false, 60, 60,
 				180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 1);
 
-		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2 , 50, 50, player->getItem(i)->getID());
+		RenderItem(180 + 60 + i * 60, Application::GetWindowHeight() / 2 - 360, 2, 50, 50, player->getItem(i)->getID());
 	}
-
-	
+}
+void SP2::RenderHPandHunger()
+{
+	//Health
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i < static_cast<int>(player->getHP() * 0.1f))
+		{
+			RenderImageToScreen(meshList[GEO_HEALTH_FULL], false, 40, 40,
+				120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+		else
+		{
+			if (static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
+				RenderImageToScreen(meshList[GEO_HEALTH_HALF], false, 40, 40,
+					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+			else
+				RenderImageToScreen(meshList[GEO_HEALTH_EMPTY], false, 40, 40,
+					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+	}
+	//Hunger
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i < static_cast<int>(player->getHunger() * 0.1f))
+		{
+			RenderImageToScreen(meshList[GEO_HUNGER_FULL], false, 40, 40,
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+		else
+		{
+			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
+				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+			else
+				RenderImageToScreen(meshList[GEO_HUNGER_EMPTY], false, 40, 40,
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+		}
+	}
+}
+void SP2::RenderWorld()
+{
+	modelStack.PushMatrix();
+	modelStack.Translate(12500, 0, 12500);
+	modelStack.Scale(6, 6, 6);
+	RenderMesh(meshList[GEO_PLAYER], false);
+	modelStack.PopMatrix();
 
 	RenderGroundObjects();
 
@@ -1286,10 +1703,77 @@ void SP2::RenderWorld()
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 	{
 		CAnimal *animal = (CAnimal *)*it;
-		if (animal->m_bActive)
+		if (animal->GetActive())
 		{
 			RenderAnimal(animal);
 		}
+	}
+}
+
+void SP2::RenderSkyBox()
+{
+	modelStack.PushMatrix();
+	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
+	modelStack.Scale(3250, 3250, 3250);
+
+	switch (SP2_Seasons->getSeason())
+	{
+	case Season::TYPE_SEASON::SPRING:
+		RenderMesh(meshList[GEO_SKYBOX_SPRING], false);
+		break;
+	case Season::TYPE_SEASON::SUMMER:
+		RenderMesh(meshList[GEO_SKYBOX_SUMMER], false);
+		break;
+	case Season::TYPE_SEASON::WINTER:
+		RenderMesh(meshList[GEO_SKYBOX_WINTER], false);
+		break;
+	default:
+		break;
+	}
+	modelStack.PopMatrix();
+}
+
+void SP2::Render3DHandHeld()
+{
+	if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+	{
+		Vector3 weaponoffset(1, 1, 2);
+		Vector3 viewvector = (camera.target - camera.position);
+		modelStack.PushMatrix();
+		modelStack.Translate(camera.position.x + viewvector.x, camera.position.y + viewvector.y, camera.position.z + viewvector.z);
+		modelStack.PushMatrix();
+		// Rotate to correspond to the camera
+		modelStack.Rotate(Math::RadianToDegree(atan2(-viewvector.x, -viewvector.z)), 0, 1, 0);
+		modelStack.Rotate(Math::RadianToDegree(atan2(viewvector.y, camera.up.y)), 1, 0, 0);
+		if (player->getcurtool()->GetCurSwing())
+		{
+			modelStack.Translate(player->getcurtool()->GetCurT(), -0.3, -0.8); // Offset to draw the object
+			modelStack.Rotate(player->getcurtool()->GetCurR(), 0, 1, 0);
+		}
+		else if (player->getcurtool()->GetSide())
+		{
+			modelStack.Translate(player->getcurtool()->GetLeftRestT(), -0.2, -0.4);
+			modelStack.Rotate(player->getcurtool()->GetLeftRestR(), 0, 1, 0);
+		}
+		else
+		{
+			modelStack.Translate(player->getcurtool()->GetRightRestT(), -0.2, -0.4);
+			modelStack.Rotate(player->getcurtool()->GetRightRestR(), 0, 1, 0);
+		}
+		if (player->getcurtool()->GetCurSwing())
+		{
+			modelStack.Rotate(player->getcurtool()->GetAttackUpTilt(), 1, 0, 0);
+		}
+		else
+		{
+			modelStack.Rotate(player->getcurtool()->GetRestUpTilt(), 1, 0, 0);
+		}
+
+		modelStack.Scale(2, 2, 2);
+		RenderMesh(meshList[GEO_STONE_SWORD_MODEL], false);
+		modelStack.PopMatrix();
+		modelStack.PopMatrix();
+		//
 	}
 }
 
@@ -1338,32 +1822,27 @@ void SP2::RenderPassMain()
 	}
 
 	RenderMesh(meshList[GEO_AXES], false);
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 5.0f);
+	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 1.0f);
 
-	RenderWorld();
+	RenderCrafting();
+	RenderFurnace();
 
+	Render3DHandHeld();
+	RenderInventory();
 
-	//render light ball
+	RenderSkyBox();
+	RenderGround();
+
 	modelStack.PushMatrix();
-	modelStack.Translate(lights[0].position.x, lights[0].position.y, lights[0].position.z);
-	RenderMesh(meshList[GEO_LIGHTBALL], false);
-	modelStack.PopMatrix();
-
-	//render GEO_LIGHT_DEPTH_QUAD
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 500, 0);
-	//modelStack.Scale(100, 100, 100);
+	modelStack.Translate(12550 , 10, 12550);
+	modelStack.Scale(10, 10, 10);
+	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - 12550, camera.position.z - 12550)), 0, 1, 0);
 	RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
 	modelStack.PopMatrix();
 
-	RenderGround();
-	RenderAnimation();
+	RenderWorld();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(camera.position.x, camera.position.y, camera.position.z);
-	modelStack.Scale(3500, 3500, 3500);
-	RenderMesh(meshList[GEO_CUBE], false);
-	modelStack.PopMatrix();
+	RenderAnimation();
 
 	//	Render Particles
 	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
@@ -1375,8 +1854,9 @@ void SP2::RenderPassMain()
 		}
 	}
 
-	RenderCrafting();
-	RenderFurnace();
+	RenderCrops();
+
+	RenderHPandHunger();
 
 	std::ostringstream ss;
 	ss.precision(5);
@@ -1384,7 +1864,7 @@ void SP2::RenderPassMain()
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600 , 300  );
 
 	ss.str("");
-	ss << to_string(player->getItem(player->getCurrentSlot())->getQuantity());
+	ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
 }
 void SP2::Render()
@@ -1401,6 +1881,8 @@ void SP2::Exit()
 		if (meshList[i])
 			delete meshList[i];
 	}
+
+	delete player;
 	glDeleteProgram(m_programID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 

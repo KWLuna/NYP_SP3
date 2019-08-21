@@ -16,6 +16,7 @@
     <ClCompile Include="Source\Camera2.cpp" />
     <ClCompile Include="Source\Camera3.cpp" />
     <ClCompile Include="Source\CAnimal.cpp" />
+    <ClCompile Include="Source\Crops.cpp" />
     <ClCompile Include="Source\DepthFBO.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\Furnace.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="Source\SP2.cpp" />
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\SpriteAnimation.cpp" />
+    <ClCompile Include="Source\Sword.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
     <ClCompile Include="Source\Weapons.cpp" />
   </ItemGroup>
@@ -44,6 +46,7 @@
     <ClInclude Include="Source\Camera2.h" />
     <ClInclude Include="Source\Camera3.h" />
     <ClInclude Include="Source\CAnimal.h" />
+    <ClInclude Include="Source\Crops.h" />
     <ClInclude Include="Source\DepthFBO.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\Furnace.h" />
@@ -65,6 +68,7 @@
     <ClInclude Include="Source\SP2.h" />
     <ClInclude Include="Source\shader.hpp" />
     <ClInclude Include="Source\SpriteAnimation.h" />
+    <ClInclude Include="Source\Sword.h" />
     <ClInclude Include="Source\Utility.h" />
     <ClInclude Include="Source\Vertex.h" />
     <ClInclude Include="Source\Weapons.h" />
@@ -74,6 +78,10 @@
     <None Include="Shader\GPass.vert" />
     <None Include="Shader\Shadow.frag" />
     <None Include="Shader\Shadow.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="PlayerSaveFile.txt" />
+    <Text Include="WorldSaveFile.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9B172635-4E2B-46F1-A403-08F4194D00F5}</ProjectGuid>
@@ -124,7 +132,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)/irrKlang/Win32-visualStudio;$(SolutionDir)$(Configuration);$(SolutionDir)/glfw/lib-vc2015;$(SolutionDir)/glew/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)/irrKlang/lib/Win32-visualStudio;$(SolutionDir)/irrKlang/Win32-visualStudio;$(SolutionDir)$(Configuration);$(SolutionDir)/glfw/lib-vc2015;$(SolutionDir)/glew/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Common.lib;winmm.lib;opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

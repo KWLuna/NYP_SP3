@@ -59,7 +59,7 @@ private:
 	int m_iResultID;
 	int m_iResultTotal;
 
-	vector <int> Smeltables;
-	vector <int> Burnables;
+	std::vector <int> Smeltables;
+	std::vector <int> Burnables;
 };
 

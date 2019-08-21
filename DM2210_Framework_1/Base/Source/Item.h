@@ -1,8 +1,6 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
 class Item
 {
 public:
@@ -14,6 +12,7 @@ public:
 		ITEM_COOKED_MEAT,
 
 		ITEM_WHEAT,
+		ITEM_BREAD,
 		ITEM_CARROT,
 		ITEM_SEED,
 
@@ -39,19 +38,19 @@ public:
 	};
 
 	Item();
-	Item(char id, int quantity);
+	Item(int id, int quantity);
 	~Item();
 
-	char getID();
-	void setID(char id);
+	int getID();
+	void setID(int id);
 	void addQuantity(int quantity);
 	int getQuantity();
 
 	void setQuantity(int quantity);
 
 private:
-	vector <int * > smeltables;
+	std::vector <int * > smeltables;
 
-	char m_iID;
+	int m_iID;
 	int m_iQuantity;
 };

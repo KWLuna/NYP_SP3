@@ -17,6 +17,8 @@
 #include "CAnimal.h"
 #include "Physics.h"
 #include "Season.h"
+#include "Crops.h"
+
 
 class SP2 : public Scene
 {
@@ -95,12 +97,15 @@ class SP2 : public Scene
 		GEO_HIGHLIGHT_INVENTORY,
 		//
 
-		//2D Image Sprites
+		//2D Image Sprites 
 		GEO_ITEMS_START,
+		
+		//Make sure its symetrical with item.h DONT TOUCH IF YOU DONT KNOW WHAT YOURE DOING
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
 
 		GEO_WHEAT,
+		GEO_BREAD,
 		GEO_CARROT,
 		GEO_SEED,
 
@@ -120,27 +125,53 @@ class SP2 : public Scene
 
 		GEO_GOLD_SWORD,
 		GEO_GOLD_PICKAXE,
+		//End of symetry.
+
+		//Crop models
+		GEO_SPROUT_CROP,
+		
+		GEO_CARROT_CROP,
+
+		GEO_WHEAT_CROP,
 		//
 
+		GEO_WOODEN_SWORD_MODEL,
+		GEO_STONE_SWORD_MODEL,
+
 		//World
+			//Skybox
+			GEO_SKYBOX_SPRING,
+			GEO_SKYBOX_SUMMER,
+			GEO_SKYBOX_WINTER,
+			//
+			GEO_LIGHT_AFFECTED,
 			//Ground textures
-			GEO_GRASS,
+			GEO_GRASS_SPRING,
+			GEO_GRASS_SUMMER,
+			GEO_GRASS_WINTER,
 			GEO_WATER,
+			GEO_WATER_WINTER,
 			//Ground Objects
 			GEO_BERRY,
-			GEO_ORE,
-			GEO_TREE,
+			GEO_GOLD_ORE,
+			GEO_COAL_ORE,
+			GEO_TREE_SPRING,
+			GEO_TREE_SUMMER,
+			GEO_TREE_WINTER,
 		//
-		
+		GEO_PLAYER,
 		//Animals
 		GEO_PIG, 
 		GEO_CHICKEN,
 		GEO_COW,
+		
+		GEO_LIGHT_AFFECTED_END,
 
 		//Crafting
 		GEO_CRAFTING_MENU,
 		GEO_SMELTING_MENU,
 		GEO_EMPTY_CRAFTING,
+		GEO_FURNACE,
 
 		//TSL
 		GEO_SPRITE_ANIMATION,
@@ -148,8 +179,18 @@ class SP2 : public Scene
 		GEO_PARTICLE_WATER, 
 		GEO_PARTICLE_SNOWFLAKE,
 		GEO_PARTICLE_LEAF,
-		GEO_PARTICLE_DEADLEAF,
+		GEO_PARTICLE_HEART,
 
+		//UI
+			//HEALTH
+			GEO_HEALTH_FULL,
+			GEO_HEALTH_HALF,
+			GEO_HEALTH_EMPTY,
+			//HUNGER
+			GEO_HUNGER_FULL,
+			GEO_HUNGER_HALF,
+			GEO_HUNGER_EMPTY,
+		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		NUM_GEOMETRY,
 	};
@@ -177,7 +218,6 @@ public:
 	void RenderAnimation();
 	void RenderImageToScreen(Mesh *mesh, bool enableLight, float scaleX, float scaleY, float xPos, float yPos, float zPos);
 
-
 	void RenderItem(float posX , float posY , float posZ , float scaleX , float scaleY , int slot);
 	//Gary
 	void RenderGroundObjects();
@@ -185,6 +225,14 @@ public:
 
 	void RenderCrafting();
 	void RenderFurnace();
+	void UpdateWorldVars();
+	void RenderCrops();
+	void RenderInventory();
+	void LoadWorld();
+
+	void SaveWorld();
+	//
+	
 	Color fogColor;
 
 	//Ke Wei
@@ -195,12 +243,18 @@ public:
 	void AnimalChecker(double dt);
 		//Season Changing
 	void SeasonChanger(double dt);
+	void RenderSkyBox();
 
+	void RenderHPandHunger();
+	//
+	//Yanson
+	void Render3DHandHeld();
 	//Shadow
 	void RenderPassGPass();
 	void RenderPassMain();
 	void RenderWorld();
 private:
+	double m_dBounceTime;
 	unsigned m_vertexArrayID;
 	Mesh* meshList[NUM_GEOMETRY];
 	unsigned m_programID;
@@ -238,6 +292,7 @@ private:
 	ParticleObject* GetParticle(void);
 	std::vector<ParticleObject*> particleList;
 	std::vector<Furnace*> FurnaceList;
+	std::vector<Crops*> CropList;
 	//Shadow
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;
@@ -249,9 +304,30 @@ private:
 	std::vector<CAnimal *> m_AnimalList;
 	int m_NumOfAnimal;
 	//Season
-	Season SP2_Seasons;
+	Season* SP2_Seasons;
 	float m_fWindBounceTime;
 	bool m_bTexChange;
+	bool WindAffecting;
+
+	//World.
+	float scale ;
+
+	float pX;
+	float pZ;
+
+	float outwards;
+
+	float minOutwardsFromPlayerX;
+	float minOutwardsFromPlayerZ;
+
+	float maxOutwardsFromPlayerX;
+	float maxOutwardsFromPlayerZ;
+
+	float m_fAmbient;
+	float m_iDayNight = 1;
+	float m_fDayNightDuration = 120;
+
+	//-----------------------------
 };
 
 #endif

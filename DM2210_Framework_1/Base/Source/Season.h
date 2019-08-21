@@ -10,12 +10,10 @@ public:
 	{
 		SPRING = 0,
 		SUMMER,
-		FALL,
 		WINTER,
 		NUM_SEASON,
 	};
 
-	TYPE_SEASON seasons;
 	Season();
 	~Season();
 	void Update(double dt);
@@ -23,6 +21,7 @@ public:
 	void setSeason(int m_iSeason);
 	int getTimer();
 private:
+	TYPE_SEASON seasons;
 	int m_iSeasonChanger;
 	float m_fSeasonTime;
 };
