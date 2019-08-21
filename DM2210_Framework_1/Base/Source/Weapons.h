@@ -1,7 +1,6 @@
 #pragma once
 #include "Vector3.h"
 #include "Physics.h"
-#include "CAnimal.h"
 
 class Weapons
 {
@@ -43,7 +42,7 @@ protected:
 
 public:
 	virtual void Init(void);
-	virtual void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal *> animalist);
+	virtual void Update(const double dt, Vector3 dir, Vector3 origin);
 
 	void SetPosition(Vector3 vPosition);
 	Vector3 GetPosition(void) const;

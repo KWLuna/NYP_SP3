@@ -45,7 +45,7 @@ class SP2 : public Scene
 		U_LIGHT0_COSCUTOFF,
 		U_LIGHT0_COSINNER,
 		U_LIGHT0_EXPONENT,
-
+		
 		//Week 4
 		U_COLOR_TEXTURE_ENABLED,
 		U_COLOR_TEXTURE_ENABLED1,
@@ -98,9 +98,9 @@ class SP2 : public Scene
 		GEO_HIGHLIGHT_INVENTORY,
 		//
 
-		//2D Image Sprites
+		//2D Image Sprites 
 		GEO_ITEMS_START,
-
+		
 		//Make sure its symetrical with item.h DONT TOUCH IF YOU DONT KNOW WHAT YOURE DOING
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
@@ -132,7 +132,7 @@ class SP2 : public Scene
 
 		//Crop models
 		GEO_SPROUT_CROP,
-
+		
 		GEO_CARROT_CROP,
 
 		GEO_WHEAT_CROP,
@@ -167,13 +167,13 @@ class SP2 : public Scene
 		//
 		GEO_PLAYER,
 		//Animals
-		GEO_PIG,
+		GEO_PIG, 
 		GEO_CHICKEN,
 		GEO_COW,
 
 		//Enemy
 		GEO_ZOMBIE,
-
+		
 
 		//BLOCKS PLACE
 		GEO_FURNACE_BLOCK,
@@ -187,7 +187,7 @@ class SP2 : public Scene
 		//TSL
 		GEO_SPRITE_ANIMATION,
 		//Particles
-		GEO_PARTICLE_WATER,
+		GEO_PARTICLE_WATER, 
 		GEO_PARTICLE_SNOWFLAKE,
 		GEO_PARTICLE_LEAF,
 		GEO_PARTICLE_HEART,
@@ -223,8 +223,6 @@ public:
 	virtual void Render();
 	virtual void Exit();
 
-	char GetPlayerCurrentTile(float xPos, float yPos);
-
 	void InitGround();
 
 	void RenderText(Mesh* mesh, std::string text, Color color);
@@ -250,7 +248,7 @@ public:
 
 	void SaveWorld();
 	//
-
+	
 	Color fogColor;
 
 	//Ke Wei
@@ -322,7 +320,7 @@ private:
 	Mtx44 m_lightDepthProj;
 	Mtx44 m_lightDepthView;
 	RENDER_PASS m_renderPass;
-
+	
 	//Enemy
 	std::vector<CEnemy *> m_EnemyList;
 	int m_NumOfEnemy;
@@ -349,7 +347,7 @@ private:
 
 	float m_fTimeTillLightning;
 	float m_fLightningDuration;
-
+	
 	float minOutwardsFromPlayerX;
 	float minOutwardsFromPlayerZ;
 

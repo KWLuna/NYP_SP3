@@ -254,4 +254,12 @@
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="PlayerSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="WorldSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

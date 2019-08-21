@@ -1,5 +1,7 @@
 #include "PlayerInformation.h"
-
+#include <fstream>
+#include <string>
+#include <iostream>
 PlayerInformation::PlayerInformation()
 {
 	m_dHP = 100;
@@ -21,25 +23,84 @@ PlayerInformation::PlayerInformation()
 
 	m_bFurnaceStatus = false;
 	m_bJump = false;
-	m_bFall = false;
+	m_bFall = true;
 	m_bSwitchStance = false;
 	//Init inventory as empty , 9 slots in total.
 	for (int i = 0; i < 15; ++i)
+	{
 		ItemList.push_back(new Item(0, 0));
+	}
 
-	// edit
 	addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 	if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
 	{
 		curtool = new Sword();
 		curtool->Init();
 	}
-	//
 	action = STANDING;
+
+	LoadData();
 }
 
 PlayerInformation::~PlayerInformation()
 {
+	std::cout << "Calling destructor" << std::endl;
+	SaveData();
+}
+
+void PlayerInformation::SaveData()
+{
+	std::ofstream saveFile("PlayerSaveFile.txt");
+	if (saveFile.is_open())
+	{
+		//15
+		for (int i = 0; i < ItemList.size(); ++i)
+			saveFile << ItemList[i]->getID() << std::endl;
+		//15
+		for (int i = 0; i < ItemList.size(); ++i)
+			saveFile << ItemList[i]->getQuantity() << std::endl;
+
+		//4
+		saveFile << m_dHP << std::endl;
+		saveFile << m_dHunger << std::endl;
+		saveFile << m_iCurrentStance << std::endl;
+		saveFile << m_dConstrainY << std::endl;
+
+		saveFile.close();
+	}
+	else
+	{
+		std::cout << " cant save !" << std::endl;
+	}
+}
+
+void PlayerInformation::LoadData()
+{
+	std::ifstream saveFile("PlayerSaveFile.txt"); //Open text file to read
+	std::string row;
+	if (saveFile.is_open())
+	{
+		for (int i = 0; i < ItemList.size(); ++i)
+		{
+			saveFile >> row;
+			ItemList[i]->setID(std::stoi(row));
+		}
+
+		for (int i = 0; i < ItemList.size(); ++i)
+		{
+			saveFile >> row;
+			ItemList[i]->setQuantity(std::stoi(row));
+		}
+
+		saveFile >> m_dHP;
+		saveFile >> m_dHunger;
+		saveFile >> m_iCurrentStance;
+		saveFile >> m_dConstrainY;
+		
+		saveFile.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
 }
 
 int PlayerInformation::getCurrentSlot()
@@ -101,7 +162,7 @@ bool PlayerInformation::addItem(Item * object)
 			ItemList[i]->setID(object->getID());
 			ItemList[i]->setQuantity(object->getQuantity());
 			return true;
-		}
+		} 
 	}
 
 	return false; //tell prog that adding item was unsuccesful
@@ -167,16 +228,16 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	return new Item(-1, 0);
 }
 
-void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist)
+void PlayerInformation::update(double dt)
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
 
-	for (int i = 0; i < ItemList.size(); ++i)
+	/*for (int i = 0; i < ItemList.size(); ++i)
 	{
 		if (ItemList[i]->getQuantity() == 0)
 			ItemList[i]->setID(0);
-	}
+	}*/
 
 	if (Application::IsKeyPressed('C') && m_bSwitchStance == false && m_dBounceTime <= 0)
 	{
@@ -502,7 +563,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist)
 		Constrain();
 
 		Vector3 dir = attachedCamera->target - attachedCamera->position;
-		curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist);
+		curtool->Update(dt, dir, attachedCamera->position);
 
 		static bool bLButtonState = false;
 

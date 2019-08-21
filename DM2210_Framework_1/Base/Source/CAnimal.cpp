@@ -278,8 +278,3 @@ void CAnimal::SetBreeded(bool m_bBreeded)
 {
 	this->m_bBreeded = m_bBreeded;
 }
-
-void CAnimal::SetAngle(float m_fAngle)
-{
-	this->m_fAngle = m_fAngle;
-}

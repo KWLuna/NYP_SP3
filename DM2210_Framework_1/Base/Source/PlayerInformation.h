@@ -4,7 +4,6 @@
 #include "Physics.h"
 #include "Weapons.h"
 #include "Sword.h"
-#include "CAnimal.h"
 #include <vector>
 #include "Application.h"
 #include <string>
@@ -32,8 +31,7 @@ public:
 
 	void Constrain(void);
 	void AttachCamera(Camera3* _cameraPtr);
-	void update(double dt, std::vector<CAnimal *> animlist);
-	/*void CheckHeldCollision(double dt, std::vector<CAnimal *> animlist);*/
+	void update(double dt);
 
 	bool addItem(Item * object);
 	Item * getItem(int ID);

@@ -39,11 +39,11 @@ public:
 	};
 
 	Item();
-	Item(char id, int quantity);
+	Item(int id, int quantity);
 	~Item();
 
-	char getID();
-	void setID(char id);
+	int getID();
+	void setID(int id);
 	void addQuantity(int quantity);
 	int getQuantity();
 
@@ -52,6 +52,6 @@ public:
 private:
 	std::vector <int * > smeltables;
 
-	char m_iID;
+	int m_iID;
 	int m_iQuantity;
 };

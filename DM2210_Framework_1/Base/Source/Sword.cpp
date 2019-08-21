@@ -27,13 +27,12 @@ void Sword::Init()
 	resttiltup = 45.0;
 	curr = rightmaxr;
 	curt = rightmaxt;
-
-	std::cout << rightmaxt;
+	//std::cout << rightmaxt;
 }
 
-void Sword::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist)
+void Sword::Update(const double dt, Vector3 dir, Vector3 origin)
 {
-	Weapons::UpdateAnimal(dt, dir, origin, animalist);
+	Weapons::Update(dt, dir, origin);
 	Response();
 }
 
