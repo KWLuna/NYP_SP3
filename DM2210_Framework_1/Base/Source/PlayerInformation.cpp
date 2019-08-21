@@ -218,6 +218,12 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 			return new Item(Item::ITEM_BREAD, 1);
 	}
 
+	if (firstItem == Item::Item::ITEM_STONE)
+	{
+		if (secondItem == Item::Item::ITEM_STONE)
+			return new Item(Item::ITEM_FURNACE, 1);
+	}
+
 	return new Item(-1, 0);
 }
 

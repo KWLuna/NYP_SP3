@@ -32,6 +32,7 @@ public:
 		ITEM_GOLD_SWORD,
 		ITEM_GOLD_PICKAXE,
 		
+		ITEM_FURNACE,
 		//TO ADD
 
 		ITEM_END
