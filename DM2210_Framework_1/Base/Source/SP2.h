@@ -159,6 +159,7 @@ class SP2 : public Scene
 			//
 			GEO_LIGHT_AFFECTED,
 			//Ground textures
+			GEO_TILLED_DIRT,
 			GEO_GRASS_SPRING,
 			GEO_GRASS_SUMMER,
 			GEO_GRASS_WINTER,

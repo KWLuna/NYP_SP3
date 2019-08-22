@@ -336,7 +336,7 @@ void SP2::Init()
 	meshList[GEO_CROSSHAIR] = MeshBuilder::GenerateCrossHair("crosshair");
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1.f);
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
-	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//calibri.tga");
+	meshList[GEO_TEXT]->textureArray[0] = LoadTGA("Image//Font.tga");
 	meshList[GEO_TEXT]->material.kAmbient.Set(1, 0, 0);
 	meshList[GEO_RING] = MeshBuilder::GenerateRing("ring", Color(1, 0, 1), 36, 1, 0.5f);
 	meshList[GEO_LIGHTBALL] = MeshBuilder::GenerateSphere("lightball", Color(1, 1, 1), 18, 36, 1.f);
@@ -356,15 +356,23 @@ void SP2::Init()
 	meshList[GEO_SKYBOX_WINTER]->textureArray[0] = LoadTGA("Image//Skybox_Winter.tga");
 
 	//
+	meshList[GEO_TILLED_DIRT] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_TILLED_DIRT]->textureArray[0] = LoadTGA("Image//Tilled_Dirt.tga");
+
+	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
+
 	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
 	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 
 	meshList[GEO_GRASS_SUMMER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_SUMMER]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 
 	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 	//
 	meshList[GEO_STONE_BRICK_FLOOR] = MeshBuilder::GenerateQuad("GEO_STONE_BRICK_FLOOR", Color(1, 1, 1), 1.f);
 	meshList[GEO_STONE_BRICK_FLOOR]->textureArray[0] = LoadTGA("Image//StoneBricks.tga");
@@ -658,7 +666,8 @@ void SP2::Init()
 
 	//Crops assign to where the player plants it. so get the tile position and multiply by scale.
 	//CropList.push_back(new Crops(0 , 12250 , 12250));
-	CropList.push_back(new Crops(0 , 12250 , 12250));
+
+	CropList.push_back(new Crops(0 , 125, 125));
 
 	//instructions
 	instructionorder = 0;
@@ -852,6 +861,7 @@ void SP2::Update(double dt)
 		{
 			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
 			player->addItem(new Item(Item::ITEM_WOOD, 1));
+			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 			player->addItem(new Item(Item::ITEM_STONE, 1));
@@ -871,7 +881,7 @@ void SP2::Update(double dt)
 
 			world[125][125] = 'D';
 
-			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'L';
+			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'c';
 
 			m_dBounceTime = 0.5;
 		}
@@ -941,13 +951,13 @@ void SP2::Update(double dt)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
+		/*if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
-			FurnaceList.push_back(new Furnace);
+			FurnaceList.push_back(new Furnace(x , y ));
 			FurnaceList[0]->SetStatus(true);
 
 			m_dBounceTime = 0.2;
-		}
+		}*/
 
 	UpdateWorldVars();
 	UpdateParticles(dt);
@@ -1316,9 +1326,9 @@ void SP2::RenderCrops()
 				if (CropList[i]->GetState() == 0)
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZPos() - 25 + k * 25));
+					modelStack.Translate(static_cast<float>(CropList[i]->GetXTile() * scale - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZTile() * scale - 25 + k * 25));
 					modelStack.Scale(25, 50, 25);
-					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXTile()  * scale  - 25 + j * 25), camera.position.z - (CropList[i]->GetZTile() * scale - 25 + k * 25))), 0, 1, 0);
 					RenderMesh(meshList[GEO_SPROUT_CROP], false);
 					modelStack.PopMatrix();
 				}
@@ -1327,18 +1337,18 @@ void SP2::RenderCrops()
 					if (CropList[i]->GetCropType() == 0)
 					{
 						modelStack.PushMatrix();
-						modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>( CropList[i]->GetZPos() - 25 + k * 25));
+						modelStack.Translate(static_cast<float>(CropList[i]->GetXTile()  * scale - 25 + j * 25), 25, static_cast<float>( CropList[i]->GetZTile() * scale - 25 + k * 25));
 						modelStack.Scale(25, 50, 25);
-						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXTile() * scale - 25 + j * 25), camera.position.z - (CropList[i]->GetZTile() * scale - 25 + k * 25))), 0, 1, 0);
 						RenderMesh(meshList[GEO_CARROT_CROP], false);
 						modelStack.PopMatrix();
 					}
 					else
 					{
 						modelStack.PushMatrix();
-						modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZPos() - 25 + k * 25));
+						modelStack.Translate(static_cast<float>(CropList[i]->GetXTile()  * scale - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZTile() * scale - 25 + k * 25));
 						modelStack.Scale(25, 50, 25);
-						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXTile()  * scale - 25 + j * 25), camera.position.z - (CropList[i]->GetZTile() * scale - 25 + k * 25))), 0, 1, 0);
 						RenderMesh(meshList[GEO_WHEAT_CROP], false);
 						modelStack.PopMatrix();
 					}
@@ -1853,7 +1863,7 @@ void SP2::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float si
 	for (unsigned i = 0; i < text.length(); ++i)
 	{
 		Mtx44 characterSpacing;
-		characterSpacing.SetToTranslation(i * 0.5f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
+		characterSpacing.SetToTranslation(i * 0.8f + 0.5f, 0.5f, 0); //1.0f is the spacing of each character, you may change this value
 		Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -2155,6 +2165,14 @@ void SP2::RenderGround()
 				{
 					switch (world[i][k])
 					{
+					case 'c':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_TILLED_DIRT], true);
+						modelStack.PopMatrix();
+						break;
 					case 'd':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
@@ -2549,15 +2567,15 @@ void SP2::RenderPassMain()
 		std::ostringstream ss;
 		ss.precision(5);
 		ss << "FPS: " << fps;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 300);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 300);
 
 		ss.str("");
 		ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -20, -300);
 
 		ss.str("");
 		ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 200);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 200);
 	}
 }
 void SP2::RenderInstructions()
@@ -2571,16 +2589,25 @@ void SP2::RenderInstructions()
 			Application::GetWindowWidth() * 0.5f, Application::GetWindowHeight() * 0.5f + 100, 0);
 		break;
 	case 1:
-		ss << "Arrow Keys to swap inventory slot.";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		ss << "Arrow Keys to swap";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -500, 150);
+		ss.str("");
+		ss << "inventory slot.";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -500, 100);
 		break;
 	case 2:
-		ss << "Press E to open up Crafting Table";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		ss << "Press E to open";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -500, 150);
+		ss.str("");
+		ss << "up Crafting Table";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -500, 100);
 		break;
 	case 3:
-		ss << "Becareful while venturing! Have Fun!";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		ss << "Becareful while venturing!";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -500, 150);
+		ss.str("");
+		ss << "Have Fun!";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -500, 100);
 		break;
 	default:
 		break;

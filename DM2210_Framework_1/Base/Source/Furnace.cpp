@@ -1,6 +1,6 @@
 #include "Furnace.h"
 
-Furnace::Furnace()
+Furnace::Furnace(int xPos, int zPos)
 {
 	m_iFuelID = 0;
 	m_iFuelTotal = 0;
@@ -8,6 +8,8 @@ Furnace::Furnace()
 	m_iSmeltingID = 0;
 	m_iSmeltingTotal = 0;
 	
+	m_bAccessFurnace = false;
+
 	m_bAccessFurnace = false;
 
 	m_iResultID = 0;
@@ -24,6 +26,9 @@ Furnace::Furnace()
 
 	Burnables.push_back(Item::ITEM_COAL);
 	Burnables.push_back(Item::ITEM_WOOD);
+
+	m_iTileX = xPos;
+	m_iTileZ = zPos;
 }
 
 Furnace::~Furnace()
@@ -39,6 +44,16 @@ Furnace::~Furnace()
 		std::cout << "drop m_iSmeltingID ";
 
 	std::cout << std::endl;
+}
+
+int Furnace::GetXTile()
+{
+	return m_iTileX;
+}
+
+int Furnace::GetZTile()
+{
+	return m_iTileZ;
 }
 
 int Furnace::GetSmeltingID()
@@ -93,7 +108,6 @@ int Furnace::GetResultTotal()
 {
 	return m_iResultTotal;
 }
-
 
 void Furnace::SmeltingProccess(double dt)
 {
