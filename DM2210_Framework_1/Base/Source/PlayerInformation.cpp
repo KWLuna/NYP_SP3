@@ -38,8 +38,6 @@ PlayerInformation::PlayerInformation()
 		curtool->Init();
 	}
 	action = STANDING;
-
-	LoadData();
 }
 
 PlayerInformation::~PlayerInformation()
@@ -65,7 +63,9 @@ void PlayerInformation::SaveData()
 		saveFile << m_dHunger << std::endl;
 		saveFile << m_iCurrentStance << std::endl;
 		saveFile << m_dConstrainY << std::endl;
-
+		
+		saveFile << attachedCamera->position.x << std::endl;
+		saveFile << attachedCamera->position.z << std::endl;
 		saveFile.close();
 	}
 	else
@@ -96,7 +96,8 @@ void PlayerInformation::LoadData()
 		saveFile >> m_dHunger;
 		saveFile >> m_iCurrentStance;
 		saveFile >> m_dConstrainY;
-		
+		saveFile >> attachedCamera->position.x;
+		saveFile >> attachedCamera->position.z;
 		saveFile.close();
 	}
 	else
@@ -120,6 +121,15 @@ void PlayerInformation::Constrain()
 	attachedCamera->position.y = m_dConstrainY;
 
 	attachedCamera->target = attachedCamera->position + viewVector;
+
+	if (attachedCamera->position.x < 0)
+		attachedCamera->position.x = 25000;
+	if (attachedCamera->position.z < 0)
+		attachedCamera->position.z = 25000;
+	if (attachedCamera->position.x > 25000)
+		attachedCamera->position.x = 0;
+	if (attachedCamera->position.x > 25000)
+		attachedCamera->position.x = 0;
 	//
 }
 
@@ -365,7 +375,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 		if (m_iCurrentStance == STAND)
 		{
 			if (m_dConstrainY > 40)
-				m_dConstrainY -= 150 * dt - 9.8 * dt;
+				m_dConstrainY -= 200 * dt - 9.8 * dt;
 			else
 				m_bFall = false;
 		}

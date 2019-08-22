@@ -149,7 +149,7 @@ void Camera3::Update(double dt)
 	}
 	if(Application::IsKeyPressed('R'))
 	{
-		Reset();
+		//Reset();
 	}
 }
 

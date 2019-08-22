@@ -179,6 +179,7 @@ void SP2::InitGround()
 void SP2::Init()
 {
 	m_bMenu = true;
+	m_bContinue = false;
 	Math::InitRNG();
 	m_fNavigatorY = 0;
 //	LoadWorld();
@@ -323,7 +324,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
 	camera.Init(Vector3(2500, 50, 2500), Vector3(0, 200, -10), Vector3(0, 1, 0));
-	player = new PlayerInformation;
+	player = new PlayerInformation();
 	player->AttachCamera(&camera);
 	
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
@@ -571,6 +572,9 @@ void SP2::Init()
 	meshList[GEO_MENU] = MeshBuilder::GenerateQuad("GEO_MENU", Color(1, 1, 1), 1.f);
 	meshList[GEO_MENU]->textureArray[0] = LoadTGA("Image//Menu.tga");
 
+	meshList[GEO_PLAYER_SELECTION] = MeshBuilder::GenerateQuad("GEO_MENU", Color(1, 1, 1), 1.f);
+	meshList[GEO_PLAYER_SELECTION]->textureArray[0] = LoadTGA("Image//Player_Selection.tga");
+
 	meshList[GEO_NAVIGATOR] = MeshBuilder::GenerateQuad("GEO_NAVIGATOR", Color(1, 1, 1), 1.f);
 	meshList[GEO_NAVIGATOR]->textureArray[0] = LoadTGA("Image//Navigator.tga");
 	//UI
@@ -764,7 +768,7 @@ void SP2::Update(double dt)
 		{
 			m_fNavigatorY -= 100;
 			if (m_fNavigatorY < -100)
-				m_fNavigatorY = 100;
+				m_fNavigatorY = 0;
 			m_dBounceTime = 0.2;
 		}
 		else if (Application::IsKeyPressed(VK_UP) && m_dBounceTime <= 0)
@@ -774,13 +778,37 @@ void SP2::Update(double dt)
 				m_fNavigatorY = -100;
 			m_dBounceTime = 0.2;
 		}
-		else if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
-		{
-			if (m_fNavigatorY == 0)
-				m_bMenu = false;
 
-			m_dBounceTime = 0.2;
-		}
+	
+			if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
+			{
+				if (m_bContinue == false)
+				{
+					if (m_fNavigatorY == 0)
+					{
+						m_bContinue = true;
+					}
+					else
+					{
+						m_bMenu = false;
+					}
+					m_dBounceTime = 0.2;
+				}
+				else
+				{
+					if (m_fNavigatorY == 0)
+					{
+						player->LoadData();
+						LoadWorld();
+						m_bMenu = false;
+					}
+					else
+					{
+						m_bMenu = false;
+					}
+					m_dBounceTime = 0.2;
+				}
+			}
 	}
 	else if(m_bMenu == false)
 	{
@@ -2449,9 +2477,11 @@ void SP2::RenderPassMain()
 	}
 	if (m_bMenu == true)
 	{
-		RenderImageToScreen(meshList[GEO_MENU], false, Application::GetWindowWidth(), Application::GetWindowHeight(), Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 1);
+		if (m_bContinue == false)
+			RenderImageToScreen(meshList[GEO_PLAYER_SELECTION], false, Application::GetWindowWidth(), Application::GetWindowHeight(), Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 1);
+		else
+			RenderImageToScreen(meshList[GEO_MENU], false, Application::GetWindowWidth(), Application::GetWindowHeight(), Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 1);
 		RenderImageToScreen(meshList[GEO_NAVIGATOR], false, Application::GetWindowWidth() / 10, Application::GetWindowHeight() / 10 , Application::GetWindowWidth() / 2 - 400 , Application::GetWindowHeight() / 2 + m_fNavigatorY, 2);
-
 	}
 	if (m_bMenu == false)
 	{
@@ -2555,6 +2585,18 @@ void SP2::Exit()
 	{
 		if (meshList[i])
 			delete meshList[i];
+	}
+
+	for (int i = 0; i < CropList.size(); ++i)
+	{
+		if (CropList[i])
+			delete CropList[i];
+	}
+
+	for (int i = 0; i < FurnaceList.size(); ++i)
+	{
+		if (FurnaceList[i])
+			delete FurnaceList[i];
 	}
 
 	delete player;

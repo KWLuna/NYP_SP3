@@ -219,6 +219,7 @@ class SP2 : public Scene
 		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		GEO_MENU,
+		GEO_PLAYER_SELECTION,
 		GEO_NAVIGATOR,
 
 		NUM_GEOMETRY,
@@ -395,6 +396,7 @@ private:
 	float m_fNavigatorY;
 
 	bool m_bMenu;
+	bool m_bContinue;
 };
 
 #endif
