@@ -10,6 +10,7 @@ public:
 	enum ENEMY_TYPE
 	{
 		GO_ZOMBIE = 0,
+		GO_WITCH,
 	};
 	enum Enemy_Behaviour
 	{
@@ -36,6 +37,7 @@ public:
 	float GetSpeed();
 	float GetStrength();
 	bool GetAttackedPlayer();
+	bool GetRotated();
 	//Set Functions
 	void SetBehaviour(int m_iCurrentBehaviour);
 	void SetPosition(Vector3 P);

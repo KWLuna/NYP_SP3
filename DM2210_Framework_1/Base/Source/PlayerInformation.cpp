@@ -389,6 +389,10 @@ void PlayerInformation::update(double dt)
 				m_dHP -= 1;
 			}
 		}
+		if (m_dHP < 0)
+		{
+			m_dHP = 0;
+		}
 	}
 	else
 	{

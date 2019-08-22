@@ -509,6 +509,9 @@ void SP2::Init()
 
 		meshList[GEO_THIRST_EMPTY] = MeshBuilder::GenerateQuad("GEO_THIRST_EMPTY", Color(1, 1, 1), 1.0f);
 		meshList[GEO_THIRST_EMPTY]->textureArray[0] = LoadTGA("Image//thirst_empty.tga");
+		//UI
+		meshList[GEO_INSTRUCTION1] = MeshBuilder::GenerateQuad("GEO_INSTRUCTION1", Color(1, 1, 1), 1.0f);
+		meshList[GEO_INSTRUCTION1]->textureArray[0] = LoadTGA("Image//instruction1.tga");
 		//
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
@@ -534,20 +537,16 @@ void SP2::Init()
 	{
 		particleList.push_back(new ParticleObject(ParticleObject_TYPE::P_WATER));
 	}
-	//Animals
+	//Animals//Enemy
 	unsigned int NUMBEROFOBJECTS = 100;
 
 	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
 	{
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
+		m_EnemyList.push_back(new CEnemy(CEnemy::GO_ZOMBIE));
+
 	}
 	m_NumOfAnimal = 0;
-
-	//Enemy
-	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
-	{
-		m_EnemyList.push_back(new CEnemy(CEnemy::GO_ZOMBIE));
-	}
 	m_NumOfEnemy = 0;
 
 	//Season
@@ -562,6 +561,13 @@ void SP2::Init()
 	//FurnaceList[0]->SetStatus(true);
 
 	CropList.push_back(new Crops(0 , 12250 , 12250));
+
+	//instructions
+	instructionorder = 0;
+	instructiontimer = 0;
+	//Projectile
+	MAX_PROJECTILE = 500;
+	m_iProjectileCount = 0;
 }
 
 void SP2::RenderFurnace()
@@ -810,6 +816,13 @@ void SP2::Update(double dt)
 
 	AnimalChecker(dt);
 	EnemyChecker(dt);
+
+	instructiontimer += dt;
+	if (instructiontimer > 3)
+	{
+		instructionorder++; 
+		instructiontimer = 0;
+	}
 }
 void SP2::EnemyChecker(double dt)
 {
@@ -821,7 +834,7 @@ void SP2::EnemyChecker(double dt)
 	float MinZ = camera.position.z - 1000;
 	float MaxZ = camera.position.z + 1000;
 
-	if (m_NumOfEnemy < 15)
+	if (m_NumOfEnemy < 20)
 		SpawningEnemy();
 
 	m_NumOfEnemy = 0;
@@ -840,19 +853,56 @@ void SP2::EnemyChecker(double dt)
 
 			if (go->GetActive())
 			{
+				
 				if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
 				{
-					if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+					if (go->type == CEnemy::ENEMY_TYPE::GO_ZOMBIE)
 					{
-						go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
-						go->SetBehaviour(2);
+						if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+						{
+							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+							go->SetBehaviour(2);
+						}
+						else
+						{
+							go->SetBehaviour(3);
+							if (go->GetAttackedPlayer())
+							{
+								player->SetHP(player->getHP() - go->GetStrength());
+							}
+						}
 					}
-					else
+					else if (go->type == CEnemy::ENEMY_TYPE::GO_WITCH)
 					{
-						go->SetBehaviour(3);
+						if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+
+						if (go->GetRotated())
+						{
+							go->SetBehaviour(3);
+							std::cout << "b" << std::endl;
+						}
+						else
+						{
+							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+							go->SetBehaviour(2);
+							std::cout << "a" << std::endl;
+						}
 						if (go->GetAttackedPlayer())
 						{
-							player->SetHP(player->getHP() - go->GetStrength());
+							std::cout << "c" << std::endl;
+
+							//shoot projectile at player
+							if (m_iProjectileCount < MAX_PROJECTILE)
+							{
+								ProjectileObject* Projectile = GetProjectile();
+								Projectile->SetType(PROJECTILE_TYPE::P_FIREBALL);
+								Projectile->SetScale(Vector3(2, 10, 2));
+								Projectile->SetVelocity(Vector3(1, 1, 1));
+								Projectile->SetRotationSpeed(Math::RandFloatMinMax(20.f, 40.f));
+								Projectile->SetPos(go->GetPosition());
+								Projectile->SetTargetPos(camera.position);
+								Projectile->SetGotPlayersPos(true);
+							}
 						}
 					}
 				}
@@ -1099,7 +1149,7 @@ void SP2::SpawningEnemy()
 				if (k >= 0 && k <= 500)
 				{
 					int choice = Math::RandIntMinMax(0, 10);
-					if (choice == 1) //spawn in if it is 1
+					if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 					{
 						CEnemy *go = EnemyFetchGO();
 						go->type = CEnemy::GO_ZOMBIE;
@@ -1112,6 +1162,8 @@ void SP2::SpawningEnemy()
 							go->SetHP(go->GetHP() * 1.5f);
 							go->SetSpeed(Math::RandFloatMinMax(0.1f, 0.5f) * 1.5f);
 						}
+						if (go->GetPosition() == camera.position)
+							go->SetSpawned(false);
 					}
 				}
 			}
@@ -1366,6 +1418,14 @@ void SP2::RenderEnemy(CEnemy* enemy)
 		RenderMesh(meshList[GEO_ZOMBIE], true);
 		modelStack.PopMatrix();
 		break;
+	case CEnemy::GO_WITCH:
+		modelStack.PushMatrix();
+		modelStack.Translate(enemy->GetPosition().x, enemy->GetPosition().y, enemy->GetPosition().z);
+		modelStack.Rotate(enemy->GetAngle(), 0, 1, 0);
+		modelStack.Scale(enemy->GetScale().x, enemy->GetScale().y, enemy->GetScale().z);
+		RenderMesh(meshList[GEO_CUBE], false);
+		modelStack.PopMatrix();
+		break;
 	default:
 		break;
 	}
@@ -1408,6 +1468,71 @@ void SP2::RenderParticles(ParticleObject * particle)
 		modelStack.Rotate(particle->rotation, 0, 0, 1);
 		modelStack.Scale(particle->scale.x, particle->scale.y, particle->scale.z);
 		RenderMesh(meshList[GEO_PARTICLE_HEART], false);
+		modelStack.PopMatrix();
+		break;
+	default:
+		break;
+	}
+}
+//Projectile
+ProjectileObject* SP2::GetProjectile(void)
+{
+	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+	{
+		ProjectileObject *Projectile = (ProjectileObject *)*it;
+		if (!Projectile->GetActive())
+		{
+			Projectile->SetActive(true);
+			m_iProjectileCount++;
+			return Projectile;
+		}
+	}
+	for (unsigned i = 0; i < MAX_PROJECTILE; ++i)
+	{
+		ProjectileObject *Projectile = new ProjectileObject(PROJECTILE_TYPE::P_FIREBALL);
+		ProjectileList.push_back(Projectile);
+	}
+
+	ProjectileObject *Projectile = ProjectileList.back();
+	Projectile->SetActive(true);
+	m_iProjectileCount++;
+	return Projectile;
+}
+void SP2::UpdateProjectile(double dt)
+{
+	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+	{
+		ProjectileObject *Projectile = (ProjectileObject *)*it;
+		if (Projectile->GetActive())
+		{
+			Projectile->Update(dt);
+			if ((Projectile->GetPos() - camera.position).Length() < 5)
+			{
+				Projectile->SetActive(false);
+				m_iProjectileCount--;
+				player->SetHP(player->getHP() - 5.f);
+			}
+			if (Projectile->GetTimeTravelled() > 10)
+			{
+				Projectile->SetActive(false);
+				m_iProjectileCount--;
+			}
+
+		}
+	}
+
+}
+void SP2::RenderProjectile(ProjectileObject * Projectile)
+{
+	switch (Projectile->GetType())
+	{
+	case PROJECTILE_TYPE::P_FIREBALL:
+		modelStack.PushMatrix();
+		modelStack.Translate(Projectile->GetPos().x, Projectile->GetPos().y, Projectile->GetPos().z);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - Projectile->GetPos().x, camera.position.z - Projectile->GetPos().z)), 0, 1, 0);
+		modelStack.Rotate(Projectile->GetRotation(), 0, 0, 1);
+		modelStack.Scale(Projectile->GetScale().x, Projectile->GetScale().y, Projectile->GetScale().z);
+		RenderMesh(meshList[GEO_CUBE], false);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -1863,16 +1988,16 @@ void SP2::RenderPlayerInfo()
 		if (i < static_cast<int>(player->getHP() * 0.1))
 		{
 			RenderImageToScreen(meshList[GEO_HEALTH_FULL], false, 40, 40,
-				120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+				120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 0);
 		}
 		else
 		{
 			if (static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
 				RenderImageToScreen(meshList[GEO_HEALTH_HALF], false, 40, 40,
-					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 0);
 			else
 				RenderImageToScreen(meshList[GEO_HEALTH_EMPTY], false, 40, 40,
-					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 1);
+					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 0);
 		}
 	}
 	//Hunger
@@ -1881,16 +2006,16 @@ void SP2::RenderPlayerInfo()
 		if (i < static_cast<int>(player->getHunger() * 0.1f))
 		{
 			RenderImageToScreen(meshList[GEO_HUNGER_FULL], false, 40, 40,
-				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 0);
 		}
 		else
 		{
 			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
 				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 0);
 			else
 				RenderImageToScreen(meshList[GEO_HUNGER_EMPTY], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 0);
 		}
 	}
 	//Thirst
@@ -1899,12 +2024,12 @@ void SP2::RenderPlayerInfo()
 		if (i < static_cast<int>(player->getThirst() * 0.1f))
 		{
 			RenderImageToScreen(meshList[GEO_THIRST_FULL], false, 40, 40,
-				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 1);
+				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 0);
 		}
 		else
 		{
 			RenderImageToScreen(meshList[GEO_THIRST_EMPTY], false, 40, 40,
-					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 1);
+					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 0);
 		}
 	}
 }
@@ -2099,10 +2224,19 @@ void SP2::RenderPassMain()
 			RenderParticles(particle);
 		}
 	}
-
+	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+	{
+		ProjectileObject *Projectile = (ProjectileObject *)*it;
+		if (Projectile->GetActive())
+		{
+			RenderProjectile(Projectile);
+		}
+	}
 	RenderCrops();
 
 	RenderPlayerInfo();
+
+	RenderInstructions();
 
 	std::ostringstream ss;
 	ss.precision(5);
@@ -2112,6 +2246,33 @@ void SP2::RenderPassMain()
 	ss.str("");
 	ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
+
+}
+void SP2::RenderInstructions()
+{
+	std::ostringstream ss;
+	//Instructions
+	switch (instructionorder)
+	{
+	case 0:
+		RenderImageToScreen(meshList[GEO_INSTRUCTION1], false, Application::GetWindowWidth() * 0.7f, Application::GetWindowWidth() * 0.5f,
+			Application::GetWindowWidth() * 0.5f, Application::GetWindowHeight() * 0.5f + 100, 0);
+		break;
+	case 1:
+		ss << "Arrow Keys to swap inventory slot.";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		break;
+	case 2:
+		ss << "Press E to open up Crafting Table";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		break;
+	case 3:
+		ss << "Becareful while venturing! Have Fun!";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		break;
+	default:
+		break;
+	}
 }
 void SP2::Render()
 {

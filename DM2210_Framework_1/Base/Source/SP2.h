@@ -19,7 +19,7 @@
 #include "Physics.h"
 #include "Season.h"
 #include "Crops.h"
-
+#include "Projectile.h"
 
 class SP2 : public Scene
 {
@@ -204,6 +204,8 @@ class SP2 : public Scene
 			//Thirst
 			GEO_THIRST_FULL,
 			GEO_THIRST_EMPTY,
+			//Instructions
+			GEO_INSTRUCTION1,
 		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
 		NUM_GEOMETRY,
@@ -267,6 +269,13 @@ public:
 	void SpawningEnemy();
 	void RenderEnemy(CEnemy* enemy);
 	void EnemyChecker(double dt);
+		//Projectile
+	void UpdateProjectile(double dt);
+	void RenderProjectile(ProjectileObject * Projectile);
+	ProjectileObject* GetProjectile(void);
+
+	//Instructions
+	void RenderInstructions();
 	//
 	//Yanson
 	void Render3DHandHeld();
@@ -274,6 +283,12 @@ public:
 	void RenderPassGPass();
 	void RenderPassMain();
 	void RenderWorld();
+
+	//Particles
+	void UpdateParticles(double dt);
+	void RenderParticles(ParticleObject * particle);
+	ParticleObject* GetParticle(void);
+
 private:
 	double m_dBounceTime;
 	unsigned m_vertexArrayID;
@@ -306,12 +321,8 @@ private:
 	Physics Phengine;
 
 	//Particles
-	void UpdateParticles(double dt);
-	void RenderParticles(ParticleObject * particle);
-
-
-	ParticleObject* GetParticle(void);
 	std::vector<ParticleObject*> particleList;
+
 	std::vector<Furnace*> FurnaceList;
 	std::vector<Crops*> CropList;
 	//Shadow
@@ -360,6 +371,14 @@ private:
 
 	float lightningX;
 	float lightningZ;
+
+	//instructions
+	int instructionorder;
+	float instructiontimer;
+	//Projectile
+	std::vector<ProjectileObject*> ProjectileList;
+	int m_iProjectileCount;
+	int MAX_PROJECTILE;
 };
 
 #endif
