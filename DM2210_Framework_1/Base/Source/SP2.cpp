@@ -650,8 +650,8 @@ void SP2::UpdateWorldVars()
 
 char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 {
-	int x = xPos / 250;
-	int y = yPos / 250;
+	int x = (xPos + scale / 2) / scale;
+	int y = (yPos + scale / 2) / scale;
 	return world[x][y];
 }
 
@@ -792,7 +792,37 @@ void SP2::Update(double dt)
 	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
 	go->SetSpawned(true);*/
 	//
-	player->update(dt, m_AnimalList);
+	char PlayerTile[9];
+	float minx = camera.position.x - 100;
+	if (minx < 0)
+	{
+		minx = 0;
+	}
+	float maxx = camera.position.x + 100;
+	if (maxx > 25000)
+	{
+		maxx = 25000;
+	}
+	float minz = camera.position.z - 100;
+	if (minz < 0)
+	{
+		minz = 0;
+	}
+	float maxz = camera.position.x + 100;
+	if (maxz > 25000)
+	{
+		maxz = 25000;
+	}
+	PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
+	PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
+	PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
+	PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
+	PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
+	PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
+	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
+	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
+	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
+	player->update(dt, m_AnimalList, PlayerTile);
 
 	//Update all crops present in the world.
 	for (int i = 0; i < CropList.size(); ++i)
@@ -2175,6 +2205,10 @@ void SP2::RenderPassMain()
 	ss.str("");
 	ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
+
+	ss.str("");
+	ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 200);
 }
 void SP2::Render()
 {

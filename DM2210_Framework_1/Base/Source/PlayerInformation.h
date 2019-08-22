@@ -32,7 +32,7 @@ public:
 
 	void Constrain(void);
 	void AttachCamera(Camera3* _cameraPtr);
-	void update(double dt, std::vector<CAnimal*> animlist);
+	void update(double dt, std::vector<CAnimal*> animlist, char tilearray[]);
 
 	bool addItem(Item * object);
 	Item * getItem(int ID);

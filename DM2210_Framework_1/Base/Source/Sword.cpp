@@ -36,6 +36,12 @@ void Sword::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vect
 	Response();
 }
 
+void Sword::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[])
+{
+	Weapons::UpdateTile(dt, dir, origin, tilearray);
+	Response();
+}
+
 void Sword::Response()
 {
 
