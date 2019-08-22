@@ -275,85 +275,87 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 				}
 				Vector3 facingtile;
 				facingtile = origin + dir * 100;
-				if (facingtile.x > ((int)origin.x/100)*100 && facingtile.x < ((int)origin.x/100+1)*100)
+				facingtile.x += 50;
+				facingtile.z += 50;
+				if (facingtile.x > ((int)(origin.x+50)/100)*100 && facingtile.x < ((int)(origin.x+50)/100+1)*100)
 				{
-					smallestvertex.x = ((int)origin.x / 100) * 100;
-					biggestvertex.x = ((int)origin.x / 100 + 1) * 100;
+					smallestvertex.x = ((int)(origin.x+50) / 100) * 100;
+					biggestvertex.x = ((int)(origin.x+50) / 100 + 1) * 100;
 					blockset.x = origin.x;
-					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z+50) / 100) * 100 && facingtile.z < ((int)(origin.z+50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[0];
 						standingonem = true;
-						smallestvertex.z = ((int)origin.z / 100) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100 + 1) * 100;
 						blockset.z = origin.z;
 					}
-					if (facingtile.z < ((int)origin.z/100)*100)
+					if (facingtile.z < ((int)(origin.z+50)/100)*100)
 					{
 						tiletype = tilearray[4];
-						smallestvertex.z = ((int)origin.z / 100-1) * 100;
-						biggestvertex.z = ((int)origin.z / 100) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100-1) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100) * 100;
 						blockset.z = origin.z - 100;
 					}
-					if (facingtile.z > ((int)origin.z/100 + 1)*100)
+					if (facingtile.z > ((int)(origin.z+50)/100 + 1)*100)
 					{
 						tiletype = tilearray[5];
-						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100 + 1) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100 + 2) * 100;
 						blockset.z = origin.z + 100;
 					}
 				}
-				else if (facingtile.x < ((int)origin.x/100)*100)
+				else if (facingtile.x < ((int)(origin.x+50)/100)*100)
 				{
-					smallestvertex.x = ((int)origin.x / 100 - 1) * 100;
-					biggestvertex.x = ((int)origin.x / 100) * 100;
+					smallestvertex.x = ((int)(origin.x+50) / 100 - 1) * 100;
+					biggestvertex.x = ((int)(origin.x+50) / 100) * 100;
 					blockset.x = origin.x - 100;
-					if (facingtile.z < ((int)origin.z / 100) * 100)
+					if (facingtile.z < ((int)(origin.z+50) / 100) * 100)
 					{
 						tiletype = tilearray[1];
-						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100 - 1) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100) * 100;
 						blockset.z = origin.z - 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z+50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[3];
-						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100 + 1) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100 + 2) * 100;
 						blockset.z = origin.z + 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z+50) / 100) * 100 && facingtile.z < ((int)(origin.z+50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[2];
-						smallestvertex.z = ((int)origin.z / 100) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100 + 1) * 100;
 						blockset.z = origin.z;
 					}
 				}
-				else if (facingtile.x > ((int)origin.x/100+1)*100)
+				else if (facingtile.x > ((int)(origin.x+50)/100+1)*100)
 				{
-					smallestvertex.x = ((int)origin.x / 100 + 1) * 100;
-					biggestvertex.x = ((int)origin.x / 100 + 2) * 100;
+					smallestvertex.x = ((int)(origin.x+50) / 100 + 1) * 100;
+					biggestvertex.x = ((int)(origin.x+50) / 100 + 2) * 100;
 					blockset.x = origin.x + 100;
-					if (facingtile.z < ((int)origin.z / 100) * 100)
+					if (facingtile.z < ((int)(origin.z+50) / 100) * 100)
 					{
 						tiletype = tilearray[6];
-						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100 - 1) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100) * 100;
 						blockset.z = origin.z - 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z+50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[8];
-						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100 + 1) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100 + 2) * 100;
 						blockset.z = origin.z + 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z+50) / 100) * 100 && facingtile.z < ((int)(origin.z+50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[7];
-						smallestvertex.z = ((int)origin.z / 100) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						smallestvertex.z = ((int)(origin.z+50) / 100) * 100;
+						biggestvertex.z = ((int)(origin.z+50) / 100 + 1) * 100;
 						blockset.z = origin.z;
 					}
 				}
@@ -402,85 +404,87 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 				}
 				Vector3 facingtile;
 				facingtile = origin + dir * 100;
-				if (facingtile.x > ((int)origin.x / 100) * 100 && facingtile.x < ((int)origin.x / 100 + 1) * 100)
+				facingtile.x += 50;
+				facingtile.z += 50;
+				if (facingtile.x > ((int)(origin.x + 50) / 100) * 100 && facingtile.x < ((int)(origin.x + 50) / 100 + 1) * 100)
 				{
-					smallestvertex.x = ((int)origin.x / 100) * 100;
-					biggestvertex.x = ((int)origin.x / 100 + 1) * 100;
+					smallestvertex.x = ((int)(origin.x + 50) / 100) * 100;
+					biggestvertex.x = ((int)(origin.x + 50) / 100 + 1) * 100;
 					blockset.x = origin.x;
-					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[0];
 						standingonem = true;
-						smallestvertex.z = ((int)origin.z / 100) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
 						blockset.z = origin.z;
 					}
-					if (facingtile.z < ((int)origin.z / 100) * 100)
+					if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
 					{
 						tiletype = tilearray[4];
-						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
 						blockset.z = origin.z - 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[5];
-						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
 						blockset.z = origin.z + 100;
 					}
 				}
-				else if (facingtile.x < ((int)origin.x / 100) * 100)
+				else if (facingtile.x < ((int)(origin.x + 50) / 100) * 100)
 				{
-					smallestvertex.x = ((int)origin.x / 100 - 1) * 100;
-					biggestvertex.x = ((int)origin.x / 100) * 100;
+					smallestvertex.x = ((int)(origin.x + 50) / 100 - 1) * 100;
+					biggestvertex.x = ((int)(origin.x + 50) / 100) * 100;
 					blockset.x = origin.x - 100;
-					if (facingtile.z < ((int)origin.z / 100) * 100)
+					if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
 					{
 						tiletype = tilearray[1];
-						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
 						blockset.z = origin.z - 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[3];
-						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
 						blockset.z = origin.z + 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[2];
-						smallestvertex.z = ((int)origin.z / 100) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
 						blockset.z = origin.z;
 					}
 				}
-				else if (facingtile.x > ((int)origin.x / 100 + 1) * 100)
+				else if (facingtile.x > ((int)(origin.x + 50) / 100 + 1) * 100)
 				{
-					smallestvertex.x = ((int)origin.x / 100 + 1) * 100;
-					biggestvertex.x = ((int)origin.x / 100 + 2) * 100;
+					smallestvertex.x = ((int)(origin.x + 50) / 100 + 1) * 100;
+					biggestvertex.x = ((int)(origin.x + 50) / 100 + 2) * 100;
 					blockset.x = origin.x + 100;
-					if (facingtile.z < ((int)origin.z / 100) * 100)
+					if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
 					{
 						tiletype = tilearray[6];
-						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
 						blockset.z = origin.z - 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[8];
-						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
 						blockset.z = origin.z + 100;
 					}
-					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
 					{
 						tiletype = tilearray[7];
-						smallestvertex.z = ((int)origin.z / 100) * 100;
-						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+						biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
 						blockset.z = origin.z;
 					}
 				}
@@ -505,11 +509,6 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					biggestvertex.y = 100;
 				}
 				else if (tiletype == 'T')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-				}
-				else if (tiletype == 'F')
 				{
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;

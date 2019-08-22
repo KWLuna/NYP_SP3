@@ -7,6 +7,8 @@ Furnace::Furnace()
 
 	m_iSmeltingID = 0;
 	m_iSmeltingTotal = 0;
+	
+	m_bAccessFurnace = false;
 
 	m_iResultID = 0;
 	m_iResultTotal = 0;
@@ -98,7 +100,7 @@ void Furnace::SmeltingProccess(double dt)
 	if (m_dFuel_Time > 0)
 		m_dFuel_Time -= 0.01;
 
-	std::cout << m_dSmelt_Time << " " << m_dFuel_Time << std::endl;
+	//std::cout << m_dSmelt_Time << " " << m_dFuel_Time << std::endl;
 
 	/*	If there is no conflict between what is in the smelting slot
 	*	Or if the smelting id is nothing

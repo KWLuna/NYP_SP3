@@ -38,6 +38,7 @@ PlayerInformation::PlayerInformation()
 		curtool->Init();
 	}
 	action = STANDING;
+	placedown = false;
 }
 
 PlayerInformation::~PlayerInformation()
