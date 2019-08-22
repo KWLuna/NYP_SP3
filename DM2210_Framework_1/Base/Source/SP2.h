@@ -1,6 +1,7 @@
 #ifndef SCENE_SHADOW_H
 #define SCNE_SHADOW_H
 
+#include "MyMath.h"
 #include "Scene.h"
 #include "Mtx44.h"
 #include "Camera3.h"
@@ -120,12 +121,15 @@ class SP2 : public Scene
 
 		GEO_WOODEN_SWORD,
 		GEO_WOODEN_PICKAXE,
+		GEO_WOODEN_AXE,
 
 		GEO_STONE_SWORD,
 		GEO_STONE_PICKAXE,
+		GEO_STONE_AXE,
 
 		GEO_GOLD_SWORD,
 		GEO_GOLD_PICKAXE,
+		GEO_GOLD_AXE,
 
 		GEO_FURNACE,
 		//End of symetry.
@@ -157,6 +161,8 @@ class SP2 : public Scene
 			GEO_GRASS_WINTER,
 			GEO_WATER,
 			GEO_WATER_WINTER,
+			//Dungeon
+			GEO_STONE_BRICK_FLOOR,
 			//Ground Objects
 			GEO_BERRY,
 			GEO_GOLD_ORE,
@@ -164,6 +170,7 @@ class SP2 : public Scene
 			GEO_TREE_SPRING,
 			GEO_TREE_SUMMER,
 			GEO_TREE_WINTER,
+			GEO_WALL,
 		//
 		GEO_PLAYER,
 		//Animals
@@ -348,11 +355,10 @@ private:
 	float m_fTimeTillLightning;
 	float m_fLightningDuration;
 	
-	float minOutwardsFromPlayerX;
-	float minOutwardsFromPlayerZ;
-
-	float maxOutwardsFromPlayerX;
-	float maxOutwardsFromPlayerZ;
+	int minOutwardsFromPlayerX;
+	int minOutwardsFromPlayerZ;
+	int maxOutwardsFromPlayerX;
+	int maxOutwardsFromPlayerZ;
 
 	float m_fAmbient;
 	float m_iDayNight = 1;
