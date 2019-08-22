@@ -10,7 +10,7 @@ ProjectileObject::ProjectileObject(PROJECTILE_TYPE typeValue)
 	m_fRotationSpeed(0),
 	m_bActive(false),
 	m_fSpeed(10.f),
-	m_fTimeTravelled(0),
+	m_fTimeTravelled(0.f),
 	m_bGotPlayersPos(false)
 {
 
@@ -92,4 +92,8 @@ void ProjectileObject::SetActive(bool m_bActive)
 void ProjectileObject::SetGotPlayersPos(bool m_bGotPlayersPos)
 {
 	this->m_bGotPlayersPos = m_bGotPlayersPos;
+}
+void ProjectileObject::SetTimeTravelled(float m_fTimeTravelled)
+{
+	this->m_fTimeTravelled = m_fTimeTravelled;
 }

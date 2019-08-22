@@ -1003,6 +1003,8 @@ void SP2::EnemyChecker(double dt)
 							if (go->GetAttackedPlayer())
 							{
 								player->SetHP(player->getHP() - go->GetStrength());
+								camera.position.x += (camera.position.x - go->GetPosition().x )* 2.f;
+								camera.position.z += (camera.position.z - go->GetPosition().z )* 2.f;
 							}
 						}
 						break;
@@ -1034,6 +1036,7 @@ void SP2::EnemyChecker(double dt)
 								Projectile->SetTargetPos((camera.position - Projectile->GetPos()));
 								Projectile->SetGotPlayersPos(true);
 								Projectile->SetActive(true);
+								Projectile->SetTimeTravelled(0.f);
 							}
 						}
 						break;
@@ -1307,7 +1310,7 @@ void SP2::SpawningEnemy()
 					if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 					{
 						CEnemy *go = EnemyFetchGO();
-						go->type = CEnemy::GO_WITCH;
+						go->type = CEnemy::GO_ZOMBIE;
 						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
 						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
 						go->SetSpawned(true);
@@ -1682,7 +1685,7 @@ ProjectileObject* SP2::GetProjectile(void)
 			return Projectile;
 		}
 	}
-	for (unsigned i = 0; i < 10; ++i)
+	for (unsigned i = 0; i < MAX_PROJECTILE; ++i)
 	{
 		ProjectileObject *Projectile = new ProjectileObject(PROJECTILE_TYPE::P_FIREBALL);
 		ProjectileList.push_back(Projectile);
@@ -1695,10 +1698,11 @@ ProjectileObject* SP2::GetProjectile(void)
 }
 void SP2::UpdateProjectile(double dt)
 {
+	int i = 0;
 	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
 	{
 		ProjectileObject *Projectile = (ProjectileObject *)*it;
-		if (Projectile->GetGotPlayersPos())
+		if (Projectile->GetActive())
 		{
 			Projectile->Update(dt);
 			if ((Projectile->GetPos() - camera.position).Length() < 15)
@@ -1706,6 +1710,8 @@ void SP2::UpdateProjectile(double dt)
 				Projectile->SetActive(false);
 				m_iProjectileCount--;
 				player->SetHP(player->getHP() - 5.f);
+				camera.position.x += (camera.position.x - Projectile->GetPos().x)* 2.f;
+				camera.position.z += (camera.position.z - Projectile->GetPos().z)* 2.f;
 			}
 			if (Projectile->GetTimeTravelled() > 5)
 			{
@@ -1713,6 +1719,7 @@ void SP2::UpdateProjectile(double dt)
 				m_iProjectileCount--;
 			}
 		}
+		i++;
 	}
 }
 void SP2::RenderProjectile(ProjectileObject * Projectile)
