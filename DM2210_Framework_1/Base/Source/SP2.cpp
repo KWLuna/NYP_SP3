@@ -784,6 +784,8 @@ void SP2::Update(double dt)
 
 		world[125][125] = 'D';*/
 
+		player->addItem(new Item(Item::ITEM_FURNACE, 1));
+	
 		world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
 		m_dBounceTime = 0.5;
@@ -904,6 +906,16 @@ void SP2::Update(double dt)
 	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
 	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
 	player->update(dt, m_AnimalList, PlayerTile);
+	if (player->GetPlaceDown())
+	{
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
+		{
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			world[x][y] = 'F';
+			FurnaceList.push_back(new Furnace);
+		}
+	}
 
 	//Update all crops present in the world.
 	for (unsigned int i = 0; i < CropList.size(); ++i)

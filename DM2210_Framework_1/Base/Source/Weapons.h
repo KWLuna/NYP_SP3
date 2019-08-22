@@ -40,6 +40,8 @@ protected:
 	bool side;
 
 	char tiletype;
+	bool standingonem;
+	Vector3 blockset;
 
 	Physics weaponphysics;
 
@@ -79,5 +81,11 @@ public:
 	void SetCurSwing();
 	bool GetCurSwing();
 	bool GetSide();
+
+	void SetTileType(char type);
+	char GetTileType();
+	void SetStandinOn(bool stand);
+	bool GetStandinOn();
+	Vector3 GetBlockPlacement();
 };
 

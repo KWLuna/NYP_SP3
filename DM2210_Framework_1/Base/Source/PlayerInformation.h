@@ -59,6 +59,9 @@ public:
 	double getMaxHP();
 	void SetMaxHP(float m_dMaxHP);
 	Weapons * getcurtool();
+
+	void PlaceBlock();
+	bool GetPlaceDown();
 private:
 
 	Camera3 * attachedCamera; // Attach camera to player
@@ -91,4 +94,6 @@ private:
 	float ThirstyOrHungry;
 	Physics playerphysics;
 	Weapons * curtool;
+
+	bool placedown;
 };
