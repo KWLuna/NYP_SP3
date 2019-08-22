@@ -180,7 +180,7 @@ class SP2 : public Scene
 
 		//Enemy
 		GEO_ZOMBIE,
-		
+		GEO_WITCH,
 
 		//BLOCKS PLACE
 		GEO_FURNACE_BLOCK,
@@ -199,6 +199,8 @@ class SP2 : public Scene
 		GEO_PARTICLE_LEAF,
 		GEO_PARTICLE_HEART,
 
+		//Projectile
+			GEO_FIREBALL,
 		//UI
 			//HEALTH
 			GEO_HEALTH_FULL,
@@ -266,6 +268,8 @@ public:
 	void SpawningAnimal();
 	void RenderAnimal(CAnimal* animal);
 	void AnimalChecker(double dt);
+	void SaveAnimalData();
+	void LoadAnimalData();
 		//Season Changing
 	void SeasonChanger(double dt);
 	void RenderSkyBox();

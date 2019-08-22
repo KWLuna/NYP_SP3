@@ -93,43 +93,43 @@ void CEnemy::Update(double dt)
 	break;
 	case CEnemy::FOLLOWING: //2
 		//if player holds the specific food the animal likes in his hand, they follow the player.
-			if (Targetpos.x < -1)
-				Targetpos.x = 0;
-			if (Targetpos.z < -1)
-				Targetpos.z = 0;
-			if (Targetpos == pos)
-			{
-				Targetpos.x = Targetpos.x - 1;
-				Targetpos.z = Targetpos.z - 1;
-			}
-			if (!m_bRotated)
-			{
-				
-				dir = (Targetpos - pos).Normalize();
-				float m_fTempAngle = atan2(dir.x, dir.z);
-				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
-				{
-					m_fAngle += 5 * static_cast<float>(dt);
-				}
-				else
-					m_bRotated = true;
-			}
+		if (Targetpos.x < -1)
+			Targetpos.x = 0;
+		if (Targetpos.z < -1)
+			Targetpos.z = 0;
+		if (Targetpos == pos)
+		{
+			Targetpos.x = Targetpos.x - 1;
+			Targetpos.z = Targetpos.z - 1;
+		}
 			
-		if (type == GO_ZOMBIE)
-			if (m_bRotated)
+		if (!m_bRotated)
+		{
+			dir = (Targetpos - pos).Normalize();
+			float m_fTempAngle = atan2(dir.x, dir.z);
+			if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 			{
-				Vector3 temp = (Targetpos - pos) * (m_fSpeed / m_fMass);
-				Vector3 prevpos;
-				prevpos = pos;
-				pos += temp;
-
-				if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
-					dir = (pos - prevpos).Normalize();
-
-				m_fAngle = atan2(dir.x, dir.z);
-
-				m_fAngle = Math::RadianToDegree(Math::RandFloatMinMax(m_fAngle - 0.04f, m_fAngle + 0.04f));
+				m_fAngle += 5 * static_cast<float>(dt);
 			}
+			else
+				m_bRotated = true;
+		}
+		else
+		{
+			m_fWalkingTarget += static_cast<float>(dt);
+
+			Vector3 temp = (Targetpos - pos) * (m_fSpeed / m_fMass);
+			Vector3 prevpos;
+			prevpos = pos;
+			pos += temp;
+
+			if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
+				dir = (pos - prevpos).Normalize();
+
+			m_fAngle = atan2(dir.x, dir.z);
+
+			m_fAngle = Math::RadianToDegree(Math::RandFloatMinMax(m_fAngle - 0.045f, m_fAngle + 0.04f));
+		}
 		break;
 	case CEnemy::ATTACKING: //3
 		if (m_bAttacked == false)
@@ -138,7 +138,7 @@ void CEnemy::Update(double dt)
 		if (m_fAttackingTime < 0)
 		{
 			m_bAttacked = true;
-			m_fAttackingTime = 10;
+			m_fAttackingTime = 5;
 		}
 		else
 			m_bAttacked = false;

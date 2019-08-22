@@ -118,7 +118,7 @@ void SP2::InitGround()
 		}
 	}
 
-	world[125][125] = 'D';
+	world[25][25] = 'D';
 
 	int dungeonCentreX = 0;
 	int dungeonCentreZ = 0;
@@ -413,7 +413,10 @@ void SP2::Init()
 	//GUI's
 	//Enemy
 	meshList[GEO_ZOMBIE] = MeshBuilder::GenerateOBJ("Zombie", "OBJ//zombie.obj");
-	//meshList[GEO_ZOMBIE]->textureArray[0] = LoadTGA("Image//cow.tga");
+	meshList[GEO_ZOMBIE]->textureArray[0] = LoadTGA("Image//zombie.tga");
+
+	meshList[GEO_WITCH] = MeshBuilder::GenerateOBJ("Witch", "OBJ//zombie.obj");
+	meshList[GEO_WITCH]->textureArray[0] = LoadTGA("Image//witch.tga");
 	
 	//
 	meshList[GEO_INVENTORY] = MeshBuilder::GenerateQuad("GEO_INVENTORY", Color(1, 1, 1), 1.0f);
@@ -581,6 +584,10 @@ void SP2::Init()
 		meshList[GEO_INSTRUCTION1] = MeshBuilder::GenerateQuad("GEO_INSTRUCTION1", Color(1, 1, 1), 1.0f);
 		meshList[GEO_INSTRUCTION1]->textureArray[0] = LoadTGA("Image//instruction1.tga");
 		//
+	//Projectile
+	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("GEO_FIREBALL", "OBJ//fireball.obj");
+	//meshList[GEO_FIREBALL]->textureArray[0] = LoadTGA("Image//fireball.tga");
+
 	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
 	if (sa)
 	{
@@ -620,6 +627,7 @@ void SP2::Init()
 	}
 	m_NumOfAnimal = 0;
 	m_NumOfEnemy = 0;
+	//LoadAnimalData();
 
 	//Season
 	SP2_Seasons = new Season;
@@ -875,6 +883,7 @@ void SP2::Update(double dt)
 
 	UpdateWorldVars();
 	UpdateParticles(dt);
+	UpdateProjectile(dt);
 	//
 	/*CAnimal *go = AnimalFetchGO();
 	go->type = CAnimal::GO_COW;
@@ -998,16 +1007,17 @@ void SP2::EnemyChecker(double dt)
 						}
 						break;
 					case CEnemy::ENEMY_TYPE::GO_WITCH:
-						if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+						if ((go->GetPosition() - camera.position).Length() > 100)
 						{
-							if (go->GetRotated())
+							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+							go->SetBehaviour(2);
+						}
+						else
+						{
+							go->SetBehaviour(3);
+							if (go->GetAttackedPlayer())
 							{
-								go->SetBehaviour(3);
-							}
-							else
-							{
-								go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
-								go->SetBehaviour(2);
+								player->SetHP(player->getHP() - go->GetStrength());
 							}
 						}
 						if (go->GetAttackedPlayer())
@@ -1017,12 +1027,13 @@ void SP2::EnemyChecker(double dt)
 							{
 								ProjectileObject* Projectile = GetProjectile();
 								Projectile->SetType(PROJECTILE_TYPE::P_FIREBALL);
-								Projectile->SetScale(Vector3(2, 10, 2));
+								Projectile->SetScale(Vector3(4, 4, 4));
 								Projectile->SetVelocity(Vector3(1, 1, 1));
 								Projectile->SetRotationSpeed(Math::RandFloatMinMax(20.f, 40.f));
-								Projectile->SetPos(go->GetPosition());
-								Projectile->SetTargetPos(camera.position);
+								Projectile->SetPos(Vector3(go->GetPosition().x, 30, go->GetPosition().z));
+								Projectile->SetTargetPos((camera.position - Projectile->GetPos()));
 								Projectile->SetGotPlayersPos(true);
+								Projectile->SetActive(true);
 							}
 						}
 						break;
@@ -1264,19 +1275,39 @@ void SP2::RenderCrops()
 void SP2::SpawningEnemy()
 {
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
-	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
+	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
-		if (i >= 0 && i <= 500)
+		if (i >= 0 && i <= 250)
 		{
-			for (float k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
+			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
-				if (k >= 0 && k <= 500)
+				if (k >= 0 && k <= 250)
 				{
+					if (world[i][k] == 'd')
+					{
+						int choice = Math::RandIntMinMax(0, 5);
+						if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
+						{
+							CEnemy *go = EnemyFetchGO();
+							go->type = CEnemy::GO_WITCH;
+							go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
+							go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+							go->SetSpawned(true);
+							if (m_iDayNight == -1)
+							{
+								go->SetStrength(go->GetStrength() * 1.5f);
+								go->SetHP(go->GetHP() * 1.5f);
+								go->SetSpeed(Math::RandFloatMinMax(0.1f, 0.5f) * 1.5f);
+							}
+							if (go->GetPosition() == camera.position)
+								go->SetSpawned(false);
+						}
+					}
 					int choice = Math::RandIntMinMax(0, 10);
 					if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 					{
 						CEnemy *go = EnemyFetchGO();
-						go->type = CEnemy::GO_ZOMBIE;
+						go->type = CEnemy::GO_WITCH;
 						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
 						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
 						go->SetSpawned(true);
@@ -1330,11 +1361,6 @@ void SP2::SpawningAnimal()
 						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
 						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
 						go->SetSpawned(true);
-
-						//choice = Math::RandIntMinMax(0, 1);
-						//if (choice == 1)
-						//	go->SetFed(true);
-
 					}
 				}
 			}
@@ -1426,15 +1452,14 @@ void SP2::UpdateParticles(double dt)
 		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 		{
 			CAnimal *go = (CAnimal *)*it;
-			if (go->GetActive() && go->GetFed() && !go->GetBreeded())
+			if (go->GetFed() && !go->GetBreeded())
 			{
 				ParticleObject* particle = GetParticle();
 				particle->type = ParticleObject_TYPE::P_HEART;
 				particle->scale.Set(10, 10, 10);
 				particle->vel.Set(1, 1, 1);
 				particle->m_gravity.Set(0, 9.8f, 0);
-				//particle->rotationSpeed = Math::RandFloatMinMax(20.f, 40.f);
-				particle->pos.Set(Math::RandFloatMinMax(go->GetPosition().x - 10, go->GetPosition().x + 10), 4, Math::RandFloatMinMax(go->GetPosition().z - 10, go->GetPosition().z + 10));
+				particle->pos.Set(Math::RandFloatMinMax(go->GetPosition().x - 10, go->GetPosition().x + 10), 10, Math::RandFloatMinMax(go->GetPosition().z - 10, go->GetPosition().z + 10));
 			}
 		}
 	}
@@ -1447,7 +1472,7 @@ void SP2::UpdateParticles(double dt)
 			particle->Update(dt);
 			if (particle->type == ParticleObject_TYPE::P_HEART)
 			{
-				if (particle->pos.y > 10.f)
+				if (particle->pos.y > 50.f)
 				{
 					particle->active = false;
 					m_particleCount--;
@@ -1593,7 +1618,7 @@ void SP2::RenderEnemy(CEnemy* enemy)
 		modelStack.Translate(enemy->GetPosition().x, enemy->GetPosition().y, enemy->GetPosition().z);
 		modelStack.Rotate(enemy->GetAngle(), 0, 1, 0);
 		modelStack.Scale(enemy->GetScale().x, enemy->GetScale().y, enemy->GetScale().z);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_WITCH], false);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -1657,7 +1682,7 @@ ProjectileObject* SP2::GetProjectile(void)
 			return Projectile;
 		}
 	}
-	for (unsigned i = 0; i < MAX_PROJECTILE; ++i)
+	for (unsigned i = 0; i < 10; ++i)
 	{
 		ProjectileObject *Projectile = new ProjectileObject(PROJECTILE_TYPE::P_FIREBALL);
 		ProjectileList.push_back(Projectile);
@@ -1673,24 +1698,22 @@ void SP2::UpdateProjectile(double dt)
 	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
 	{
 		ProjectileObject *Projectile = (ProjectileObject *)*it;
-		if (Projectile->GetActive())
+		if (Projectile->GetGotPlayersPos())
 		{
 			Projectile->Update(dt);
-			if ((Projectile->GetPos() - camera.position).Length() < 5)
+			if ((Projectile->GetPos() - camera.position).Length() < 15)
 			{
 				Projectile->SetActive(false);
 				m_iProjectileCount--;
 				player->SetHP(player->getHP() - 5.f);
 			}
-			if (Projectile->GetTimeTravelled() > 10)
+			if (Projectile->GetTimeTravelled() > 5)
 			{
 				Projectile->SetActive(false);
 				m_iProjectileCount--;
 			}
-
 		}
 	}
-
 }
 void SP2::RenderProjectile(ProjectileObject * Projectile)
 {
@@ -1699,10 +1722,9 @@ void SP2::RenderProjectile(ProjectileObject * Projectile)
 	case PROJECTILE_TYPE::P_FIREBALL:
 		modelStack.PushMatrix();
 		modelStack.Translate(Projectile->GetPos().x, Projectile->GetPos().y, Projectile->GetPos().z);
-		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - Projectile->GetPos().x, camera.position.z - Projectile->GetPos().z)), 0, 1, 0);
-		modelStack.Rotate(Projectile->GetRotation(), 0, 0, 1);
+		//modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - Projectile->GetPos().x, camera.position.z - Projectile->GetPos().z)), 0, 1, 0);
 		modelStack.Scale(Projectile->GetScale().x, Projectile->GetScale().y, Projectile->GetScale().z);
-		RenderMesh(meshList[GEO_CUBE], false);
+		RenderMesh(meshList[GEO_FIREBALL], false);
 		modelStack.PopMatrix();
 		break;
 	default:
@@ -2478,8 +2500,98 @@ void SP2::Render()
 	RenderPassMain();
 }
 
+void SP2::SaveAnimalData()
+{
+	std::ofstream saveFile("AnimalSaveFile.txt");
+
+		if (saveFile.is_open())
+		{
+			for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+			{
+				CAnimal *animal = (CAnimal *)*it;
+					saveFile << animal->type << std::endl;
+					saveFile << animal->GetPosition().x << std::endl;
+					saveFile << animal->GetPosition().y << std::endl;
+					saveFile << animal->GetPosition().z << std::endl;
+					saveFile << animal->GetScale().x << std::endl;
+					saveFile << animal->GetScale().y << std::endl;
+					saveFile << animal->GetScale().z << std::endl;
+					saveFile << animal->GetActive() << std::endl;
+					saveFile << animal->GetSpawned() << std::endl;
+					saveFile << animal->GetIsABaby() << std::endl;
+					saveFile << animal->GetGrowUpTimer() << std::endl;
+
+				animal = NULL;
+				delete animal;
+				m_AnimalList.pop_back();
+				if (it == m_AnimalList.end())
+				{
+					saveFile.close();
+				}
+			}
+		}
+		else
+		{
+			std::cout << " cant save !" << std::endl;
+		}
+	
+	
+}
+void SP2::LoadAnimalData()
+{
+	std::ifstream saveFile("AnimalSaveFile.txt"); //Open text file to read
+	int tempx;
+	int tempy;
+	int tempz;
+	if (saveFile.is_open())
+	{
+		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+		{
+			CAnimal *animal = (CAnimal *)*it;
+
+			saveFile >> animal->m_iAnimalType;
+			saveFile >> tempx;
+			saveFile >> tempy;
+			saveFile >> tempz;
+			animal->SetPosition(Vector3(tempx, tempy, tempz));
+			saveFile >> tempx;
+			saveFile >> tempy;
+			saveFile >> tempz;
+			animal->SetPosition(Vector3(tempx, tempy, tempz));
+			saveFile >> tempx;
+			if (tempx == 0)
+				animal->SetActive(false);
+			else
+				animal->SetActive(true);
+			saveFile >> tempx;
+			if (tempx == 0)
+				animal->SetSpawned(false);
+			else
+				animal->SetSpawned(true);
+			saveFile >> tempx;
+			if (tempx == 0)
+				animal->SetIsBaby(false);
+			else
+				animal->SetIsBaby(true);
+			saveFile >> tempx;
+			animal->SetGrowUpTimer(tempx);
+
+			m_AnimalList.push_back(animal);
+			if (it == m_AnimalList.end())
+			{
+				saveFile.close();
+			}
+		}
+
+		
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+}
 void SP2::Exit()
 {
+	//SaveAnimalData();
+
 	// Cleanup VBO
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
@@ -2488,6 +2600,7 @@ void SP2::Exit()
 	}
 
 	delete player;
+	
 	glDeleteProgram(m_programID);
 	glDeleteVertexArrays(1, &m_vertexArrayID);
 

@@ -3,6 +3,8 @@
 
 #include "Vector3.h"
 #include "Vertex.h"
+#include <iostream>
+#include <string>
 
 class CAnimal
 {
@@ -23,6 +25,7 @@ public:
 	};
 	
 	ANIMAL_TYPE type;
+	int m_iAnimalType;
 
 	CAnimal(ANIMAL_TYPE typeValue = GO_PIG);
 	void Update(double dt);
@@ -38,6 +41,8 @@ public:
 	float GetHP();
 	bool GetFed();
 	bool GetBreeded();
+	bool GetIsABaby();
+	float GetGrowUpTimer();
 	//Set Functions
 	void SetBehaviour(int m_iCurrentBehaviour);
 	void SetPosition(Vector3 P);
@@ -50,6 +55,7 @@ public:
 	void SetIsBaby(bool m_bIsABaby);
 	void SetBreeded(bool m_bBreeded);
 	void SetAngle(float m_fAngle);
+	void SetGrowUpTimer(float m_fGrowUpTimer);
 private:
 	//Behaviour
 	Behaviour theCurrentBehaviour;
@@ -79,6 +85,7 @@ private:
 	bool m_bIsABaby;
 	float m_fGrowUpTimer;
 	bool m_bBreeded;
+
 };
 
 #endif
