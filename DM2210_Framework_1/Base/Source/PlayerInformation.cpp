@@ -396,16 +396,9 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 	if (m_dHunger < 30 || m_dThirst < 30)
 	{
 		m_fSpeed = 80;
-		if (m_dHunger < 0)
+		if (m_dHunger < 0.001)
 		{
 			m_dHunger = 0;
-		}
-		if (m_dThirst < 0)
-		{
-			m_dThirst = 0;
-		}
-		if (m_dHunger == 0)
-		{
 			ThirstyOrHungry -= dt;
 			if (ThirstyOrHungry < 0)
 			{
@@ -413,18 +406,15 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 				m_dHP -= 2;
 			}
 		}
-		if (m_dThirst == 0)
+		if (m_dThirst < 0.001)
 		{
+			m_dThirst = 0;
 			ThirstyOrHungry -= dt;
 			if (ThirstyOrHungry < 0)
 			{
 				ThirstyOrHungry = 5;
 				m_dHP -= 1;
 			}
-		}
-		if (m_dHP < 0)
-		{
-			m_dHP = 0;
 		}
 	}
 	else
@@ -440,7 +430,10 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 			}
 		}
 	}
-
+	if (m_dHP < 0.001)
+	{
+		m_dHP = 0;
+	}
 	switch (action)
 	{
 	case PlayerInformation::STANDING:
@@ -462,14 +455,26 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 		}
 		break;
 	case PlayerInformation::EATING:
-		if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT)
+		switch (getItem(getCurrentSlot())->getID())
 		{
-			m_dHunger += 0.2f;
-			m_dThirst -= 0.2f;
-		}
-		else if (getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT)
+		case Item::ITEM_MEAT:
 			m_dHunger += 0.5f;
-
+			m_dThirst -= 0.2f;
+			break;
+		case Item::ITEM_COOKED_MEAT:
+			m_dHunger += 1.5f;
+			break;
+		case Item::ITEM_CARROT:
+			m_dHunger += 0.2f;
+			m_dThirst += 0.2f;
+			break;
+		case Item::ITEM_BREAD:
+			m_dHunger += 1.f;
+			m_dThirst += 0.2f;
+			break;
+		default:
+			break;
+		}
 		walkingtime = 0;
 		m_fSpeed *= 0.4f;
 		break;
@@ -644,7 +649,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 
 			if (m_dHunger < 100)
 			{
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT)
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT || getItem(getCurrentSlot())->getID() == Item::ITEM_BREAD)
 				{
 					action = PlayerInformation::EATING;
 					getItem(getCurrentSlot())->addQuantity(-1);

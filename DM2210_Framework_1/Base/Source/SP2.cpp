@@ -605,6 +605,11 @@ void SP2::Init()
 	{
 		particleList.push_back(new ParticleObject(ParticleObject_TYPE::P_WATER));
 	}
+	//Projectile
+	for (int i = 0; i < MAX_PROJECTILE; ++i)
+	{
+		ProjectileList.push_back(new ProjectileObject(PROJECTILE_TYPE::P_FIREBALL));
+	}
 	//Animals//Enemy
 	unsigned int NUMBEROFOBJECTS = 100;
 
@@ -612,7 +617,6 @@ void SP2::Init()
 	{
 		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
 		m_EnemyList.push_back(new CEnemy(CEnemy::GO_ZOMBIE));
-
 	}
 	m_NumOfAnimal = 0;
 	m_NumOfEnemy = 0;
@@ -974,11 +978,11 @@ void SP2::EnemyChecker(double dt)
 
 			if (go->GetActive())
 			{
-				
 				if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
 				{
-					if (go->type == CEnemy::ENEMY_TYPE::GO_ZOMBIE)
+					switch (go->type)
 					{
+					case CEnemy::ENEMY_TYPE::GO_ZOMBIE:
 						if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
 						{
 							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
@@ -992,26 +996,22 @@ void SP2::EnemyChecker(double dt)
 								player->SetHP(player->getHP() - go->GetStrength());
 							}
 						}
-					}
-					else if (go->type == CEnemy::ENEMY_TYPE::GO_WITCH)
-					{
+						break;
+					case CEnemy::ENEMY_TYPE::GO_WITCH:
 						if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
-
-						if (go->GetRotated())
 						{
-							go->SetBehaviour(3);
-							std::cout << "b" << std::endl;
-						}
-						else
-						{
-							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
-							go->SetBehaviour(2);
-							std::cout << "a" << std::endl;
+							if (go->GetRotated())
+							{
+								go->SetBehaviour(3);
+							}
+							else
+							{
+								go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
 						}
 						if (go->GetAttackedPlayer())
 						{
-							std::cout << "c" << std::endl;
-
 							//shoot projectile at player
 							if (m_iProjectileCount < MAX_PROJECTILE)
 							{
@@ -1025,6 +1025,9 @@ void SP2::EnemyChecker(double dt)
 								Projectile->SetGotPlayersPos(true);
 							}
 						}
+						break;
+					default:
+						break;
 					}
 				}
 				go->Update(dt);
