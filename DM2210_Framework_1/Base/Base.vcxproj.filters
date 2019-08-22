@@ -138,6 +138,9 @@
     <ClCompile Include="Source\CEnemy.cpp">
       <Filter>SP2\EnemyAI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Projectile.cpp">
+      <Filter>SP2\EnemyAI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -237,6 +240,9 @@
       <Filter>SP2\Crops</Filter>
     </ClInclude>
     <ClInclude Include="Source\CEnemy.h">
+      <Filter>SP2\EnemyAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Projectile.h">
       <Filter>SP2\EnemyAI</Filter>
     </ClInclude>
   </ItemGroup>

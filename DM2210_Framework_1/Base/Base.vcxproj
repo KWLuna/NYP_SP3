@@ -31,6 +31,7 @@
     <ClCompile Include="Source\Particle.cpp" />
     <ClCompile Include="Source\Physics.cpp" />
     <ClCompile Include="Source\PlayerInformation.cpp" />
+    <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\Season.cpp" />
     <ClCompile Include="Source\SoundEngine.cpp" />
     <ClCompile Include="Source\SP2.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Source\Particle.h" />
     <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\PlayerInformation.h" />
+    <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Season.h" />
     <ClInclude Include="Source\SoundEngine.h" />

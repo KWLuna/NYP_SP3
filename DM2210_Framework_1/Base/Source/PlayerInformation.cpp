@@ -422,6 +422,10 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 				m_dHP -= 1;
 			}
 		}
+		if (m_dHP < 0)
+		{
+			m_dHP = 0;
+		}
 	}
 	else
 	{

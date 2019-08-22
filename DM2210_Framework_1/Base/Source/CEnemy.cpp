@@ -6,7 +6,7 @@ CEnemy::CEnemy(ENEMY_TYPE typeValue)
 	Targetpos(1, 1, 1),
 	Scale(6, 6, 6),
 	gravity(0, -9.8f, 0),
-	dir(0, 0, 0),
+	dir(1, 1, 1),
 	m_bActive(false),
 	m_bSpawned(false),
 	m_fMass(55.f),
@@ -97,9 +97,14 @@ void CEnemy::Update(double dt)
 				Targetpos.x = 0;
 			if (Targetpos.z < -1)
 				Targetpos.z = 0;
-
+			if (Targetpos == pos)
+			{
+				Targetpos.x = Targetpos.x - 1;
+				Targetpos.z = Targetpos.z - 1;
+			}
 			if (!m_bRotated)
 			{
+				
 				dir = (Targetpos - pos).Normalize();
 				float m_fTempAngle = atan2(dir.x, dir.z);
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
@@ -109,7 +114,9 @@ void CEnemy::Update(double dt)
 				else
 					m_bRotated = true;
 			}
-			else
+			
+		if (type == GO_ZOMBIE)
+			if (m_bRotated)
 			{
 				Vector3 temp = (Targetpos - pos) * (m_fSpeed / m_fMass);
 				Vector3 prevpos;
@@ -189,6 +196,10 @@ float CEnemy::GetStrength()
 bool CEnemy::GetAttackedPlayer()
 {
 	return m_bAttacked;
+}
+bool CEnemy::GetRotated()
+{
+	return m_bRotated;
 }
 //Set Functions
 void CEnemy::SetBehaviour(int m_iCurrentBehaviour)
