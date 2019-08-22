@@ -484,6 +484,9 @@ void SP2::Init()
 	meshList[GEO_WOODEN_AXE] = MeshBuilder::GenerateQuad("GEO_WOODEN_AXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOODEN_AXE]->textureArray[0] = LoadTGA("Image//Wooden_Axe.tga");
 
+	meshList[GEO_WOODEN_HOE] = MeshBuilder::GenerateQuad("GEO_WOODEN_HOE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WOODEN_HOE]->textureArray[0] = LoadTGA("Image//Wooden_Hoe.tga");
+
 	meshList[GEO_STONE_SWORD] = MeshBuilder::GenerateQuad("GEO_STONE_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_SWORD]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
 
@@ -493,6 +496,9 @@ void SP2::Init()
 	meshList[GEO_STONE_AXE] = MeshBuilder::GenerateQuad("GEO_STONE_AXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_STONE_AXE]->textureArray[0] = LoadTGA("Image//Stone_Axe.tga");
 
+	meshList[GEO_STONE_HOE] = MeshBuilder::GenerateQuad("GEO_STONE_HOE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_STONE_HOE]->textureArray[0] = LoadTGA("Image//Stone_Hoe.tga");
+
 	meshList[GEO_GOLD_SWORD] = MeshBuilder::GenerateQuad("GEO_GOLD_SWORD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_SWORD]->textureArray[0] = LoadTGA("Image//Gold_Sword.tga");
 
@@ -501,6 +507,9 @@ void SP2::Init()
 
 	meshList[GEO_GOLD_AXE] = MeshBuilder::GenerateQuad("GEO_GOLD_AXE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_GOLD_AXE]->textureArray[0] = LoadTGA("Image//Gold_Axe.tga");
+
+	meshList[GEO_GOLD_HOE] = MeshBuilder::GenerateQuad("GEO_STONE_HOE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_GOLD_HOE]->textureArray[0] = LoadTGA("Image//Gold_Hoe.tga");
 
 	meshList[GEO_FURNACE] = MeshBuilder::GenerateQuad("GEO_FURNACE", Color(1, 1, 1), 1.0f);
 	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
