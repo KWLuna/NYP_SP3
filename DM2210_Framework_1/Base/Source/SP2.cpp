@@ -47,7 +47,6 @@ void SP2::LoadWorld()
 {
 	std::ifstream saveFiler("WorldSaveFile.txt"); //Open text file to read
 	std::string row;
-	int tmp;
 	int level = 0;
 	if (saveFiler.is_open())
 	{
@@ -55,7 +54,7 @@ void SP2::LoadWorld()
 		{
 			saveFiler >> row;
 
-			for (int i = 0; i < row.size(); ++i)
+			for (unsigned int i = 0; i < row.size(); ++i)
 			{
 			//	world[i][level] = row[i];
 			}
@@ -137,8 +136,6 @@ void SP2::InitGround()
 		}
 	}
 
-	
-
 	int dungeonSize = 10;
 
 	for (int i = dungeonCentreX - dungeonSize; i < dungeonCentreX + dungeonSize; ++i)
@@ -161,9 +158,9 @@ void SP2::InitGround()
 		world[dungeonCentreZ + dungeonSize][i] = 'D';
 	}
 	
-	for (int i = dungeonCentreZ - dungeonSize + 1; i < dungeonCentreZ + dungeonSize - 1; ++i)
+	for (int i = dungeonCentreZ - dungeonSize + 1; i < dungeonCentreZ + dungeonSize; ++i)
 	{
-		for (int j = dungeonCentreX - dungeonSize + 1; j < dungeonCentreX + dungeonSize - 1; j++)
+		for (int j = dungeonCentreX - dungeonSize + 1; j < dungeonCentreX + dungeonSize; j++)
 		{
 			int checker = Math::RandIntMinMax(0, 10);
 
@@ -180,8 +177,8 @@ void SP2::InitGround()
 
 void SP2::Init()
 {
+	Math::InitRNG();
 //	LoadWorld();
-	srand(time(0));
 	player = new PlayerInformation;
 	
 	m_bRandLightning = true;
@@ -198,7 +195,7 @@ void SP2::Init()
 
 	outwards = 25;
 
-	m_fAmbient = 0.6;
+	m_fAmbient = 0.6f;
 	minOutwardsFromPlayerX = pX - outwards;
 	minOutwardsFromPlayerZ = pZ - outwards;
 
@@ -323,7 +320,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(0, 50, 0), Vector3(0, 200, -10), Vector3(0, 1, 0));
 
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
@@ -356,7 +353,7 @@ void SP2::Init()
 	//
 	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
-	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3, 0.3, 0.3);
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 
 	meshList[GEO_GRASS_SUMMER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_SUMMER]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
@@ -504,7 +501,7 @@ void SP2::Init()
 	meshList[GEO_FURNACE]->textureArray[0] = LoadTGA("Image//Furnace.tga");
 
 	//World Objects
-	meshList[GEO_FURNACE_BLOCK] = MeshBuilder::GenerateOBJ("GEO_FURNACE_BLOCK", "OBJ//Ore.obj");
+	meshList[GEO_FURNACE_BLOCK] = MeshBuilder::GenerateOBJ("GEO_FURNACE_BLOCK", "OBJ//Cube.obj");
 	meshList[GEO_FURNACE_BLOCK]->textureArray[0] = LoadTGA("Image//Furnace.tga");
 	//
 
@@ -590,7 +587,7 @@ void SP2::Init()
 
 	//Test item stacking
 	//Particle
-	for (unsigned int i = 0; i < MAX_PARTICLE; ++i)
+	for (int i = 0; i < MAX_PARTICLE; ++i)
 	{
 		particleList.push_back(new ParticleObject(ParticleObject_TYPE::P_WATER));
 	}
@@ -703,8 +700,8 @@ void SP2::UpdateWorldVars()
 
 char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 {
-	int x = xPos / 250;
-	int y = yPos / 250;
+	int x = (xPos + scale / 2) / scale;
+	int y = (yPos + scale / 2)/ scale;
 	return world[x][y];
 }
 
@@ -767,6 +764,8 @@ void SP2::Update(double dt)
 		/*std::cout << "converting a world tile ..." << std::endl;
 
 		world[125][125] = 'D';*/
+
+		world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
 		m_dBounceTime = 0.5;
 	}
@@ -849,11 +848,11 @@ void SP2::Update(double dt)
 	player->update(dt);
 
 	//Update all crops present in the world.
-	for (int i = 0; i < CropList.size(); ++i)
+	for (unsigned int i = 0; i < CropList.size(); ++i)
 		CropList[i]->update(dt);
 
 	//Update all the furnaces present in the level.
-	for (int i = 0; i < FurnaceList.size(); ++i)
+	for (unsigned int i = 0; i < FurnaceList.size(); ++i)
 		FurnaceList[i]->update(dt, player);
 
 	//Rmb to update to pointer.
@@ -1046,7 +1045,7 @@ void SP2::RenderCrops()
 				if (CropList[i]->GetState() == 0)
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+					modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZPos() - 25 + k * 25));
 					modelStack.Scale(25, 50, 25);
 					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
 					RenderMesh(meshList[GEO_SPROUT_CROP], false);
@@ -1057,7 +1056,7 @@ void SP2::RenderCrops()
 					if (CropList[i]->GetCropType() == 0)
 					{
 						modelStack.PushMatrix();
-						modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+						modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>( CropList[i]->GetZPos() - 25 + k * 25));
 						modelStack.Scale(25, 50, 25);
 						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
 						RenderMesh(meshList[GEO_CARROT_CROP], false);
@@ -1066,7 +1065,7 @@ void SP2::RenderCrops()
 					else
 					{
 						modelStack.PushMatrix();
-						modelStack.Translate(CropList[i]->GetXPos() - 25 + j * 25, 25, CropList[i]->GetZPos() - 25 + k * 25);
+						modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZPos() - 25 + k * 25));
 						modelStack.Scale(25, 50, 25);
 						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
 						RenderMesh(meshList[GEO_WHEAT_CROP], false);
@@ -1262,7 +1261,7 @@ ParticleObject* SP2::GetParticle(void)
 			return particle;
 		}
 	}
-	for (unsigned i = 0; i < MAX_PARTICLE; ++i)
+	for (int i = 0; i < MAX_PARTICLE; ++i)
 	{
 		ParticleObject *particle = new ParticleObject(ParticleObject_TYPE::P_WATER);
 		particleList.push_back(particle);
@@ -1673,6 +1672,13 @@ void SP2::RenderGroundObjects()
 						RenderMesh(meshList[GEO_WALL], true);
 						modelStack.PopMatrix();
 						break;
+					case 'F':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						RenderMesh(meshList[GEO_FURNACE_BLOCK], true);
+						modelStack.PopMatrix();
+						break;
 					default:
 						break;
 					}
@@ -2044,6 +2050,10 @@ void SP2::RenderPassMain()
 	ss.str("");
 	ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
+
+	ss.str("");
+	ss << std::to_string(int((camera.position.x + scale / 2)/ scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
+	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 200);
 }
 void SP2::Render()
 {

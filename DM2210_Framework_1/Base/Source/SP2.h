@@ -340,11 +340,10 @@ private:
 	float m_fTimeTillLightning;
 	float m_fLightningDuration;
 	
-	float minOutwardsFromPlayerX;
-	float minOutwardsFromPlayerZ;
-
-	float maxOutwardsFromPlayerX;
-	float maxOutwardsFromPlayerZ;
+	int minOutwardsFromPlayerX;
+	int minOutwardsFromPlayerZ;
+	int maxOutwardsFromPlayerX;
+	int maxOutwardsFromPlayerZ;
 
 	float m_fAmbient;
 	float m_iDayNight = 1;
