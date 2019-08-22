@@ -8,6 +8,8 @@ Furnace::Furnace(int xPos, int zPos)
 	m_iSmeltingID = 0;
 	m_iSmeltingTotal = 0;
 
+	m_bAccessFurnace = false;
+
 	m_iResultID = 0;
 	m_iResultTotal = 0;
 
