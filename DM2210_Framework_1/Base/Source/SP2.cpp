@@ -583,6 +583,10 @@ void SP2::Init()
 		//UI
 		meshList[GEO_INSTRUCTION1] = MeshBuilder::GenerateQuad("GEO_INSTRUCTION1", Color(1, 1, 1), 1.0f);
 		meshList[GEO_INSTRUCTION1]->textureArray[0] = LoadTGA("Image//instruction1.tga");
+		meshList[GEO_INSTRUCTION2] = MeshBuilder::GenerateQuad("GEO_INSTRUCTION2", Color(1, 1, 1), 1.0f);
+		meshList[GEO_INSTRUCTION2]->textureArray[0] = LoadTGA("Image//instruction2.tga");
+		meshList[GEO_INSTRUCTION3] = MeshBuilder::GenerateQuad("GEO_INSTRUCTION2", Color(1, 1, 1), 1.0f);
+		meshList[GEO_INSTRUCTION3]->textureArray[0] = LoadTGA("Image//instruction3.tga");
 		//
 	//Projectile
 	meshList[GEO_FIREBALL] = MeshBuilder::GenerateOBJ("GEO_FIREBALL", "OBJ//fireball.obj");
@@ -952,7 +956,7 @@ void SP2::Update(double dt)
 	EnemyChecker(dt);
 
 	instructiontimer += dt;
-	if (instructiontimer > 3)
+	if (instructiontimer > 4)
 	{
 		instructionorder++; 
 		instructiontimer = 0;
@@ -2460,6 +2464,7 @@ void SP2::RenderPassMain()
 
 	RenderPlayerInfo();
 
+	if (instructionorder < 4)
 	RenderInstructions();
 
 	std::ostringstream ss;
@@ -2486,12 +2491,12 @@ void SP2::RenderInstructions()
 			Application::GetWindowWidth() * 0.5f, Application::GetWindowHeight() * 0.5f + 100, 0);
 		break;
 	case 1:
-		ss << "Arrow Keys to swap inventory slot.";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		RenderImageToScreen(meshList[GEO_INSTRUCTION2], false, Application::GetWindowWidth() * 0.7f, Application::GetWindowWidth() * 0.5f,
+			Application::GetWindowWidth() * 0.5f, Application::GetWindowHeight() * 0.5f + 100, 0);
 		break;
 	case 2:
-		ss << "Press E to open up Crafting Table";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -400, 150);
+		RenderImageToScreen(meshList[GEO_INSTRUCTION3], false, Application::GetWindowWidth() * 0.7f, Application::GetWindowWidth() * 0.5f,
+			Application::GetWindowWidth() * 0.5f, Application::GetWindowHeight() * 0.5f + 100, 0);
 		break;
 	case 3:
 		ss << "Becareful while venturing! Have Fun!";
