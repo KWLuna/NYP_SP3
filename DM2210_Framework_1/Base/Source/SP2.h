@@ -183,10 +183,10 @@ class SP2 : public Scene
 
 		//Enemy
 		GEO_ZOMBIE,
-		
 
 		//BLOCKS PLACE
 		GEO_FURNACE_BLOCK,
+		GEO_CHEST_BLOCK,
 		GEO_LIGHT_AFFECTED_END,
 
 		//Crafting
@@ -218,6 +218,9 @@ class SP2 : public Scene
 			GEO_INSTRUCTION1,
 		//
 		GEO_LIGHT_DEPTH_QUAD, //SHADOW
+		GEO_MENU,
+		GEO_NAVIGATOR,
+
 		NUM_GEOMETRY,
 	};
 
@@ -388,6 +391,10 @@ private:
 	std::vector<ProjectileObject*> ProjectileList;
 	int m_iProjectileCount;
 	int MAX_PROJECTILE;
+
+	float m_fNavigatorY;
+
+	bool m_bMenu;
 };
 
 #endif

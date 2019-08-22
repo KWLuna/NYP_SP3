@@ -262,6 +262,12 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
+	if (m_dHP <= 0)
+	{
+		m_dHP = 100;
+		attachedCamera->position.x = 12500;
+		attachedCamera->position.z = 12500;
+	}
 
 	for (int i = 0; i < ItemList.size(); ++i)
 	{

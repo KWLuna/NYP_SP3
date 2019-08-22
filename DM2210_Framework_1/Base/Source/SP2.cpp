@@ -118,7 +118,7 @@ void SP2::InitGround()
 		}
 	}
 
-	world[125][125] = 'D';
+	world[25][25] = 'D';
 
 	int dungeonCentreX = 0;
 	int dungeonCentreZ = 0;
@@ -158,9 +158,9 @@ void SP2::InitGround()
 		world[dungeonCentreZ + dungeonSize][i] = 'D';
 	}
 	
-	for (int i = dungeonCentreZ - dungeonSize + 1; i < dungeonCentreZ + dungeonSize; ++i)
+	for (int i = dungeonCentreZ - dungeonSize; i < dungeonCentreZ + dungeonSize; ++i)
 	{
-		for (int j = dungeonCentreX - dungeonSize + 1; j < dungeonCentreX + dungeonSize; j++)
+		for (int j = dungeonCentreX - dungeonSize; j < dungeonCentreX + dungeonSize; j++)
 		{
 			int checker = Math::RandIntMinMax(0, 10);
 
@@ -173,13 +173,15 @@ void SP2::InitGround()
 	}
 
 	world[dungeonCentreX - dungeonSize][dungeonCentreZ] = 'd';
+	world[dungeonCentreX + dungeonSize - 1][dungeonCentreZ] = 'L';
 }
 
 void SP2::Init()
 {
+	m_bMenu = true;
 	Math::InitRNG();
+	m_fNavigatorY = 0;
 //	LoadWorld();
-	player = new PlayerInformation;
 	
 	m_bRandLightning = true;
 
@@ -320,8 +322,10 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
-
+	camera.Init(Vector3(2500, 50, 2500), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	player = new PlayerInformation;
+	player->AttachCamera(&camera);
+	
 	for (int i = 0; i < NUM_GEOMETRY; ++i)
 	{
 		meshList[i] = NULL;
@@ -517,6 +521,9 @@ void SP2::Init()
 	//World Objects
 	meshList[GEO_FURNACE_BLOCK] = MeshBuilder::GenerateOBJ("GEO_FURNACE_BLOCK", "OBJ//Cube.obj");
 	meshList[GEO_FURNACE_BLOCK]->textureArray[0] = LoadTGA("Image//Furnace.tga");
+
+	meshList[GEO_CHEST_BLOCK] = MeshBuilder::GenerateOBJ("GEO_FURNACE_BLOCK", "OBJ//Cube.obj");
+	meshList[GEO_CHEST_BLOCK]->textureArray[0] = LoadTGA("Image//Ritual.tga");
 	//
 
 	//Yansons models
@@ -561,6 +568,11 @@ void SP2::Init()
 	meshList[GEO_LIGHT_DEPTH_QUAD] = MeshBuilder::GenerateQuad("LIGHT_DEPTH_TEXTURE", Color(1, 1, 1), 1.f);
 	meshList[GEO_LIGHT_DEPTH_QUAD]->textureArray[0] = m_lightDepthFBO.GetTexture();
 
+	meshList[GEO_MENU] = MeshBuilder::GenerateQuad("GEO_MENU", Color(1, 1, 1), 1.f);
+	meshList[GEO_MENU]->textureArray[0] = LoadTGA("Image//Menu.tga");
+
+	meshList[GEO_NAVIGATOR] = MeshBuilder::GenerateQuad("GEO_NAVIGATOR", Color(1, 1, 1), 1.f);
+	meshList[GEO_NAVIGATOR]->textureArray[0] = LoadTGA("Image//Navigator.tga");
 	//UI
 		//HEALTH
 		meshList[GEO_HEALTH_FULL] = MeshBuilder::GenerateQuad("GEO_HEALTH_FULL", Color(1, 1, 1), 1.0f);
@@ -606,7 +618,6 @@ void SP2::Init()
 	bLightEnabled = true;
 	translate_tex_coord = 0;
 
-	player->AttachCamera(&camera);
 
 	//Test item stacking
 	//Particle
@@ -747,215 +758,240 @@ char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
-//	std::cout << Math::RandFloatMinMax(0, 10) << std::endl;
-
-	// Duration of lightning strike = 0.12
-	if (m_fTimeTillLightning <= 0.2)
+	if (m_bMenu == true)
 	{
-		m_bLightningStrike = false;
-		if (m_bRandLightning == true)
+		if (Application::IsKeyPressed(VK_DOWN) && m_dBounceTime <= 0)
 		{
-			lightningX = Math::RandFloatMinMax(camera.position.x - 500, camera.position.x + 500);
-			lightningZ = Math::RandFloatMinMax(camera.position.z - 500, camera.position.z + 500);
-			m_bRandLightning = false;
-
-			lights[0].position.x = lightningX;
-			lights[0].position.z = lightningZ;
+			m_fNavigatorY -= 100;
+			if (m_fNavigatorY < -100)
+				m_fNavigatorY = 100;
+			m_dBounceTime = 0.2;
 		}
-		if (m_fTimeTillLightning >= 0)
+		else if (Application::IsKeyPressed(VK_UP) && m_dBounceTime <= 0)
 		{
-			m_bLightningStrike = true;
-			//Flashing effect.
-			float x = Math::RandFloatMinMax(0, 1);
+			m_fNavigatorY += 100;
+			if (m_fNavigatorY > 0)
+				m_fNavigatorY = -100;
+			m_dBounceTime = 0.2;
+		}
+		else if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
+		{
+			if (m_fNavigatorY == 0)
+				m_bMenu = false;
 
-			if (x > 0.1)
-				lights[0].power = 10;
-			else
-				lights[0].power = 1;
+			m_dBounceTime = 0.2;
+		}
+	}
+	else if(m_bMenu == false)
+	{
+		// Duration of lightning strike = 0.12
+		if (m_fTimeTillLightning <= 0.2)
+		{
+			m_bLightningStrike = false;
+			if (m_bRandLightning == true)
+			{
+				lightningX = Math::RandFloatMinMax(camera.position.x - 500, camera.position.x + 500);
+				lightningZ = Math::RandFloatMinMax(camera.position.z - 500, camera.position.z + 500);
+				m_bRandLightning = false;
+
+				lights[0].position.x = lightningX;
+				lights[0].position.z = lightningZ;
+			}
+			if (m_fTimeTillLightning >= 0)
+			{
+				m_bLightningStrike = true;
+				//Flashing effect.
+				float x = Math::RandFloatMinMax(0, 1);
+
+				if (x > 0.1)
+					lights[0].power = 10;
+				else
+					lights[0].power = 1;
+				glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+			}
+			m_fTimeTillLightning += 0.1 * dt;
+		}
+		else
+		{
+			lights[0].power = 1;
 			glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+			m_fTimeTillLightning = -0.3;
+			m_bRandLightning = true;
 		}
-		m_fTimeTillLightning += 0.1 * dt;
-	}
-	else
-	{
-		lights[0].power = 1;
-		glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
-		m_fTimeTillLightning = -0.3;
-		m_bRandLightning = true;
-	}
 
 
-	if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
-	{
-		std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
-		player->addItem(new Item(Item::ITEM_WOOD, 1));
-
-		/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
-		player->addItem(new Item(Item::ITEM_STONE, 1));
-		player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
-		player->addItem(new Item(Item::ITEM_COAL, 100));
-		player->addItem(new Item(Item::ITEM_MEAT, 100));
-		player->addItem(new Item(Item::ITEM_CARROT, 10));
-		player->addItem(new Item(Item::ITEM_WHEAT, 10));
-		player->addItem(new Item(Item::ITEM_SEED, 10));
-		player->addItem(new Item(Item::ITEM_STONE, 10));*/
-
-		/*std::cout << "converting a world tile ..." << std::endl;
-
-		world[125][125] = 'D';*/
-
-		world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
-
-		m_dBounceTime = 0.5;
-	}
-
-	if (m_fAmbient >= 0.1 && m_iDayNight == 1)
-	{
-		m_fAmbient -= 0.002 * dt;
-
-		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+		if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 		{
-			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-		
-			if (m_bLightningStrike == false)
+			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
+			player->addItem(new Item(Item::ITEM_WOOD, 1));
+
+			/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+			player->addItem(new Item(Item::ITEM_STONE, 1));
+			player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+			player->addItem(new Item(Item::ITEM_COAL, 100));
+			player->addItem(new Item(Item::ITEM_MEAT, 100));
+			player->addItem(new Item(Item::ITEM_CARROT, 10));
+			player->addItem(new Item(Item::ITEM_WHEAT, 10));
+			player->addItem(new Item(Item::ITEM_SEED, 10));
+			player->addItem(new Item(Item::ITEM_STONE, 10));*/
+
+			/*std::cout << "converting a world tile ..." << std::endl;
+
+			world[125][125] = 'D';*/
+
+			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'L';
+
+			m_dBounceTime = 0.5;
+		}
+
+		if (m_fAmbient >= 0.1 && m_iDayNight == 1)
+		{
+			m_fAmbient -= 0.002 * dt;
+
+			for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
 			{
-				lights[0].power = m_fAmbient;
-				glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+				meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+
+				if (m_bLightningStrike == false)
+				{
+					lights[0].power = m_fAmbient;
+					glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+				}
 			}
 		}
-	}
-	else if (m_iDayNight == -1)
-	{
-		//How long day or night lasts
-		m_fDayNightDuration -= 1 * dt;
-
-		//Can start transitioning to day
-		if (m_fDayNightDuration <= 0)
+		else if (m_iDayNight == -1)
 		{
-			m_iDayNight *= -1;
-			m_fDayNightDuration = 120;
-		}
-	}
+			//How long day or night lasts
+			m_fDayNightDuration -= 1 * dt;
 
-	if (m_fAmbient <= 0.6 && m_iDayNight == -1)
-	{
-		m_fAmbient += 0.002 * dt;
-
-		for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
-		{
-			meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
-			if (m_bLightningStrike == false)
+			//Can start transitioning to day
+			if (m_fDayNightDuration <= 0)
 			{
-				lights[0].power = m_fAmbient;
-				glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+				m_iDayNight *= -1;
+				m_fDayNightDuration = 120;
 			}
 		}
-	}
-	else if (m_iDayNight == -1)
-	{
-		//How long day or night lasts
-		m_fDayNightDuration -= 1 * dt;
 
-		//Can start transitioning to day
-		if (m_fDayNightDuration <= 0)
+		if (m_fAmbient <= 0.6 && m_iDayNight == -1)
 		{
-			m_iDayNight *= -1;
-			m_fDayNightDuration = 120;
+			m_fAmbient += 0.002 * dt;
+
+			for (int i = GEO_LIGHT_AFFECTED + 1; i < GEO_LIGHT_AFFECTED_END; ++i)
+			{
+				meshList[i]->material.kAmbient.Set(m_fAmbient, m_fAmbient, m_fAmbient);
+				if (m_bLightningStrike == false)
+				{
+					lights[0].power = m_fAmbient;
+					glUniform1f(m_parameters[U_LIGHT0_POWER], lights[0].power);
+				}
+			}
 		}
-	}
+		else if (m_iDayNight == -1)
+		{
+			//How long day or night lasts
+			m_fDayNightDuration -= 1 * dt;
 
-	if (Application::IsKeyPressed('1'))
-		glEnable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('2'))
-		glDisable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('3'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	if (Application::IsKeyPressed('4'))
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			//Can start transitioning to day
+			if (m_fDayNightDuration <= 0)
+			{
+				m_iDayNight *= -1;
+				m_fDayNightDuration = 120;
+			}
+		}
+
+		if (Application::IsKeyPressed('1'))
+			glEnable(GL_CULL_FACE);
+		if (Application::IsKeyPressed('2'))
+			glDisable(GL_CULL_FACE);
+		if (Application::IsKeyPressed('3'))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		if (Application::IsKeyPressed('4'))
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-	if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
-	{
-		FurnaceList.push_back(new Furnace);
-		FurnaceList[0]->SetStatus(true);
+		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
+		{
+			FurnaceList.push_back(new Furnace);
+			FurnaceList[0]->SetStatus(true);
 
-		m_dBounceTime = 0.2;
-	}
+			m_dBounceTime = 0.2;
+		}
 
-	UpdateWorldVars();
-	UpdateParticles(dt);
-	//
-	/*CAnimal *go = AnimalFetchGO();
-	go->type = CAnimal::GO_COW;
-	go->SetActive(true);
-	go->SetPosition(Vector3(12550, 0, 12550));
-	go->SetAngle(40.0);
-	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
-	go->SetSpawned(true);*/
-	//
-	char PlayerTile[9];
-	float minx = camera.position.x - 100;
-	if (minx < 0)
-	{
-		minx = 0;
-	}
-	float maxx = camera.position.x + 100;
-	if (maxx > 25000)
-	{
-		maxx = 25000;
-	}
-	float minz = camera.position.z - 100;
-	if (minz < 0)
-	{
-		minz = 0;
-	}
-	float maxz = camera.position.x + 100;
-	if (maxz > 25000)
-	{
-		maxz = 25000;
-	}
-	PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
-	PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
-	PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
-	PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
-	PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
-	PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
-	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
-	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
-	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
-	player->update(dt, m_AnimalList, PlayerTile);
+		UpdateWorldVars();
+		UpdateParticles(dt);
+		//
+		/*CAnimal *go = AnimalFetchGO();
+		go->type = CAnimal::GO_COW;
+		go->SetActive(true);
+		go->SetPosition(Vector3(12550, 0, 12550));
+		go->SetAngle(40.0);
+		go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+		go->SetSpawned(true);*/
+		//
+		char PlayerTile[9];
+		float minx = camera.position.x - 100;
+		if (minx < 0)
+		{
+			minx = 0;
+		}
+		float maxx = camera.position.x + 100;
+		if (maxx > 25000)
+		{
+			maxx = 25000;
+		}
+		float minz = camera.position.z - 100;
+		if (minz < 0)
+		{
+			minz = 0;
+		}
+		float maxz = camera.position.x + 100;
+		if (maxz > 25000)
+		{
+			maxz = 25000;
+		}
+		PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
+		PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
+		PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
+		PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
+		PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
+		PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
+		PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
+		PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
+		PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
+		player->update(dt, m_AnimalList, PlayerTile);
 
-	//Update all crops present in the world.
-	for (unsigned int i = 0; i < CropList.size(); ++i)
-		CropList[i]->update(dt);
+		//Update all crops present in the world.
+		for (unsigned int i = 0; i < CropList.size(); ++i)
+			CropList[i]->update(dt);
 
-	//Update all the furnaces present in the level.
-	for (unsigned int i = 0; i < FurnaceList.size(); ++i)
-		FurnaceList[i]->update(dt, player);
+		//Update all the furnaces present in the level.
+		for (unsigned int i = 0; i < FurnaceList.size(); ++i)
+			FurnaceList[i]->update(dt, player);
 
-	//Rmb to update to pointer.
-	SP2_Seasons->Update(dt);
-	SeasonChanger(dt);
+		//Rmb to update to pointer.
+		SP2_Seasons->Update(dt);
+		SeasonChanger(dt);
 
-	//Sprite Animation
-	SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
-	if (sa)
-	{
-		sa->Update(dt);
-		sa->m_anim->animActive = true;
-	}
+		//Sprite Animation
+		SpriteAnimation *sa = dynamic_cast<SpriteAnimation*>(meshList[GEO_SPRITE_ANIMATION]);
+		if (sa)
+		{
+			sa->Update(dt);
+			sa->m_anim->animActive = true;
+		}
 
-	camera.Update(dt);
-	fps = (float)(1.f / dt);
+		camera.Update(dt);
+		fps = (float)(1.f / dt);
 
-	AnimalChecker(dt);
-	EnemyChecker(dt);
+		AnimalChecker(dt);
+		EnemyChecker(dt);
 
-	instructiontimer += dt;
-	if (instructiontimer > 3)
-	{
-		instructionorder++; 
-		instructiontimer = 0;
+		instructiontimer += dt;
+		if (instructiontimer > 3)
+		{
+			instructionorder++;
+			instructiontimer = 0;
+		}
 	}
 }
 void SP2::EnemyChecker(double dt)
@@ -2048,6 +2084,13 @@ void SP2::RenderGroundObjects()
 						RenderMesh(meshList[GEO_FURNACE_BLOCK], true);
 						modelStack.PopMatrix();
 						break;
+					case 'L':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale / 3, scale / 3, scale / 3);
+						RenderMesh(meshList[GEO_CHEST_BLOCK], true);
+						modelStack.PopMatrix();
+						break;
 					default:
 						break;
 					}
@@ -2089,7 +2132,13 @@ void SP2::RenderGround()
 						RenderMesh(meshList[GEO_WATER], true);
 						modelStack.PopMatrix();
 						break;
-					case 'D':
+					case 'L':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_STONE_BRICK_FLOOR], true);
+						modelStack.PopMatrix();
 						break;
 					default:
 						modelStack.PushMatrix();
@@ -2239,48 +2288,51 @@ void SP2::RenderPlayerInfo()
 }
 void SP2::RenderWorld()
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(12500, 0, 12500);
-	modelStack.Scale(6, 6, 6);
-	RenderMesh(meshList[GEO_PLAYER], false);
-	modelStack.PopMatrix();
+	if (m_bMenu == false)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(12500, 0, 12500);
+		modelStack.Scale(6, 6, 6);
+		RenderMesh(meshList[GEO_PLAYER], false);
+		modelStack.PopMatrix();
 
-	for (int i = 0; i < 15; ++i)
-	{
-		//Interval between drawing of each line that makes up the lightning
-		if (m_fTimeTillLightning >= i * 0.008)
+		for (int i = 0; i < 15; ++i)
 		{
-			modelStack.PushMatrix();
-			modelStack.Translate(lightningX + 50, 1440 - i * 96, lightningZ);
-			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - lightningX, camera.position.z - lightningZ)), 0, 1, 0);
-			if (i % 2 == 0)
-				modelStack.Rotate(15, 0, 0, 1);
-			else
-				modelStack.Rotate(345, 0, 0, 1);
-			modelStack.Scale(1, 100, 1);
-			RenderMesh(meshList[GEO_LIGHTNING], false);
-			modelStack.PopMatrix();
+			//Interval between drawing of each line that makes up the lightning
+			if (m_fTimeTillLightning >= i * 0.008)
+			{
+				modelStack.PushMatrix();
+				modelStack.Translate(lightningX + 50, 1440 - i * 96, lightningZ);
+				modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - lightningX, camera.position.z - lightningZ)), 0, 1, 0);
+				if (i % 2 == 0)
+					modelStack.Rotate(15, 0, 0, 1);
+				else
+					modelStack.Rotate(345, 0, 0, 1);
+				modelStack.Scale(1, 100, 1);
+				RenderMesh(meshList[GEO_LIGHTNING], false);
+				modelStack.PopMatrix();
+			}
 		}
-	}
-	
-	RenderGroundObjects();
 
-	//Render Animals
-	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
-	{
-		CAnimal *animal = (CAnimal *)*it;
-		if (animal->GetActive())
+		RenderGroundObjects();
+
+		//Render Animals
+		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 		{
-			RenderAnimal(animal);
+			CAnimal *animal = (CAnimal *)*it;
+			if (animal->GetActive())
+			{
+				RenderAnimal(animal);
+			}
 		}
-	}
-	//Render Enemys
-	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
-	{
-		CEnemy *enemy = (CEnemy *)*it;
-		if (enemy->GetActive())
+		//Render Enemys
+		for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
 		{
-			RenderEnemy(enemy);
+			CEnemy *enemy = (CEnemy *)*it;
+			if (enemy->GetActive())
+			{
+				RenderEnemy(enemy);
+			}
 		}
 	}
 }
@@ -2395,65 +2447,74 @@ void SP2::RenderPassMain()
 		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
 		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
 	}
-
-	RenderMesh(meshList[GEO_AXES], false);
-	RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 1.0f);
-
-	RenderCrafting();
-	RenderFurnace();
-
-	Render3DHandHeld();
-	RenderInventory();
-
-	RenderSkyBox();
-	RenderGround();
-
-	modelStack.PushMatrix();
-	modelStack.Translate(12550 , 10, 12550);
-	modelStack.Scale(10, 10, 10);
-	modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - 12550, camera.position.z - 12550)), 0, 1, 0);
-	RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
-	modelStack.PopMatrix();
-
-	RenderWorld();
-
-	RenderAnimation();
-
-	//	Render Particles
-	for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
+	if (m_bMenu == true)
 	{
-		ParticleObject *particle = (ParticleObject *)*it;
-		if (particle->active)
-		{
-			RenderParticles(particle);
-		}
+		RenderImageToScreen(meshList[GEO_MENU], false, Application::GetWindowWidth(), Application::GetWindowHeight(), Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 1);
+		RenderImageToScreen(meshList[GEO_NAVIGATOR], false, Application::GetWindowWidth() / 10, Application::GetWindowHeight() / 10 , Application::GetWindowWidth() / 2 - 400 , Application::GetWindowHeight() / 2 + m_fNavigatorY, 2);
+
 	}
-	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+	if (m_bMenu == false)
 	{
-		ProjectileObject *Projectile = (ProjectileObject *)*it;
-		if (Projectile->GetActive())
+
+		RenderMesh(meshList[GEO_AXES], false);
+		RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 1.0f);
+
+		RenderCrafting();
+		RenderFurnace();
+
+		Render3DHandHeld();
+		RenderInventory();
+
+		RenderSkyBox();
+		RenderGround();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(12550, 10, 12550);
+		modelStack.Scale(10, 10, 10);
+		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - 12550, camera.position.z - 12550)), 0, 1, 0);
+		RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
+		modelStack.PopMatrix();
+
+		RenderWorld();
+
+		RenderAnimation();
+
+		//	Render Particles
+		for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 		{
-			RenderProjectile(Projectile);
+			ParticleObject *particle = (ParticleObject *)*it;
+			if (particle->active)
+			{
+				RenderParticles(particle);
+			}
 		}
+		for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+		{
+			ProjectileObject *Projectile = (ProjectileObject *)*it;
+			if (Projectile->GetActive())
+			{
+				RenderProjectile(Projectile);
+			}
+		}
+		RenderCrops();
+
+		RenderPlayerInfo();
+
+		RenderInstructions();
+
+		std::ostringstream ss;
+		ss.precision(5);
+		ss << "FPS: " << fps;
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 300);
+
+		ss.str("");
+		ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
+
+		ss.str("");
+		ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 200);
 	}
-	RenderCrops();
-
-	RenderPlayerInfo();
-
-	RenderInstructions();
-
-	std::ostringstream ss;
-	ss.precision(5);
-	ss << "FPS: " << fps;
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600 , 300  );
-
-	ss.str("");
-	ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -20, -300);
-
-	ss.str("");
-	ss << std::to_string(int((camera.position.x + scale / 2)/ scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 100, -600, 200);
 }
 void SP2::RenderInstructions()
 {
