@@ -12,7 +12,7 @@ class Furnace
 		END
 	};
 public:
-	Furnace();
+	Furnace(int xPos , int zPos);
 	~Furnace();
 
 	// Pass in the player from the scene along with dt.
@@ -28,6 +28,9 @@ public:
 	void SetStatus(bool condition);
 
 	int GetResultID();
+
+	int GetXTile();
+	int GetZTile();
 
 	int GetResultTotal();
 
@@ -58,6 +61,9 @@ private:
 
 	int m_iResultID;
 	int m_iResultTotal;
+
+	int m_iTileX;
+	int m_iTileZ;
 
 	std::vector <int> Smeltables;
 	std::vector <int> Burnables;

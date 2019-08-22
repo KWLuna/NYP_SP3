@@ -356,15 +356,23 @@ void SP2::Init()
 	meshList[GEO_SKYBOX_WINTER]->textureArray[0] = LoadTGA("Image//Skybox_Winter.tga");
 
 	//
+	meshList[GEO_TILLED_DIRT] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_TILLED_DIRT]->textureArray[0] = LoadTGA("Image//Tilled_Dirt.tga");
+
+	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
+	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
+
 	meshList[GEO_GRASS_SPRING] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_SPRING]->textureArray[0] = LoadTGA("Image//Grass.tga");
 	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 
 	meshList[GEO_GRASS_SUMMER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_SUMMER]->textureArray[0] = LoadTGA("Image//Grass_summer.tga");
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 
 	meshList[GEO_GRASS_WINTER] = MeshBuilder::GenerateQuad("Grass", Color(1, 1, 1), 1.f);
 	meshList[GEO_GRASS_WINTER]->textureArray[0] = LoadTGA("Image//Grass_winter.tga");
+	meshList[GEO_GRASS_SPRING]->material.kAmbient.Set(0.3f, 0.3f, 0.3f);
 	//
 	meshList[GEO_STONE_BRICK_FLOOR] = MeshBuilder::GenerateQuad("GEO_STONE_BRICK_FLOOR", Color(1, 1, 1), 1.f);
 	meshList[GEO_STONE_BRICK_FLOOR]->textureArray[0] = LoadTGA("Image//StoneBricks.tga");
@@ -658,7 +666,8 @@ void SP2::Init()
 
 	//Crops assign to where the player plants it. so get the tile position and multiply by scale.
 	//CropList.push_back(new Crops(0 , 12250 , 12250));
-	CropList.push_back(new Crops(0 , 12250 , 12250));
+
+	CropList.push_back(new Crops(0 , 125, 125));
 
 	//instructions
 	instructionorder = 0;
@@ -852,6 +861,7 @@ void SP2::Update(double dt)
 		{
 			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
 			player->addItem(new Item(Item::ITEM_WOOD, 1));
+			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 			player->addItem(new Item(Item::ITEM_STONE, 1));
@@ -937,13 +947,13 @@ void SP2::Update(double dt)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
+		/*if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
-			FurnaceList.push_back(new Furnace);
+			FurnaceList.push_back(new Furnace(x , y ));
 			FurnaceList[0]->SetStatus(true);
 
 			m_dBounceTime = 0.2;
-		}
+		}*/
 
 		UpdateWorldVars();
 		UpdateParticles(dt);
@@ -1302,9 +1312,9 @@ void SP2::RenderCrops()
 				if (CropList[i]->GetState() == 0)
 				{
 					modelStack.PushMatrix();
-					modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZPos() - 25 + k * 25));
+					modelStack.Translate(static_cast<float>(CropList[i]->GetXTile() * scale - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZTile() * scale - 25 + k * 25));
 					modelStack.Scale(25, 50, 25);
-					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+					modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXTile()  * scale  - 25 + j * 25), camera.position.z - (CropList[i]->GetZTile() * scale - 25 + k * 25))), 0, 1, 0);
 					RenderMesh(meshList[GEO_SPROUT_CROP], false);
 					modelStack.PopMatrix();
 				}
@@ -1313,18 +1323,18 @@ void SP2::RenderCrops()
 					if (CropList[i]->GetCropType() == 0)
 					{
 						modelStack.PushMatrix();
-						modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>( CropList[i]->GetZPos() - 25 + k * 25));
+						modelStack.Translate(static_cast<float>(CropList[i]->GetXTile()  * scale - 25 + j * 25), 25, static_cast<float>( CropList[i]->GetZTile() * scale - 25 + k * 25));
 						modelStack.Scale(25, 50, 25);
-						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXTile() * scale - 25 + j * 25), camera.position.z - (CropList[i]->GetZTile() * scale - 25 + k * 25))), 0, 1, 0);
 						RenderMesh(meshList[GEO_CARROT_CROP], false);
 						modelStack.PopMatrix();
 					}
 					else
 					{
 						modelStack.PushMatrix();
-						modelStack.Translate(static_cast<float>(CropList[i]->GetXPos() - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZPos() - 25 + k * 25));
+						modelStack.Translate(static_cast<float>(CropList[i]->GetXTile()  * scale - 25 + j * 25), 25, static_cast<float>(CropList[i]->GetZTile() * scale - 25 + k * 25));
 						modelStack.Scale(25, 50, 25);
-						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXPos() - 25 + j * 25), camera.position.z - (CropList[i]->GetZPos() - 25 + k * 25))), 0, 1, 0);
+						modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - (CropList[i]->GetXTile()  * scale - 25 + j * 25), camera.position.z - (CropList[i]->GetZTile() * scale - 25 + k * 25))), 0, 1, 0);
 						RenderMesh(meshList[GEO_WHEAT_CROP], false);
 						modelStack.PopMatrix();
 					}
@@ -2141,6 +2151,14 @@ void SP2::RenderGround()
 				{
 					switch (world[i][k])
 					{
+					case 'c':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_TILLED_DIRT], true);
+						modelStack.PopMatrix();
+						break;
 					case 'd':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);

@@ -6,13 +6,13 @@ Crops::Crops(int TYPE , int xPos , int zPos)
 	m_iCropType = TYPE;
 	m_iCropState = 0;
 
-	m_iXpos = xPos;
-	m_iZpos = zPos;
+	m_iXTile = xPos;
+	m_iZTile = zPos;
 }
 
-int Crops::GetXPos()
+int Crops::GetXTile()
 {
-	return m_iXpos;
+	return m_iXTile;
 }
 
 int Crops::GetCropType()
@@ -20,19 +20,19 @@ int Crops::GetCropType()
 	return m_iCropType;
 }
 
-int Crops::GetZPos()
+int Crops::GetZTile()
 {
-	return m_iZpos;
+	return m_iZTile;
 }
 
 void Crops::SetXPos(int x)
 {
-	m_iXpos = x;
+	m_iXTile = x;
 }
 
 void Crops::SetZPos(int z)
 {
-	m_iZpos = z;
+	m_iZTile = z;
 }
 
 int Crops::GetState()

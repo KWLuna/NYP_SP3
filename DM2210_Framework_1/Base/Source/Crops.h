@@ -18,8 +18,8 @@ public:
 	void SetXPos(int x);
 	void SetZPos(int z);
 
-	int GetXPos();
-	int GetZPos();
+	int GetXTile();
+	int GetZTile();
 	int GetCropType();
 
 private:
@@ -32,6 +32,6 @@ private:
 	//CROP_STATE
 	int m_iCropState;
 
-	int m_iXpos, m_iZpos;
+	int m_iXTile, m_iZTile;
 };
 
