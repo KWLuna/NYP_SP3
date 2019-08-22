@@ -39,11 +39,14 @@ protected:
 	bool curswing;
 	bool side;
 
+	char tiletype;
+
 	Physics weaponphysics;
 
 public:
 	virtual void Init(void);
 	virtual void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist);
+	virtual void UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[]);
 
 	void SetPosition(Vector3 vPosition);
 	Vector3 GetPosition(void) const;

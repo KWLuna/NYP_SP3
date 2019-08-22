@@ -247,6 +247,256 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 	}
 	else if (type == RANGE)
 	{
+		
+	}
+}
+
+void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[])
+{
+	Vector3 smallestvertex;
+	Vector3 biggestvertex;
+	if (type == MELEE)
+	{
+		if (curswing)
+		{
+			if (side)
+			{
+				curt += ((leftmaxt - rightmaxt) / swingtime * dt);
+				curr += ((leftmaxr - rightmaxr) / swingtime * dt);
+				if (curt <= leftmaxt)
+				{
+					curt = leftmaxt;
+				}
+				if (curr >= leftmaxr)
+				{
+					curr = leftmaxr;
+					curswing = false;
+				}
+				Vector3 facingtile;
+				facingtile = origin + dir * 100;
+				if (facingtile.x > ((int)origin.x/100)*100 && facingtile.x < ((int)origin.x/100+1)*100)
+				{
+					smallestvertex.x = ((int)origin.x / 100) * 100;
+					biggestvertex.x = ((int)origin.x / 100 + 1) * 100;
+
+					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[0];
+						smallestvertex.z = ((int)origin.z / 100) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+					}
+					if (facingtile.z < ((int)origin.z/100)*100)
+					{
+						tiletype = tilearray[4];
+						smallestvertex.z = ((int)origin.z / 100-1) * 100;
+						biggestvertex.z = ((int)origin.z / 100) * 100;
+					}
+					if (facingtile.z > ((int)origin.z/100 + 1)*100)
+					{
+						tiletype = tilearray[5];
+						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+					}
+				}
+				else if (facingtile.x < ((int)origin.x/100)*100)
+				{
+					smallestvertex.x = ((int)origin.x / 100 - 1) * 100;
+					biggestvertex.x = ((int)origin.x / 100) * 100;
+
+					if (facingtile.z < ((int)origin.z / 100) * 100)
+					{
+						tiletype = tilearray[1];
+						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[3];
+						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[2];
+						smallestvertex.z = ((int)origin.z / 100) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+					}
+				}
+				else if (facingtile.x > ((int)origin.x/100+1)*100)
+				{
+					smallestvertex.x = ((int)origin.x / 100 + 1) * 100;
+					biggestvertex.x = ((int)origin.x / 100 + 2) * 100;
+
+					if (facingtile.z < ((int)origin.z / 100) * 100)
+					{
+						tiletype = tilearray[6];
+						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[8];
+						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[7];
+						smallestvertex.z = ((int)origin.z / 100) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+					}
+				}
+				if (tiletype == 'G')
+				{
+					smallestvertex.y = -5;
+					biggestvertex.y = 0;
+				}
+				else if (tiletype == 'C')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'W')
+				{
+					smallestvertex.y = -5;
+					biggestvertex.y = 0;
+				}
+				else if (tiletype == 'B')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'T')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
+				{
+					std::cout << "tile collide";
+				}
+			}
+			else
+			{
+				curt += ((rightmaxt - leftmaxt) / swingtime * dt);
+				curr += ((rightmaxr - leftmaxr) / swingtime * dt);
+				if (curt >= rightmaxt)
+				{
+					curt = rightmaxt;
+				}
+				if (curr <= rightmaxr)
+				{
+					curr = rightmaxr;
+					curswing = false;
+				}
+				Vector3 facingtile;
+				facingtile = origin + dir * 100;
+				if (facingtile.x > ((int)origin.x / 100) * 100 && facingtile.x < ((int)origin.x / 100 + 1) * 100)
+				{
+					smallestvertex.x = ((int)origin.x / 100) * 100;
+					biggestvertex.x = ((int)origin.x / 100 + 1) * 100;
+
+					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[0];
+						smallestvertex.z = ((int)origin.z / 100) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+					}
+					if (facingtile.z < ((int)origin.z / 100) * 100)
+					{
+						tiletype = tilearray[4];
+						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[5];
+						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+					}
+				}
+				else if (facingtile.x < ((int)origin.x / 100) * 100)
+				{
+					smallestvertex.x = ((int)origin.x / 100 - 1) * 100;
+					biggestvertex.x = ((int)origin.x / 100) * 100;
+
+					if (facingtile.z < ((int)origin.z / 100) * 100)
+					{
+						tiletype = tilearray[1];
+						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[3];
+						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[2];
+						smallestvertex.z = ((int)origin.z / 100) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+					}
+				}
+				else if (facingtile.x > ((int)origin.x / 100 + 1) * 100)
+				{
+					smallestvertex.x = ((int)origin.x / 100 + 1) * 100;
+					biggestvertex.x = ((int)origin.x / 100 + 2) * 100;
+
+					if (facingtile.z < ((int)origin.z / 100) * 100)
+					{
+						tiletype = tilearray[6];
+						smallestvertex.z = ((int)origin.z / 100 - 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[8];
+						smallestvertex.z = ((int)origin.z / 100 + 1) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 2) * 100;
+					}
+					if (facingtile.z > ((int)origin.z / 100) * 100 && facingtile.z < ((int)origin.z / 100 + 1) * 100)
+					{
+						tiletype = tilearray[7];
+						smallestvertex.z = ((int)origin.z / 100) * 100;
+						biggestvertex.z = ((int)origin.z / 100 + 1) * 100;
+					}
+				}
+				if (tiletype == 'G')
+				{
+					smallestvertex.y = -5;
+					biggestvertex.y = 0;
+				}
+				else if (tiletype == 'C')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'W')
+				{
+					smallestvertex.y = -5;
+					biggestvertex.y = 0;
+				}
+				else if (tiletype == 'B')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'T')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
+				{
+					std::cout << "tile collide";
+				}
+			}
+		}
+	}
+	else if (type == RANGE)
+	{
 
 	}
 }
