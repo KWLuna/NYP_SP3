@@ -853,7 +853,7 @@ void SP2::Update(double dt)
 			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
 			player->addItem(new Item(Item::ITEM_WOOD, 1));
 
-			/*player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
+			player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
 			player->addItem(new Item(Item::ITEM_STONE, 1));
 			player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 			player->addItem(new Item(Item::ITEM_COAL, 100));
@@ -861,11 +861,15 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_CARROT, 10));
 			player->addItem(new Item(Item::ITEM_WHEAT, 10));
 			player->addItem(new Item(Item::ITEM_SEED, 10));
-			player->addItem(new Item(Item::ITEM_STONE, 10));*/
+			player->addItem(new Item(Item::ITEM_STONE, 10));
 
-			/*std::cout << "converting a world tile ..." << std::endl;
+			/*std::cout << "converting a world tile ..." << std::endl;*/
 
-			world[125][125] = 'D';*/
+		player->addItem(new Item(Item::ITEM_FURNACE, 1));
+	
+		world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
+
+			world[125][125] = 'D';
 
 			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'L';
 
@@ -945,48 +949,58 @@ void SP2::Update(double dt)
 			m_dBounceTime = 0.2;
 		}
 
-		UpdateWorldVars();
-		UpdateParticles(dt);
-		//
-		/*CAnimal *go = AnimalFetchGO();
-		go->type = CAnimal::GO_COW;
-		go->SetActive(true);
-		go->SetPosition(Vector3(12550, 0, 12550));
-		go->SetAngle(40.0);
-		go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
-		go->SetSpawned(true);*/
-		//
-		char PlayerTile[9];
-		float minx = camera.position.x - 100;
-		if (minx < 0)
+	UpdateWorldVars();
+	UpdateParticles(dt);
+	//
+	/*CAnimal *go = AnimalFetchGO();
+	go->type = CAnimal::GO_COW;
+	go->SetActive(true);
+	go->SetPosition(Vector3(12550, 0, 12550));
+	go->SetAngle(40.0);
+	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+	go->SetSpawned(true);*/
+	//
+	char PlayerTile[9];
+	float minx = camera.position.x - 100;
+	if (minx < 0)
+	{
+		minx = 0;
+	}
+	float maxx = camera.position.x + 100;
+	if (maxx > 25000)
+	{
+		maxx = 25000;
+	}
+	float minz = camera.position.z - 100;
+	if (minz < 0)
+	{
+		minz = 0;
+	}
+	float maxz = camera.position.x + 100;
+	if (maxz > 25000)
+	{
+		maxz = 25000;
+	}
+	PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
+	PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
+	PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
+	PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
+	PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
+	PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
+	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
+	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
+	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
+	player->update(dt, m_AnimalList, PlayerTile);
+	if (player->GetPlaceDown())
+	{
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
 		{
-			minx = 0;
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			world[x][y] = 'F';
+			FurnaceList.push_back(new Furnace);
 		}
-		float maxx = camera.position.x + 100;
-		if (maxx > 25000)
-		{
-			maxx = 25000;
-		}
-		float minz = camera.position.z - 100;
-		if (minz < 0)
-		{
-			minz = 0;
-		}
-		float maxz = camera.position.x + 100;
-		if (maxz > 25000)
-		{
-			maxz = 25000;
-		}
-		PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
-		PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
-		PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
-		PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
-		PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
-		PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
-		PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
-		PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
-		PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
-		player->update(dt, m_AnimalList, PlayerTile);
+	}
 
 		//Update all crops present in the world.
 		for (unsigned int i = 0; i < CropList.size(); ++i)

@@ -131,6 +131,10 @@ void PlayerInformation::Constrain()
 	if (attachedCamera->position.x > 25000)
 		attachedCamera->position.x = 0;
 	//
+	/*if ()
+	{
+
+	}*/
 }
 
 Item * PlayerInformation::getItem(int id)
@@ -622,6 +626,8 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 
 		Vector3 dir = attachedCamera->target - attachedCamera->position;
 		curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist);
+		curtool->SetStandinOn(false);
+		curtool->SetTileType('N');
 		curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
 
 		static bool bLButtonState = false;
@@ -658,6 +664,11 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 			}
 			else
 				std::cout << "rnotcollide";
+			if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE)
+			{
+				curtool->SetCurSwing();
+				PlaceBlock();
+			}
 		}
 		else if (bRButtonState && !Application::IsMousePressed(1))
 		{
@@ -673,6 +684,23 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 			}
 		}
 	}
+}
+
+void PlayerInformation::PlaceBlock()
+{
+	placedown = false;
+	if (!curtool->GetStandinOn())
+	{
+		if (curtool->GetTileType() == 'G')
+		{
+			placedown = true;
+		}
+	}
+}
+
+bool PlayerInformation::GetPlaceDown()
+{
+	return placedown;
 }
 
 double PlayerInformation::getHunger()
