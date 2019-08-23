@@ -11,6 +11,7 @@
 #include "LoadHmap.h"
 #include "Particle.h"
 #include "DepthFBO.h"
+#include "Bush.h"
 
 #include "PlayerInformation.h"
 #include "Furnace.h"
@@ -169,6 +170,9 @@ class SP2 : public Scene
 			GEO_STONE_BRICK_FLOOR,
 			//Ground Objects
 			GEO_BERRY,
+
+			GEO_NO_BERRY,
+
 			GEO_GOLD_ORE,
 			GEO_COAL_ORE,
 			GEO_TREE_SPRING,
@@ -348,6 +352,7 @@ private:
 
 	std::vector<Furnace*> FurnaceList;
 	std::vector<Crops*> CropList;
+	std::vector<Bush *> HarvestedBushList;
 	//Shadow
 	unsigned m_gPassShaderID;
 	DepthFBO m_lightDepthFBO;

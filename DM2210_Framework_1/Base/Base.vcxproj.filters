@@ -52,6 +52,9 @@
     <Filter Include="SP2\EnemyAI">
       <UniqueIdentifier>{fd51c071-0d41-403a-9aa5-9b7a721c263b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SP2\Bush">
+      <UniqueIdentifier>{4fc52c1b-621b-4872-b3fe-e4c5800679fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -140,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="Source\Projectile.cpp">
       <Filter>SP2\EnemyAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Bush.cpp">
+      <Filter>SP2\Bush</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="Source\Projectile.h">
       <Filter>SP2\EnemyAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Bush.h">
+      <Filter>SP2\Bush</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
