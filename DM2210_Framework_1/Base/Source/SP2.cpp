@@ -312,6 +312,7 @@ void SP2::InitGround()
 
 void SP2::Init()
 {
+	CSoundEngine::GetInstance()->AddSound("awa", "poo");
 	m_bMenu = true;
 	m_bContinue = false;
 	Math::InitRNG();
