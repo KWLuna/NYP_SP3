@@ -25,12 +25,12 @@ int Crops::GetZTile()
 	return m_iZTile;
 }
 
-void Crops::SetXPos(int x)
+void Crops::SetXTile(int x)
 {
 	m_iXTile = x;
 }
 
-void Crops::SetZPos(int z)
+void Crops::SetZTile(int z)
 {
 	m_iZTile = z;
 }
@@ -42,6 +42,16 @@ int Crops::GetState()
 
 Crops::~Crops()
 {
+}
+
+double Crops::getTimeSincePlanted()
+{
+	return m_dTimeSincePlanted;
+}
+
+void Crops::setTimeSincePlanted(double time)
+{
+	m_dTimeSincePlanted = time;
 }
 
 void Crops::update(double dt)

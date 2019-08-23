@@ -10,8 +10,6 @@ Furnace::Furnace(int xPos, int zPos)
 	
 	m_bAccessFurnace = false;
 
-	m_bAccessFurnace = false;
-
 	m_iResultID = 0;
 	m_iResultTotal = 0;
 
@@ -33,17 +31,6 @@ Furnace::Furnace(int xPos, int zPos)
 
 Furnace::~Furnace()
 {
-	//Drop items in the furnace on the ground.
-
-	for (int i = 0; i < m_iFuelID; ++i)
-		std::cout << "drop m_iFuelID ";
-
-	std::cout << std::endl;
-
-	for (int i = 0; i < m_iSmeltingID; ++i)
-		std::cout << "drop m_iSmeltingID ";
-
-	std::cout << std::endl;
 }
 
 int Furnace::GetXTile()
@@ -79,7 +66,6 @@ bool Furnace::GetStatus()
 {
 	return m_bAccessFurnace;
 }
-
 
 int Furnace::ReturnResult(int ID)
 {

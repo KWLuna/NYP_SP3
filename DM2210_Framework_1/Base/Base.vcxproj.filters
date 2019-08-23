@@ -267,5 +267,11 @@
     <Text Include="WorldSaveFile.txt">
       <Filter>SP2\TextFiles</Filter>
     </Text>
+    <Text Include="CropSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="FurnaceSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
   </ItemGroup>
 </Project>

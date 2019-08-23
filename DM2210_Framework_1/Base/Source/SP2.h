@@ -222,6 +222,7 @@ class SP2 : public Scene
 		GEO_MENU,
 		GEO_PLAYER_SELECTION,
 		GEO_NAVIGATOR,
+		GEO_GAME_OVER,
 
 		NUM_GEOMETRY,
 	};

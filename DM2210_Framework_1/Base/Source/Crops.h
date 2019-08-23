@@ -15,17 +15,21 @@ public:
 	void update(double dt);
 	int GetState();
 
-	void SetXPos(int x);
-	void SetZPos(int z);
+	double getTimeSincePlanted();
+	void setTimeSincePlanted(double time);
 
 	int GetXTile();
 	int GetZTile();
+
+	void SetXTile(int x);
+	void SetZTile(int z);
+
 	int GetCropType();
 
 private:
 	bool m_bFinishedGrowing;
 	double m_dTimeSincePlanted;
-	const int TIME_TO_GROW = 300;
+	const int TIME_TO_GROW = 5;
 
 	//CROP_TYPE
 	int m_iCropType;
