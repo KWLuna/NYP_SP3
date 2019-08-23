@@ -2,7 +2,7 @@
 #include "Vector3.h"
 #include "Physics.h"
 #include "CAnimal.h"
-
+#include "CEnemy.h"
 class Weapons
 {
 public:
@@ -43,11 +43,14 @@ protected:
 	bool standingonem;
 	Vector3 blockset;
 
+	bool rclick;
+
 	Physics weaponphysics;
 
 public:
 	virtual void Init(void);
-	virtual void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist);
+	virtual void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist, float m_fPlayersDamage);
+	virtual void UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vector<CEnemy*> enemylist, float m_fPlayersDamage);
 	virtual void UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[]);
 
 	void SetPosition(Vector3 vPosition);
@@ -87,5 +90,8 @@ public:
 	void SetStandinOn(bool stand);
 	bool GetStandinOn();
 	Vector3 GetBlockPlacement();
+
+	void SetRClick();
+	void SetLClick();
 };
 

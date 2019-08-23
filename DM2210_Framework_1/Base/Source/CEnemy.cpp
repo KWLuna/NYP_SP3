@@ -14,7 +14,8 @@ CEnemy::CEnemy(ENEMY_TYPE typeValue)
 	m_iCurrentBehaviour(0),
 	m_fStrength(5.f),
 	m_fAttackingTime(0.f),
-	m_bAttacked(false)
+	m_bAttacked(false),
+	Newpos(false)
 {
 	m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
 	m_fSpeed = Math::RandFloatMinMax(0.1f, 0.5f);
@@ -25,8 +26,9 @@ CEnemy::~CEnemy()
 {
 }
 
-void CEnemy::Update(double dt)
+void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 {
+
 	theCurrentBehaviour = (Enemy_Behaviour)(m_iCurrentBehaviour);
 
 	switch (theCurrentBehaviour)
@@ -42,6 +44,8 @@ void CEnemy::Update(double dt)
 		break;
 	case CEnemy::WANDERING: //1
 	{
+		m_fSpeed = Math::RandFloatMinMax(0.1f, 0.5f);
+
 		if (Targetpos == pos)
 		{
 			Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 500.f), 1, Math::RandFloatMinMax(pos.z - 500.f, pos.z + 500.f));
@@ -79,7 +83,31 @@ void CEnemy::Update(double dt)
 				Vector3 temp = (Targetpos - pos) * (m_fSpeed / m_fMass);
 				Vector3 prevpos;
 				prevpos = pos;
-				pos += temp;
+				Vector3* last = WorldObjectPositionList[WorldObjectPositionList.size() - 1];
+
+				for (std::vector<Vector3*>::iterator it2 = WorldObjectPositionList.begin(); it2 != WorldObjectPositionList.end(); ++it2)
+				{
+					Vector3* WorldObjectPos = (Vector3*)*it2;
+
+					if (pos.x + temp.x > WorldObjectPos->x - 50 && pos.x + temp.x < WorldObjectPos->x + 50)
+					{
+						if (pos.z + temp.z > WorldObjectPos->z - 50 && pos.z + temp.z < WorldObjectPos->z + 50)
+						{
+							if (!Newpos)
+							{
+								Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 200.f), 1, Math::RandFloatMinMax(pos.z - 200.f, pos.z + 200.f));
+								Newpos = true;
+								m_bRotated = false;
+							}
+							break;
+						}
+					}
+					else if (WorldObjectPos == last)
+					{
+						pos += temp;
+						Newpos = false;
+					}
+				}
 
 				if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
 					dir = (pos - prevpos).Normalize();
@@ -92,6 +120,8 @@ void CEnemy::Update(double dt)
 	}
 	break;
 	case CEnemy::FOLLOWING: //2
+		m_fSpeed = Math::RandFloatMinMax(0.1f, 1.0f);
+
 		//if player holds the specific food the animal likes in his hand, they follow the player.
 		if (Targetpos.x < -1)
 			Targetpos.x = 0;
@@ -121,7 +151,31 @@ void CEnemy::Update(double dt)
 			Vector3 temp = (Targetpos - pos) * (m_fSpeed / m_fMass);
 			Vector3 prevpos;
 			prevpos = pos;
-			pos += temp;
+			
+			Vector3* last = WorldObjectPositionList[WorldObjectPositionList.size() - 1];
+			for (std::vector<Vector3*>::iterator it2 = WorldObjectPositionList.begin(); it2 != WorldObjectPositionList.end(); ++it2)
+			{
+				Vector3* WorldObjectPos = (Vector3*)*it2;
+
+				if (pos.x + temp.x > WorldObjectPos->x - 50 && pos.x + temp.x < WorldObjectPos->x + 50)
+				{
+					if (pos.z + temp.z > WorldObjectPos->z - 50 && pos.z + temp.z < WorldObjectPos->z + 50)
+					{
+						if (!Newpos)
+						{
+							Newpos = true;
+							m_bRotated = false;
+						}
+						break;
+					}
+				}
+				else if (WorldObjectPos == last)
+				{
+					pos += temp;
+					Newpos = false;
+				}
+			}
+
 
 			if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
 				dir = (pos - prevpos).Normalize();
@@ -138,18 +192,24 @@ void CEnemy::Update(double dt)
 		if (m_fAttackingTime < 0)
 		{
 			m_bAttacked = true;
-			m_fAttackingTime = 5;
+			m_fAttackingTime = 3;
 		}
 		else
 			m_bAttacked = false;
 		break;
 	case CEnemy::ATTACKED: //4
 		//if killed, set spawned & active to false. and pop the Object.
+		m_fHP -= m_fPlayersDamage;
+		std::cout << m_fHP << std::endl;
 		if (m_fHP < 0)
 		{
+			m_fHP = 100;
 			m_bSpawned = false;
 			m_bActive = false;
 		}
+
+		m_iCurrentBehaviour = 2;
+
 		break;
 	default:
 		m_iCurrentBehaviour = 0;
@@ -241,4 +301,8 @@ void CEnemy::SetStrength(float m_fStrength)
 void CEnemy::SetAttacking(bool m_bAttacked)
 {
 	this->m_bAttacked = m_bAttacked;
+}
+void CEnemy::SetPlayersDamage(float m_fPlayersDamage)
+{
+	this->m_fPlayersDamage = m_fPlayersDamage;
 }

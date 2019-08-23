@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 class CAnimal
 {
@@ -28,7 +29,7 @@ public:
 	int m_iAnimalType;
 
 	CAnimal(ANIMAL_TYPE typeValue = GO_PIG);
-	void Update(double dt);
+	void Update(double dt, std::vector<Vector3*> WorldObjectPositionList);
 	~CAnimal();
 
 	//Get Functions
@@ -56,6 +57,8 @@ public:
 	void SetBreeded(bool m_bBreeded);
 	void SetAngle(float m_fAngle);
 	void SetGrowUpTimer(float m_fGrowUpTimer);
+
+	void SetPlayersDamage(float m_fPlayersDamage);
 private:
 	//Behaviour
 	Behaviour theCurrentBehaviour;
@@ -86,6 +89,9 @@ private:
 	float m_fGrowUpTimer;
 	bool m_bBreeded;
 
+
+	float m_fPlayersDamage;
+	bool Newpos;
 };
 
 #endif

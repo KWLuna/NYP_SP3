@@ -30,6 +30,7 @@ void ProjectileObject::Update(double dt)
 
 		m_fTimeTravelled += dt;
 		Pos += TargetPos * 0.01f;
+
 }
 //Get Functions
 PROJECTILE_TYPE ProjectileObject::GetType()

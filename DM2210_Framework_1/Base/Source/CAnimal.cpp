@@ -23,8 +23,10 @@ CAnimal::CAnimal(ANIMAL_TYPE typeValue)
 	m_bFed(false),
 	m_bIsABaby(false),
 	m_fGrowUpTimer(0.f),
-	m_bBreeded(false)
+	m_bBreeded(false),
+	m_fPlayersDamage(0.f)
 {
+	Newpos = false;
 	m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
 	switch (typeValue)
 	{
@@ -58,7 +60,7 @@ CAnimal::~CAnimal()
 {
 }
 
-void CAnimal::Update(double dt)
+void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 {
 	m_iAnimalType = type;
 	type = (ANIMAL_TYPE)(m_iAnimalType);
@@ -99,11 +101,12 @@ void CAnimal::Update(double dt)
 		{
 			if (!m_bRotated)
 			{
+				if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
 				dir = (Targetpos - pos).Normalize();
 				float m_fTempAngle = atan2(dir.x, dir.z);
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 				{
-					m_fAngle += 5 * static_cast<float>(dt);
+					m_fAngle += 6 * static_cast<float>(dt);
 				}
 				else
 					m_bRotated = true;
@@ -116,8 +119,33 @@ void CAnimal::Update(double dt)
 				Vector3 temp = (Targetpos - pos) * (m_fspeed / m_fMass);
 				Vector3 prevpos;
 				prevpos = pos;
-				pos += temp;
 
+				Vector3* last = WorldObjectPositionList[WorldObjectPositionList.size() - 1];
+
+				for (std::vector<Vector3*>::iterator it2 = WorldObjectPositionList.begin(); it2 != WorldObjectPositionList.end(); ++it2)
+				{
+					Vector3* WorldObjectPos = (Vector3*)*it2;
+
+					if (pos.x + temp.x > WorldObjectPos->x - 50 && pos.x + temp.x < WorldObjectPos->x + 50)
+					{
+						if (pos.z + temp.z > WorldObjectPos->z - 50 && pos.z + temp.z < WorldObjectPos->z + 50)
+						{
+							if (!Newpos)
+							{
+								Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 200.f), 1, Math::RandFloatMinMax(pos.z - 200.f, pos.z + 200.f));
+								Newpos = true;
+								m_bRotated = false;
+							}
+							break;
+						}
+					}
+					else if (WorldObjectPos == last)
+					{
+						pos += temp;
+						Newpos = false;
+					}
+				}
+				//pos += temp;
 				if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
 					dir = (pos - prevpos).Normalize();
 
@@ -139,11 +167,12 @@ void CAnimal::Update(double dt)
 
 			if (!m_bRotated)
 			{
+				if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
 				dir = (Targetpos - pos).Normalize();
 				float m_fTempAngle = atan2(dir.x, dir.z);
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 				{
-					m_fAngle += 5 * static_cast<float>(dt);
+					m_fAngle += 6 * static_cast<float>(dt);
 				}
 				else
 					m_bRotated = true;
@@ -154,7 +183,31 @@ void CAnimal::Update(double dt)
 				Vector3 temp = (Targetpos - pos) * (m_fspeed / m_fMass);
 				Vector3 prevpos;
 				prevpos = pos;
-				pos += temp;
+
+				Vector3* last = WorldObjectPositionList[WorldObjectPositionList.size() - 1];
+
+				for (std::vector<Vector3*>::iterator it2 = WorldObjectPositionList.begin(); it2 != WorldObjectPositionList.end(); ++it2)
+				{
+					Vector3* WorldObjectPos = (Vector3*)*it2;
+
+					if (pos.x + temp.x > WorldObjectPos->x - 50 && pos.x + temp.x < WorldObjectPos->x + 50)
+					{
+						if (pos.z + temp.z > WorldObjectPos->z - 50 && pos.z + temp.z < WorldObjectPos->z + 50)
+						{
+							if (!Newpos)
+							{
+								Newpos = true;
+								m_bRotated = false;
+							}
+							break;
+						}
+					}
+					else if (WorldObjectPos == last)
+					{
+						pos += temp;
+						Newpos = false;
+					}
+				}
 
 				if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
 					dir = (pos - prevpos).Normalize();
@@ -182,6 +235,19 @@ void CAnimal::Update(double dt)
 		break;
 	case CAnimal::ATTACKED: //4
 		//if killed, set spawned & active to false. and pop the Object.
+		m_fHP -= m_fPlayersDamage;
+		
+		if (m_fHP < 0)//animal dead
+		{
+			m_fHP = 100;
+			m_bSpawned = false;
+			m_bActive = false;
+		}
+		//Knocked back.
+		
+		//
+		Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 500.f), 1, Math::RandFloatMinMax(pos.z - 500.f, pos.z + 500.f));
+		m_iCurrentBehaviour = 2;
 		break;
 	
 	default:
@@ -300,4 +366,8 @@ void CAnimal::SetAngle(float m_fAngle)
 void CAnimal::SetGrowUpTimer(float m_fGrowUpTimer)
 {
 	this->m_fGrowUpTimer = m_fGrowUpTimer;
+}
+void CAnimal::SetPlayersDamage(float m_fPlayersDamage)
+{
+	this->m_fPlayersDamage = m_fPlayersDamage;
 }
