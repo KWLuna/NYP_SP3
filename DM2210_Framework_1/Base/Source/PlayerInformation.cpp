@@ -115,29 +115,24 @@ void PlayerInformation::AttachCamera(Camera3* _cameraPtr)
 
 void PlayerInformation::Constrain()
 {
+	//if (attachedCamera->position.x < 0)
+	//	attachedCamera->position.x = 0;
+
+	//else if (attachedCamera->position.x > 25000)
+	//	attachedCamera->position.x = 25000;
+
+	//if (attachedCamera->position.z < 0)
+	//	attachedCamera->position.z = 0;
+
+	//else if (attachedCamera->position.z > 25000)
+	//	attachedCamera->position.z = 25000;
+
 	//Anchor player to the ground
 	Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 
 	attachedCamera->position.y = m_dConstrainY;
 
 	attachedCamera->target = attachedCamera->position + viewVector;
-
-	if (attachedCamera->position.x < 0)
-		attachedCamera->position.x = 25000;
-
-	if (attachedCamera->position.z < 0)
-		attachedCamera->position.z = 25000;
-
-	if (attachedCamera->position.x > 25000)
-		attachedCamera->position.x = 0;
-
-	if (attachedCamera->position.z > 25000)
-		attachedCamera->position.z = 0;
-	//
-	/*if ()
-	{
-
-	}*/
 }
 
 Item * PlayerInformation::getItem(int id)
@@ -590,9 +585,17 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 					{
 						attachedCamera->position += viewVector.Normalized() * m_fSpeed * 3.0f * (float)dt;
 						action = SPRINTING;
+
+						int randVal = Math::RandIntMinMax(0, 200);
+						if (randVal < 2)
+							addItem(new Item(Item::ITEM_SEED, 1));
 					}
 					else
 					{
+						int randVal = Math::RandIntMinMax(0, 200);
+						if (randVal < 1)
+							addItem(new Item(Item::ITEM_SEED, 1));
+
 						action = WALKING;
 						attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
 					}

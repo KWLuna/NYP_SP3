@@ -901,7 +901,7 @@ void SP2::Update(double dt)
 		if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 		{
 			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
-			/*player->addItem(new Item(Item::ITEM_WOOD, 1));
+			player->addItem(new Item(Item::ITEM_WOOD, 1));
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
@@ -912,12 +912,12 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_CARROT, 10));
 			player->addItem(new Item(Item::ITEM_WHEAT, 10));
 			player->addItem(new Item(Item::ITEM_SEED, 10));
-			player->addItem(new Item(Item::ITEM_STONE, 10));*/
+			player->addItem(new Item(Item::ITEM_STONE, 10));
 
 			/*std::cout << "converting a world tile ..." << std::endl;*/
-			player->addItem(new Item(Item::ITEM_SEED, 10));
+	/*		player->addItem(new Item(Item::ITEM_SEED, 10));
 			player->addItem(new Item(Item::ITEM_CARROT, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
+			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));*/
 
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
@@ -995,13 +995,12 @@ void SP2::Update(double dt)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-		/*if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
+		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
-			FurnaceList.push_back(new Furnace(x , y ));
 			FurnaceList[0]->SetStatus(true);
 
 			m_dBounceTime = 0.2;
-		}*/
+		}
 
 
 	UpdateWorldVars();
@@ -1175,8 +1174,8 @@ void SP2::EnemyChecker(double dt)
 							if (go->GetAttackedPlayer())
 							{
 								player->SetHP(player->getHP() - go->GetStrength());
-								camera.position.x += (camera.position.x - go->GetPosition().x )* 2.f;
-								camera.position.z += (camera.position.z - go->GetPosition().z )* 2.f;
+							/*	camera.position.x += (camera.position.x - go->GetPosition().x )* 2.f;
+								camera.position.z += (camera.position.z - go->GetPosition().z )* 2.f;*/
 							}
 						}
 						break;
