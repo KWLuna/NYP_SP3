@@ -10,6 +10,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include "SoundEngine.h"
 
 SP2::SP2()
 {
@@ -22,8 +23,8 @@ SP2::~SP2()
 void SP2::SaveWorld()
 {
 	//By default , when open you clear it.
-	std::ofstream saveFile("WorldSaveFile.txt");
-	if (saveFile.is_open())
+	std::ofstream worldFile("WorldSaveFile.txt");
+	if (worldFile.is_open())
 	{
 		for (int i = 0; i < 250; ++i)
 		{
@@ -32,35 +33,61 @@ void SP2::SaveWorld()
 			{
 				tmp.push_back(world[i][j]);
 			}
-			saveFile << tmp << std::endl;
+			worldFile << tmp << std::endl;
 		}
 
-		saveFile.close();
+		worldFile.close();
 	}
 	else
-	{
 		std::cout << " cant save !" << std::endl;
+
+	std::ofstream cropFile("CropSaveFile.txt");
+	if (cropFile.is_open())
+	{
+		std::cout << "ppppp " << CropList.size() << std::endl;
+		for (int i = 0; i < CropList.size(); ++i)
+		{
+			cropFile << CropList[i]->GetXTile() << std::endl;
+			cropFile << CropList[i]->GetZTile() << std::endl;
+			cropFile << CropList[i]->getTimeSincePlanted() << std::endl;
+		}
+		cropFile.close();
 	}
+	else
+		std::cout << " cant save !" << std::endl;
 }
 
 void SP2::LoadWorld()
 {
-	std::ifstream saveFiler("WorldSaveFile.txt"); //Open text file to read
+	std::ifstream worldFile("WorldSaveFile.txt"); //Open text file to read
 	std::string row;
 	int level = 0;
-	if (saveFiler.is_open())
+	if (worldFile.is_open())
 	{
-		while (!saveFiler.eof())
+		while (!worldFile.eof())
 		{
-			saveFiler >> row;
-
+			worldFile >> row;
 			for (unsigned int i = 0; i < row.size(); ++i)
 			{
-			//	world[i][level] = row[i];
+				world[i][level] = row[i];
 			}
 			level += 1;
 		}
-		saveFiler.close();
+		worldFile.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+
+	int cropLines = 0;
+	row = "";
+	std::ifstream cropFile("CropSaveFile.txt"); //Open text file to read
+	if (cropFile.is_open())
+	{
+		while (std::getline(cropFile, row))
+			cropLines += 1;
+
+		std::cout << cropLines << std::endl;
+		cropFile.close();
 	}
 	else
 		std::cout << "Impossible to open save file!" << std::endl;
@@ -68,7 +95,6 @@ void SP2::LoadWorld()
 
 void SP2::InitGround()
 {
-	std::cout << Math::RandFloatMinMax(0, 10) << std::endl;
 	int x = 250, z = 250;
 
 	for (int i = 0; i < x; ++i)
@@ -323,7 +349,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_TYPE], 1);
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
-	camera.Init(Vector3(2500, 50, 2500), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	camera.Init(Vector3(0, 50, 0), Vector3(0, 200, -10), Vector3(0, 1, 0));
 	player = new PlayerInformation();
 	player->AttachCamera(&camera);
 	
@@ -588,6 +614,10 @@ void SP2::Init()
 
 	meshList[GEO_NAVIGATOR] = MeshBuilder::GenerateQuad("GEO_NAVIGATOR", Color(1, 1, 1), 1.f);
 	meshList[GEO_NAVIGATOR]->textureArray[0] = LoadTGA("Image//Navigator.tga");
+	
+	meshList[GEO_GAME_OVER] = MeshBuilder::GenerateQuad("GEO_GAME_OVER", Color(1, 1, 1), 1.f);
+	meshList[GEO_GAME_OVER]->textureArray[0] = LoadTGA("Image//Game_Over.tga");
+
 	//UI
 		//HEALTH
 		meshList[GEO_HEALTH_FULL] = MeshBuilder::GenerateQuad("GEO_HEALTH_FULL", Color(1, 1, 1), 1.0f);
@@ -868,11 +898,10 @@ void SP2::Update(double dt)
 			m_bRandLightning = true;
 		}
 
-
 		if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 		{
 			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
-			player->addItem(new Item(Item::ITEM_WOOD, 1));
+			/*player->addItem(new Item(Item::ITEM_WOOD, 1));
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			player->addItem(new Item(Item::ITEM_WOODEN_SWORD, 1));
@@ -883,9 +912,12 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_CARROT, 10));
 			player->addItem(new Item(Item::ITEM_WHEAT, 10));
 			player->addItem(new Item(Item::ITEM_SEED, 10));
-			player->addItem(new Item(Item::ITEM_STONE, 10));
+			player->addItem(new Item(Item::ITEM_STONE, 10));*/
 
 			/*std::cout << "converting a world tile ..." << std::endl;*/
+			player->addItem(new Item(Item::ITEM_SEED, 10));
+			player->addItem(new Item(Item::ITEM_CARROT, 10));
+			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
 
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
@@ -971,59 +1003,98 @@ void SP2::Update(double dt)
 			m_dBounceTime = 0.2;
 		}*/
 
-		UpdateWorldVars();
-		UpdateParticles(dt);
-		UpdateProjectile(dt);
-		//
-		/*CAnimal *go = AnimalFetchGO();
-		go->type = CAnimal::GO_COW;
-		go->SetActive(true);
-		go->SetPosition(Vector3(12550, 0, 12550));
-		go->SetAngle(40.0);
-		go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
-		go->SetSpawned(true);*/
-		//
-		char PlayerTile[9];
-		float minx = camera.position.x - 100;
-		if (minx < 0)
+
+	UpdateWorldVars();
+	UpdateParticles(dt);
+	UpdateProjectile(dt);
+
+	//
+	/*CAnimal *go = AnimalFetchGO();
+	go->type = CAnimal::GO_COW;
+	go->SetActive(true);
+	go->SetPosition(Vector3(12550, 0, 12550));
+	go->SetAngle(40.0);
+	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+	go->SetSpawned(true);*/
+	//
+	char PlayerTile[9];
+	float minx = camera.position.x - 100;
+	if (minx < 0)
+	{
+		minx = 0;
+	}
+	float maxx = camera.position.x + 100;
+	if (maxx > 25000)
+	{
+		maxx = 25000;
+	}
+	float minz = camera.position.z - 100;
+	if (minz < 0)
+	{
+		minz = 0;
+	}
+	float maxz = camera.position.x + 100;
+	if (maxz > 25000)
+	{
+		maxz = 25000;
+	}
+	PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
+	PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
+	PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
+	PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
+	PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
+	PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
+	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
+	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
+	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
+	player->update(dt, m_AnimalList, PlayerTile);
+	
+	//Code for block placing based off item in player inventory
+	if (player->GetPlaceDown())
+	{
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
 		{
-			minx = 0;
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			world[x][y] = 'F';
+			player->getItem(player->getCurrentSlot())->addQuantity(-1);
+			FurnaceList.push_back(new Furnace(x, y));
 		}
-		float maxx = camera.position.x + 100;
-		if (maxx > 25000)
+		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE ||
+			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
+			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
 		{
-			maxx = 25000;
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			world[x][y] = 't';
 		}
-		float minz = camera.position.z - 100;
-		if (minz < 0)
+		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_SEED)
 		{
-			minz = 0;
-		}
-		float maxz = camera.position.x + 100;
-		if (maxz > 25000)
-		{
-			maxz = 25000;
-		}
-		PlayerTile[0] = GetPlayerCurrentTile(camera.position.x, camera.position.z);
-		PlayerTile[1] = GetPlayerCurrentTile(minx, minz);
-		PlayerTile[2] = GetPlayerCurrentTile(minx, camera.position.z);
-		PlayerTile[3] = GetPlayerCurrentTile(minx, maxz);
-		PlayerTile[4] = GetPlayerCurrentTile(camera.position.x, minz);
-		PlayerTile[5] = GetPlayerCurrentTile(camera.position.x, maxz);
-		PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
-		PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
-		PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
-		player->update(dt, m_AnimalList, PlayerTile);
-		if (player->GetPlaceDown())
-		{
-			if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+
+			if (world[x][y] == 't')
 			{
-				int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
-				int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-				world[x][y] = 'F';
-				FurnaceList.push_back(new Furnace(x, y));
+				std::cout << "planted something" << std::endl;
+				world[x][y] = 'w';
+				CropList.push_back(new Crops(1, x, y));
+				player->getItem(player->getCurrentSlot())->addQuantity(-1);
 			}
 		}
+		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_CARROT)
+		{
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+
+			if (world[x][y] == 't')
+			{
+				std::cout << "planted something" << std::endl;
+				world[x][y] = 'c';
+				CropList.push_back(new Crops(0, x, y));
+				player->getItem(player->getCurrentSlot())->addQuantity(-1);
+			}
+		}
+	}
 
 		//Update all crops present in the world.
 		for (unsigned int i = 0; i < CropList.size(); ++i)
@@ -2165,7 +2236,7 @@ void SP2::RenderGroundObjects()
 					case 'F':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
-						modelStack.Scale(scale, scale, scale);
+						modelStack.Scale(scale / 3, scale / 3, scale / 3);
 						RenderMesh(meshList[GEO_FURNACE_BLOCK], true);
 						modelStack.PopMatrix();
 						break;
@@ -2198,7 +2269,23 @@ void SP2::RenderGround()
 				{
 					switch (world[i][k])
 					{
+					case 't':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_TILLED_DIRT], true);
+						modelStack.PopMatrix();
+						break;
 					case 'c':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						modelStack.Rotate(270, 1, 0, 0);
+						RenderMesh(meshList[GEO_TILLED_DIRT], true);
+						modelStack.PopMatrix();
+						break;
+					case 'w':
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
@@ -2548,68 +2635,74 @@ void SP2::RenderPassMain()
 			RenderImageToScreen(meshList[GEO_MENU], false, Application::GetWindowWidth(), Application::GetWindowHeight(), Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 1);
 		RenderImageToScreen(meshList[GEO_NAVIGATOR], false, Application::GetWindowWidth() / 10, Application::GetWindowHeight() / 10 , Application::GetWindowWidth() / 2 - 400 , Application::GetWindowHeight() / 2 + m_fNavigatorY, 2);
 	}
+	
 	if (m_bMenu == false)
 	{
-
-		RenderMesh(meshList[GEO_AXES], false);
-		RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 1.0f);
-
-		RenderCrafting();
-		RenderFurnace();
-
-		Render3DHandHeld();
-		RenderInventory();
-
-		RenderSkyBox();
-		RenderGround();
-
-		modelStack.PushMatrix();
-		modelStack.Translate(12550, 10, 12550);
-		modelStack.Scale(10, 10, 10);
-		modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - 12550, camera.position.z - 12550)), 0, 1, 0);
-		RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
-		modelStack.PopMatrix();
-
-		RenderWorld();
-
-		RenderAnimation();
-
-		//	Render Particles
-		for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
+		if (player->getHP() <= 0)
 		{
-			ParticleObject *particle = (ParticleObject *)*it;
-			if (particle->active)
-			{
-				RenderParticles(particle);
-			}
+			RenderImageToScreen(meshList[GEO_GAME_OVER], false, Application::GetWindowWidth(), Application::GetWindowHeight(), Application::GetWindowWidth() / 2, Application::GetWindowHeight() / 2, 1);
 		}
-		for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+		else
 		{
-			ProjectileObject *Projectile = (ProjectileObject *)*it;
-			if (Projectile->GetActive())
+			RenderMesh(meshList[GEO_AXES], false);
+			RenderMeshIn2D(meshList[GEO_CROSSHAIR], false, 1.0f);
+
+			RenderCrafting();
+			RenderFurnace();
+
+			Render3DHandHeld();
+			RenderInventory();
+
+			RenderSkyBox();
+			RenderGround();
+
+			modelStack.PushMatrix();
+			modelStack.Translate(12550, 10, 12550);
+			modelStack.Scale(10, 10, 10);
+			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - 12550, camera.position.z - 12550)), 0, 1, 0);
+			RenderMesh(meshList[GEO_LIGHT_DEPTH_QUAD], false);
+			modelStack.PopMatrix();
+
+			RenderWorld();
+
+			RenderAnimation();
+
+			//	Render Particles
+			for (std::vector<ParticleObject *>::iterator it = particleList.begin(); it != particleList.end(); ++it)
 			{
-				RenderProjectile(Projectile);
+				ParticleObject *particle = (ParticleObject *)*it;
+				if (particle->active)
+				{
+					RenderParticles(particle);
+				}
 			}
-		}
-		RenderCrops();
+			for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
+			{
+				ProjectileObject *Projectile = (ProjectileObject *)*it;
+				if (Projectile->GetActive())
+				{
+					RenderProjectile(Projectile);
+				}
+			}
+			RenderCrops();
 
-		RenderPlayerInfo();
-
+			RenderPlayerInfo();
 	if (instructionorder < 4)
 	RenderInstructions();
 
-		std::ostringstream ss;
-		ss.precision(5);
-		ss << "FPS: " << fps;
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 300);
+			std::ostringstream ss;
+			ss.precision(5);
+			ss << "FPS: " << fps;
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 300);
 
-		ss.str("");
-		ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -20, -300);
+			ss.str("");
+			ss << std::to_string(player->getItem(player->getCurrentSlot())->getQuantity());
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -20, -300);
 
-		ss.str("");
-		ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 200);
+			ss.str("");
+			ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 200);
+		}
 	}
 }
 void SP2::RenderInstructions()
@@ -2757,6 +2850,8 @@ void SP2::Exit()
 		if (FurnaceList[i])
 			delete FurnaceList[i];
 	}
+
+	SaveWorld();
 
 	delete player;
 	

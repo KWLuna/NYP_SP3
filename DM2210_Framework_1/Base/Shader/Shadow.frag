@@ -250,6 +250,8 @@ void main(){
 		
 		if (color.a != 0) 
 			color.xyz = mix(color.xyz, fogParam.color, fogFactor);
-		//color = mix(color, vec4(fogParam.color, 1), fogFactor);
+
+			if (color.a < 0)
+			 discard;//color = mix(color, vec4(fogParam.color, 1), fogFactor);
 	}
 }

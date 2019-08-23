@@ -12,7 +12,6 @@ PlayerInformation::PlayerInformation()
 	m_dBounceTime = 0;
 	ThirstyOrHungry = 5;
 	m_bCrafting = false;
-
 	m_iCurrentStance = STAND;
 
 	m_iInventorySlot = 0;
@@ -125,12 +124,15 @@ void PlayerInformation::Constrain()
 
 	if (attachedCamera->position.x < 0)
 		attachedCamera->position.x = 25000;
+
 	if (attachedCamera->position.z < 0)
 		attachedCamera->position.z = 25000;
+
 	if (attachedCamera->position.x > 25000)
 		attachedCamera->position.x = 0;
-	if (attachedCamera->position.x > 25000)
-		attachedCamera->position.x = 0;
+
+	if (attachedCamera->position.z > 25000)
+		attachedCamera->position.z = 0;
 	//
 	/*if ()
 	{
@@ -279,408 +281,422 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 	m_dBounceTime -= 1 * dt;
 	if (m_dHP <= 0)
 	{
-		m_dHP = 100;
-		attachedCamera->position.x = 12500;
-		attachedCamera->position.z = 12500;
-	}
-
-	for (int i = 0; i < ItemList.size(); ++i)
-	{
-		if (ItemList[i]->getQuantity() <= 0)
+		if (Application::IsKeyPressed(VK_RETURN))
 		{
-			ItemList[i]->setID(0);
-			ItemList[i]->setQuantity(0);
-		}
-	}
-
-	if (Application::IsKeyPressed('C') && m_bSwitchStance == false && m_dBounceTime <= 0)
-	{
-		m_iCurrentStance += 1;
-
-		if (m_iCurrentStance > PRONE)
-			m_iCurrentStance = 0;
-
-		m_dBounceTime = 0.5;
-		m_bSwitchStance = true;
-	}
-
-	if (m_bSwitchStance == true)
-	{
-		switch (m_iCurrentStance)
-		{
-		case STAND:
-			if (m_dConstrainY < 40)
-				m_dConstrainY += 50 * dt;
-			else
-				m_bSwitchStance = false;
-			break;
-		case CROUCH:
-			if (m_dConstrainY > 20)
-				m_dConstrainY -= 50 * dt;
-			else
-				m_bSwitchStance = false;
-			break;
-		case PRONE:
-			if (m_dConstrainY > 5)
-				m_dConstrainY -= 50 * dt;
-			else
-				m_bSwitchStance = false;
-			break;
-		}
-	}
-
-	if (m_bFurnaceStatus == false)
-	{
-		if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
-		{
-			if (m_bCrafting == true)
-			{
-				m_iCraftingSlotOne = -1;
-				m_iCraftingSlotTwo = -1;
-				m_bCrafting = false;
-			}
-			else
-				m_bCrafting = true;
-
-			m_dBounceTime = 0.2;
-		}
-	}
-
-	if (Application::IsKeyPressed(VK_SPACE) && m_bJump == false && m_bFall == false)
-		m_bJump = true;
-
-	if (m_bJump == true && m_bSwitchStance == false)
-	{
-		if (m_iCurrentStance == STAND)
-		{
-			if (m_dConstrainY < 90)
-				m_dConstrainY += 150 * dt;
-			else
-			{
-				m_bFall = true;
-				m_bJump = false;
-			}
-		}
-		else if (m_iCurrentStance == CROUCH)
-		{
-			if (m_dConstrainY < 100)
-				m_dConstrainY += 200 * dt;
-			else
-			{
-				m_bFall = true;
-				m_bJump = false;
-			}
-		}
-		else
-			m_bJump = false;
-	}
-
-	if (m_bFall == true)
-	{
-		if (m_iCurrentStance == STAND)
-		{
-			if (m_dConstrainY > 40)
-				m_dConstrainY -= 200 * dt - 9.8 * dt;
-			else
-				m_bFall = false;
-		}
-		else if (m_iCurrentStance == CROUCH)
-		{
-			if (m_dConstrainY > 20)
-				m_dConstrainY -= 200 * dt - 9.8 * dt;
-			else
-				m_bFall = false;
-		}
-	}
-
-	if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
-	{
-		m_iInventorySlot -= 1;
-		m_dBounceTime = 0.2;
-
-		if (m_iInventorySlot < 0)
-			m_iInventorySlot = ItemList.size() - 1;
-	}
-
-	if (Application::IsKeyPressed(VK_RIGHT) && m_dBounceTime <= 0)
-	{
-		m_iInventorySlot += 1;
-		m_dBounceTime = 0.2;
-
-		if (m_iInventorySlot > ItemList.size() - 1)
-			m_iInventorySlot = 0;
-	}
-	if (action != PlayerInformation::STANDING)
-	{
-		walkingtime += dt;
-	}
-	if (m_dHunger < 30 || m_dThirst < 30)
-	{
-		m_fSpeed = 80;
-		if (m_dHunger < 0.001)
-		{
-			m_dHunger = 0;
-			ThirstyOrHungry -= dt;
-			if (ThirstyOrHungry < 0)
-			{
-				ThirstyOrHungry = 5;
-				m_dHP -= 2;
-			}
-		}
-		if (m_dThirst < 0.001)
-		{
-			m_dThirst = 0;
-			ThirstyOrHungry -= dt;
-			if (ThirstyOrHungry < 0)
-			{
-				ThirstyOrHungry = 5;
-				m_dHP -= 1;
-			}
+			m_dHP = 100;
+			attachedCamera->position.x = 12500;
+			attachedCamera->position.z = 12500;
 		}
 	}
 	else
 	{
-		m_fSpeed = 100;
-		if (m_dHunger > 80 && m_dThirst > 80)
+
+		for (int i = 0; i < ItemList.size(); ++i)
 		{
-			if (m_dHP < m_dMaxHP)
+			if (ItemList[i]->getQuantity() <= 0)
 			{
-				m_dHP += 0.5f;
-				m_dHunger -= 0.5f;
-				m_dThirst -= 0.5f;
+				ItemList[i]->setID(0);
+				ItemList[i]->setQuantity(0);
 			}
 		}
-	}
-	if (m_dHP < 0.001)
-	{
-		m_dHP = 0;
-	}
-	switch (action)
-	{
-	case PlayerInformation::STANDING:
-		break;
-	case PlayerInformation::SPRINTING:
-		if (walkingtime > 5)
+
+		if (Application::IsKeyPressed('C') && m_bSwitchStance == false && m_dBounceTime <= 0)
 		{
-			m_dHunger -= 0.1f;
-			m_dThirst -= 0.1f;
-			walkingtime = 0;
+			m_iCurrentStance += 1;
+
+			if (m_iCurrentStance > PRONE)
+				m_iCurrentStance = 0;
+
+			m_dBounceTime = 0.5;
+			m_bSwitchStance = true;
 		}
-		break;
-	case PlayerInformation::WALKING:
-		if (walkingtime > 5)
+
+		if (m_bSwitchStance == true)
 		{
-			m_dHunger -= 0.05f;
-			m_dThirst -= 0.05f;
-			walkingtime = 0;
+			switch (m_iCurrentStance)
+			{
+			case STAND:
+				if (m_dConstrainY < 40)
+					m_dConstrainY += 50 * dt;
+				else
+					m_bSwitchStance = false;
+				break;
+			case CROUCH:
+				if (m_dConstrainY > 20)
+					m_dConstrainY -= 50 * dt;
+				else
+					m_bSwitchStance = false;
+				break;
+			case PRONE:
+				if (m_dConstrainY > 5)
+					m_dConstrainY -= 50 * dt;
+				else
+					m_bSwitchStance = false;
+				break;
+			}
 		}
-		break;
-	case PlayerInformation::EATING:
-		switch (getItem(getCurrentSlot())->getID())
+
+		if (m_bFurnaceStatus == false)
 		{
-		case Item::ITEM_MEAT:
-			m_dHunger += 0.5f;
-			m_dThirst -= 0.2f;
+			if (Application::IsKeyPressed('E') && m_dBounceTime <= 0)
+			{
+				if (m_bCrafting == true)
+				{
+					m_iCraftingSlotOne = -1;
+					m_iCraftingSlotTwo = -1;
+					m_bCrafting = false;
+				}
+				else
+					m_bCrafting = true;
+
+				m_dBounceTime = 0.2;
+			}
+		}
+
+		if (Application::IsKeyPressed(VK_SPACE) && m_bJump == false && m_bFall == false)
+			m_bJump = true;
+
+		if (m_bJump == true && m_bSwitchStance == false)
+		{
+			if (m_iCurrentStance == STAND)
+			{
+				if (m_dConstrainY < 90)
+					m_dConstrainY += 150 * dt;
+				else
+				{
+					m_bFall = true;
+					m_bJump = false;
+				}
+			}
+			else if (m_iCurrentStance == CROUCH)
+			{
+				if (m_dConstrainY < 100)
+					m_dConstrainY += 200 * dt;
+				else
+				{
+					m_bFall = true;
+					m_bJump = false;
+				}
+			}
+			else
+				m_bJump = false;
+		}
+
+		if (m_bFall == true)
+		{
+			if (m_iCurrentStance == STAND)
+			{
+				if (m_dConstrainY > 40)
+					m_dConstrainY -= 200 * dt - 9.8 * dt;
+				else
+					m_bFall = false;
+			}
+			else if (m_iCurrentStance == CROUCH)
+			{
+				if (m_dConstrainY > 20)
+					m_dConstrainY -= 200 * dt - 9.8 * dt;
+				else
+					m_bFall = false;
+			}
+		}
+
+		if (Application::IsKeyPressed(VK_LEFT) && m_dBounceTime <= 0)
+		{
+			m_iInventorySlot -= 1;
+			m_dBounceTime = 0.2;
+
+			if (m_iInventorySlot < 0)
+				m_iInventorySlot = ItemList.size() - 1;
+		}
+
+		if (Application::IsKeyPressed(VK_RIGHT) && m_dBounceTime <= 0)
+		{
+			m_iInventorySlot += 1;
+			m_dBounceTime = 0.2;
+
+			if (m_iInventorySlot > ItemList.size() - 1)
+				m_iInventorySlot = 0;
+		}
+		if (action != PlayerInformation::STANDING)
+		{
+			walkingtime += dt;
+		}
+		if (m_dHunger < 30 || m_dThirst < 30)
+		{
+			m_fSpeed = 80;
+			if (m_dHunger < 0.001)
+			{
+				m_dHunger = 0;
+				ThirstyOrHungry -= dt;
+				if (ThirstyOrHungry < 0)
+				{
+					ThirstyOrHungry = 5;
+					m_dHP -= 2;
+				}
+			}
+			if (m_dThirst < 0.001)
+			{
+				m_dThirst = 0;
+				ThirstyOrHungry -= dt;
+				if (ThirstyOrHungry < 0)
+				{
+					ThirstyOrHungry = 5;
+					m_dHP -= 1;
+				}
+			}
+		}
+		else
+		{
+			m_fSpeed = 100;
+			if (m_dHunger > 80 && m_dThirst > 80)
+			{
+				if (m_dHP < m_dMaxHP)
+				{
+					m_dHP += 0.5f;
+					m_dHunger -= 0.5f;
+					m_dThirst -= 0.5f;
+				}
+			}
+		}
+		if (m_dHP < 0.001)
+		{
+			m_dHP = 0;
+		}
+		switch (action)
+		{
+		case PlayerInformation::STANDING:
 			break;
-		case Item::ITEM_COOKED_MEAT:
-			m_dHunger += 1.5f;
+		case PlayerInformation::SPRINTING:
+			if (walkingtime > 5)
+			{
+				m_dHunger -= 0.1f;
+				m_dThirst -= 0.1f;
+				walkingtime = 0;
+			}
 			break;
-		case Item::ITEM_CARROT:
-			m_dHunger += 0.2f;
-			m_dThirst += 0.2f;
+		case PlayerInformation::WALKING:
+			if (walkingtime > 5)
+			{
+				m_dHunger -= 0.05f;
+				m_dThirst -= 0.05f;
+				walkingtime = 0;
+			}
 			break;
-		case Item::ITEM_BREAD:
-			m_dHunger += 1.f;
-			m_dThirst += 0.2f;
+		case PlayerInformation::EATING:
+			switch (getItem(getCurrentSlot())->getID())
+			{
+			case Item::ITEM_MEAT:
+				m_dHunger += 0.5f;
+				m_dThirst -= 0.2f;
+				break;
+			case Item::ITEM_COOKED_MEAT:
+				m_dHunger += 1.5f;
+				break;
+			case Item::ITEM_CARROT:
+				m_dHunger += 0.2f;
+				m_dThirst += 0.2f;
+				break;
+			case Item::ITEM_BREAD:
+				m_dHunger += 1.f;
+				m_dThirst += 0.2f;
+				break;
+			default:
+				break;
+			}
+			walkingtime = 0;
+			m_fSpeed *= 0.4f;
 			break;
 		default:
 			break;
 		}
-		walkingtime = 0;
-		m_fSpeed *= 0.4f;
-		break;
-	default:
-		break;
-	}
 
-	if (m_bCrafting == true)
-	{
-		if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
+		if (m_bCrafting == true)
 		{
-			m_dBounceTime = 0.2;
-
-			if (m_iCraftingSlotOne != -1 && m_iCraftingSlotTwo != -1)
+			if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
 			{
-				Item * result = craft(m_iCraftingSlotOne, m_iCraftingSlotTwo);
+				m_dBounceTime = 0.2;
 
-				if (result->getID() != -1)
+				if (m_iCraftingSlotOne != -1 && m_iCraftingSlotTwo != -1)
 				{
-					if (addItem(result) == false)
-					{
-						// drop item , waiting for raycast
-					}
-					else
-					{
-						ItemList[m_iCraftingSlotTwo]->addQuantity(-1);
-						ItemList[m_iCraftingSlotOne]->addQuantity(-1);
-					}
-				}
+					Item * result = craft(m_iCraftingSlotOne, m_iCraftingSlotTwo);
 
+					if (result->getID() != -1)
+					{
+						if (addItem(result) == false)
+						{
+							// drop item , waiting for raycast
+						}
+						else
+						{
+							ItemList[m_iCraftingSlotTwo]->addQuantity(-1);
+							ItemList[m_iCraftingSlotOne]->addQuantity(-1);
+						}
+					}
+
+					m_iCraftingSlotOne = -1;
+					m_iCraftingSlotTwo = -1;
+				}
+				else if (m_iCraftingSlotOne == -1)
+				{
+					m_iCraftingSlotOne = m_iInventorySlot;
+
+					if (ItemList[m_iCraftingSlotOne]->getID() == 0)
+						m_iCraftingSlotOne = -1;
+				}
+				else if (m_iCraftingSlotTwo == -1)
+				{
+					m_iCraftingSlotTwo = m_iInventorySlot;
+
+					if (ItemList[m_iCraftingSlotTwo]->getID() == 0)
+						m_iCraftingSlotTwo = -1;
+				}
+			}
+
+			if (Application::IsKeyPressed(VK_BACK) && m_dBounceTime <= 0)
+			{
 				m_iCraftingSlotOne = -1;
 				m_iCraftingSlotTwo = -1;
 			}
-			else if (m_iCraftingSlotOne == -1)
-			{
-				m_iCraftingSlotOne = m_iInventorySlot;
-
-				if (ItemList[m_iCraftingSlotOne]->getID() == 0)
-					m_iCraftingSlotOne = -1;
-			}
-			else if (m_iCraftingSlotTwo == -1)
-			{
-				m_iCraftingSlotTwo = m_iInventorySlot;
-
-				if (ItemList[m_iCraftingSlotTwo]->getID() == 0)
-					m_iCraftingSlotTwo = -1;
-			}
 		}
 
-		if (Application::IsKeyPressed(VK_BACK) && m_dBounceTime <= 0)
-		{
-			m_iCraftingSlotOne = -1;
-			m_iCraftingSlotTwo = -1;
-		}
-	}
-
-	if (m_bCrafting == false && m_bFurnaceStatus == false)
-	{
-		Vector3 viewVector = attachedCamera->target - attachedCamera->position;
-		Vector3 rightUV;
-
-		if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
-		{
-			if (m_iSwitchInventorySlot == -1)
-				m_iSwitchInventorySlot = m_iInventorySlot;
-			else
-			{
-				Item * temp = ItemList[m_iInventorySlot];
-
-				ItemList[m_iInventorySlot] = ItemList[m_iSwitchInventorySlot];
-				ItemList[m_iSwitchInventorySlot] = temp;
-
-				m_iSwitchInventorySlot = -1;
-			}
-
-			m_dBounceTime = 0.2;
-		}
-
-		//Movement
-		if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
+		if (m_bCrafting == false && m_bFurnaceStatus == false)
 		{
 			Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 			Vector3 rightUV;
-			if (Application::IsKeyPressed('W'))
+
+			if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
 			{
-				if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT) && m_iCurrentStance == STAND))
-				{
-					attachedCamera->position += viewVector.Normalized() * m_fSpeed * 3.0f * (float)dt;
-					action = SPRINTING;
-				}
+				if (m_iSwitchInventorySlot == -1)
+					m_iSwitchInventorySlot = m_iInventorySlot;
 				else
 				{
+					Item * temp = ItemList[m_iInventorySlot];
+					ItemList[m_iInventorySlot] = ItemList[m_iSwitchInventorySlot];
+					ItemList[m_iSwitchInventorySlot] = temp;
+
+					m_iSwitchInventorySlot = -1;
+				}
+				m_dBounceTime = 0.2;
+			}
+
+			//Movement
+			if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
+			{
+				Vector3 viewVector = attachedCamera->target - attachedCamera->position;
+				Vector3 rightUV;
+				if (Application::IsKeyPressed('W'))
+				{
+					if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT) && m_iCurrentStance == STAND))
+					{
+						attachedCamera->position += viewVector.Normalized() * m_fSpeed * 3.0f * (float)dt;
+						action = SPRINTING;
+					}
+					else
+					{
+						action = WALKING;
+						attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
+					}
+				}
+				else if (Application::IsKeyPressed('S'))
+				{
+					attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
 					action = WALKING;
-					attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
+				}
+				if (Application::IsKeyPressed('A'))
+				{
+					rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
+					rightUV.y = 0;
+					rightUV.Normalize();
+					attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
+					action = WALKING;
+				}
+				else if (Application::IsKeyPressed('D'))
+				{
+					rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
+					rightUV.y = 0;
+					rightUV.Normalize();
+					attachedCamera->position += rightUV * m_fSpeed * (float)dt;
+					action = WALKING;
+				}
+
+				// Constrain the position
+				// Update the target
+				attachedCamera->target = attachedCamera->position + viewVector;
+			}
+			else
+			{
+				action = STANDING;
+			}
+
+			Constrain();
+
+			Vector3 dir = attachedCamera->target - attachedCamera->position;
+			curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist);
+			curtool->SetStandinOn(false);
+			curtool->SetTileType('N');
+			curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
+			PlaceBlock();
+
+			static bool bLButtonState = false;
+
+			if (!bLButtonState &&Application::IsMousePressed(0))
+			{
+				bLButtonState = true;
+
+				if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
+				{
+					//std::cout << "left " << playerphysics.GetDist();
+				}
+				else
+					//std::cout << "lnotcollide";
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+				{
+					curtool->SetCurSwing();
 				}
 			}
-			else if (Application::IsKeyPressed('S'))
+			else if (bLButtonState && !Application::IsMousePressed(0))
 			{
-				attachedCamera->position -= viewVector.Normalized() * m_fSpeed * (float)dt;
-				action = WALKING;
-			}
-			if (Application::IsKeyPressed('A'))
-			{
-				rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
-				rightUV.y = 0;
-				rightUV.Normalize();
-				attachedCamera->position -= rightUV * m_fSpeed * (float)dt;
-				action = WALKING;
-			}
-			else if (Application::IsKeyPressed('D'))
-			{
-				rightUV = (viewVector.Normalized()).Cross(attachedCamera->up);
-				rightUV.y = 0;
-				rightUV.Normalize();
-				attachedCamera->position += rightUV * m_fSpeed * (float)dt;
-				action = WALKING;
+				bLButtonState = false;
+
 			}
 
-			// Constrain the position
-			// Update the target
-			attachedCamera->target = attachedCamera->position + viewVector;
-		}
-		else
-		{
-			action = STANDING;
-		}
-
-		Constrain();
-
-		Vector3 dir = attachedCamera->target - attachedCamera->position;
-		curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist);
-		curtool->SetStandinOn(false);
-		curtool->SetTileType('N');
-		curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
-
-		static bool bLButtonState = false;
-
-		if (!bLButtonState &&Application::IsMousePressed(0))
-		{
-			bLButtonState = true;
-
-			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
+			static bool bRButtonState = false;
+			if (!bRButtonState && Application::IsMousePressed(1))
 			{
-				std::cout << "left " << playerphysics.GetDist();
-			}
-			else
-				std::cout << "lnotcollide";
-			if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
-			{
-				curtool->SetCurSwing();
-			}
-		}
-		else if (bLButtonState && !Application::IsMousePressed(0))
-		{
-			bLButtonState = false;
-
-		}
-
-		static bool bRButtonState = false;
-		if (!bRButtonState && Application::IsMousePressed(1))
-		{
-			bRButtonState = true;
-
-			if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
-			{
-				std::cout << "right " << playerphysics.GetDist();
-			}
-			else
-				std::cout << "rnotcollide";
-			if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE)
-			{
-				curtool->SetCurSwing();
-				PlaceBlock();
-			}
-		}
-		else if (bRButtonState && !Application::IsMousePressed(1))
-		{
-			bRButtonState = false;
-
-			if (m_dHunger < 100)
-			{
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT || getItem(getCurrentSlot())->getID() == Item::ITEM_BREAD)
+				bRButtonState = true;
+				
+				if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
 				{
-					action = PlayerInformation::EATING;
-					getItem(getCurrentSlot())->addQuantity(-1);
+					std::cout << "right " << playerphysics.GetDist();
+				}
+				else
+					std::cout << "rnotcollide";
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE ||
+					getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT ||
+					getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+				{
+					curtool->SetCurSwing();
+				//	PlaceBlock();
+				}
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE || 
+					getItem(getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
+					getItem(getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
+				{
+					curtool->SetCurSwing();
+				}
+			}
+			else if (bRButtonState && !Application::IsMousePressed(1))
+			{
+				bRButtonState = false;
+
+
+				if (m_dHunger < 100)
+				{
+					if (getItem(getCurrentSlot())->getID() == Item::ITEM_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_COOKED_MEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT || getItem(getCurrentSlot())->getID() == Item::ITEM_BREAD)
+					{
+						action = PlayerInformation::EATING;
+						getItem(getCurrentSlot())->addQuantity(-1);
+					}
 				}
 			}
 		}
@@ -692,7 +708,8 @@ void PlayerInformation::PlaceBlock()
 	placedown = false;
 	if (!curtool->GetStandinOn())
 	{
-		if (curtool->GetTileType() == 'G')
+		//Tiles that player can edit.
+		if (curtool->GetTileType() == 'G' || curtool->GetTileType() == 't')
 		{
 			placedown = true;
 		}
