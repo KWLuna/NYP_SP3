@@ -1047,7 +1047,7 @@ void SP2::Update(double dt)
 	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
 	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
 	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
-	player->update(dt, m_AnimalList, PlayerTile);
+	player->update(dt, m_AnimalList,m_EnemyList, PlayerTile);
 	
 	//Code for block placing based off item in player inventory
 	if (player->GetPlaceDown())
@@ -1140,7 +1140,7 @@ void SP2::EnemyChecker(double dt)
 	float MinZ = camera.position.z - 1000;
 	float MaxZ = camera.position.z + 1000;
 
-	if (m_NumOfEnemy < 20)
+	if (m_NumOfEnemy < 1)
 		SpawningEnemy();
 
 	m_NumOfEnemy = 0;
@@ -1155,8 +1155,9 @@ void SP2::EnemyChecker(double dt)
 				go->SetActive(true);
 			}
 			else
+			{
 				go->SetActive(false);
-
+			}
 			if (go->GetActive())
 			{
 				if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
@@ -1175,8 +1176,8 @@ void SP2::EnemyChecker(double dt)
 							if (go->GetAttackedPlayer())
 							{
 								player->SetHP(player->getHP() - go->GetStrength());
-								camera.position.x += (camera.position.x - go->GetPosition().x )* 2.f;
-								camera.position.z += (camera.position.z - go->GetPosition().z )* 2.f;
+								//camera.position.x += (camera.position.x - go->GetPosition().x )* 2.f;
+								//camera.position.z += (camera.position.z - go->GetPosition().z )* 2.f;
 							}
 						}
 						break;
@@ -1205,7 +1206,7 @@ void SP2::EnemyChecker(double dt)
 								Projectile->SetVelocity(Vector3(1, 1, 1));
 								Projectile->SetRotationSpeed(Math::RandFloatMinMax(20.f, 40.f));
 								Projectile->SetPos(Vector3(go->GetPosition().x, 30, go->GetPosition().z));
-								Projectile->SetTargetPos((camera.position - Projectile->GetPos()));
+								Projectile->SetTargetPos(Vector3(camera.position.x - go->GetPosition().x, camera.position.y - 5, camera.position.z - go->GetPosition().z ));
 								Projectile->SetGotPlayersPos(true);
 								Projectile->SetActive(true);
 								Projectile->SetTimeTravelled(0.f);
@@ -1216,7 +1217,7 @@ void SP2::EnemyChecker(double dt)
 						break;
 					}
 				}
-				go->Update(dt);
+				go->Update(dt, WorldObjectPositionList);
 				m_NumOfEnemy++;
 			}
 		}
@@ -1231,8 +1232,8 @@ void SP2::AnimalChecker(double dt)
 	float MinZ = camera.position.z - 1000;
 	float MaxZ = camera.position.z + 1000;
 
-	if (m_NumOfAnimal < 20)
-		SpawningAnimal();
+	if (m_NumOfAnimal < 1)
+		SpawningAnimal(dt);
 
 	m_NumOfAnimal = 0;
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
@@ -1323,7 +1324,7 @@ void SP2::AnimalChecker(double dt)
 					go->SetDistracted(true);
 					go->SetBehaviour(3);
 				}
-				go->Update(dt);
+				go->Update(dt, WorldObjectPositionList);
 				m_NumOfAnimal++;
 
 				//Breeding
@@ -1478,64 +1479,70 @@ void SP2::SpawningEnemy()
 								go->SetSpawned(false);
 						}
 					}
-					int choice = Math::RandIntMinMax(0, 10);
-					if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
+					if (world[i][k] == 'd' || world[i][k] == 'G')
 					{
-						CEnemy *go = EnemyFetchGO();
-						go->type = CEnemy::GO_ZOMBIE;
-						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
-						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
-						go->SetSpawned(true);
-						if (m_iDayNight == -1)
+						int choice = Math::RandIntMinMax(0, 20);
+						if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 						{
-							go->SetStrength(go->GetStrength() * 1.5f);
-							go->SetHP(go->GetHP() * 1.5f);
-							go->SetSpeed(Math::RandFloatMinMax(0.1f, 0.5f) * 1.5f);
+							CEnemy *go = EnemyFetchGO();
+							go->type = CEnemy::GO_ZOMBIE;
+							go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
+							go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+							go->SetSpawned(true);
+							if (m_iDayNight == -1)
+							{
+								go->SetStrength(go->GetStrength() * 1.5f);
+								go->SetHP(go->GetHP() * 1.5f);
+								go->SetSpeed(Math::RandFloatMinMax(0.1f, 0.5f) * 1.5f);
+							}
+							if (go->GetPosition() == camera.position)
+								go->SetSpawned(false);
 						}
-						if (go->GetPosition() == camera.position)
-							go->SetSpawned(false);
 					}
 				}
 			}
 		}
 	}
 }
-void SP2::SpawningAnimal()
+void SP2::SpawningAnimal(double dt)
 {
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
-	for (float i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
+	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
 		if (i >= 0 && i <= 250)
 		{
-			for (float k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
+			for (int k = minOutwardsFromPlayerZ; k < maxOutwardsFromPlayerZ; ++k)
 			{
 				if (k >= 0 && k <= 250)
 				{
-					int choice = Math::RandIntMinMax(0, 10);
-
-					if (choice == 1) //spawn in if it is 1
+					if (world[i][k] == 'G')
 					{
+						int choice = Math::RandIntMinMax(0, 20 + 5 * dt);
 
-						CAnimal *go = AnimalFetchGO();
-
-						choice = Math::RandIntMinMax(0, 2);
-						switch (choice)
+						if (choice == 1) //spawn in if it is 1
 						{
-						case 0:
-							go->type = CAnimal::GO_PIG;
-							break;
-						case 1:
-							go->type = CAnimal::GO_COW;
-							break;
-						case 2:
-							go->type = CAnimal::GO_CHICKEN;
-							break;
-						default:
-							break;
+
+							CAnimal *go = AnimalFetchGO();
+
+							choice = Math::RandIntMinMax(0, 2);
+							switch (choice)
+							{
+							case 0:
+								go->type = CAnimal::GO_PIG;
+								break;
+							case 1:
+								go->type = CAnimal::GO_COW;
+								break;
+							case 2:
+								go->type = CAnimal::GO_CHICKEN;
+								break;
+							default:
+								break;
+							}
+							go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
+							go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
+							go->SetSpawned(true);
 						}
-						go->SetPosition(Vector3(0 + i * scale, 0, 0 + k * scale));
-						go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
-						go->SetSpawned(true);
 					}
 				}
 			}
@@ -1870,28 +1877,41 @@ ProjectileObject* SP2::GetProjectile(void)
 }
 void SP2::UpdateProjectile(double dt)
 {
-	int i = 0;
 	for (std::vector<ProjectileObject *>::iterator it = ProjectileList.begin(); it != ProjectileList.end(); ++it)
 	{
 		ProjectileObject *Projectile = (ProjectileObject *)*it;
 		if (Projectile->GetActive())
 		{
 			Projectile->Update(dt);
-			if ((Projectile->GetPos() - camera.position).Length() < 15)
+
+			for (std::vector<Vector3*>::iterator it2 = WorldObjectPositionList.begin(); it2 != WorldObjectPositionList.end(); ++it2)
+			{
+				Vector3* WorldObjectPos = (Vector3*)*it2;
+
+				if (Projectile->GetPos().x > WorldObjectPos->x - 50 && Projectile->GetPos().x < WorldObjectPos->x + 50)
+				{
+					if (Projectile->GetPos().z > WorldObjectPos->z - 50 && Projectile->GetPos().z < WorldObjectPos->z + 50)
+					{
+						Projectile->SetActive(false);
+						m_iProjectileCount--;
+						break;
+					}
+				}
+			}
+			if ((Projectile->GetPos() - camera.position).Length() < 10)
 			{
 				Projectile->SetActive(false);
 				m_iProjectileCount--;
 				player->SetHP(player->getHP() - 5.f);
-				camera.position.x += (camera.position.x - Projectile->GetPos().x)* 2.f;
-				camera.position.z += (camera.position.z - Projectile->GetPos().z)* 2.f;
+				//add knockback
 			}
-			if (Projectile->GetTimeTravelled() > 5)
+			else if (Projectile->GetTimeTravelled() > 5)
 			{
 				Projectile->SetActive(false);
 				m_iProjectileCount--;
 			}
 		}
-		i++;
+
 	}
 }
 void SP2::RenderProjectile(ProjectileObject * Projectile)
@@ -2173,6 +2193,7 @@ void SP2::RenderPassGPass()
 
 void SP2::RenderGroundObjects()
 {
+	WorldObjectPositionList.clear();
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
@@ -2211,6 +2232,8 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale, scale, scale);
 						RenderMesh(meshList[GEO_GOLD_ORE], true);
 						modelStack.PopMatrix();
+						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
+
 						break;
 					case 'C':
 						modelStack.PushMatrix();
@@ -2218,6 +2241,8 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale, scale, scale);
 						RenderMesh(meshList[GEO_COAL_ORE], true);
 						modelStack.PopMatrix();
+						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
+
 						break;
 					case 'B':
 						modelStack.PushMatrix();
@@ -2225,6 +2250,8 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale, scale, scale);
 						RenderMesh(meshList[GEO_BERRY], true);
 						modelStack.PopMatrix();
+						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
+
 						break;
 					case 'D':
 						modelStack.PushMatrix();
@@ -2232,6 +2259,8 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale, scale, scale);
 						RenderMesh(meshList[GEO_WALL], true);
 						modelStack.PopMatrix();
+						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
+
 						break;
 					case 'F':
 						modelStack.PushMatrix();
@@ -2239,6 +2268,8 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale / 3, scale / 3, scale / 3);
 						RenderMesh(meshList[GEO_FURNACE_BLOCK], true);
 						modelStack.PopMatrix();
+						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
+
 						break;
 					case 'L':
 						modelStack.PushMatrix();
@@ -2246,6 +2277,8 @@ void SP2::RenderGroundObjects()
 						modelStack.Scale(scale / 3, scale / 3, scale / 3);
 						RenderMesh(meshList[GEO_CHEST_BLOCK], true);
 						modelStack.PopMatrix();
+						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
+
 						break;
 					default:
 						break;
@@ -2849,6 +2882,21 @@ void SP2::Exit()
 	{
 		if (FurnaceList[i])
 			delete FurnaceList[i];
+	}
+	for (int i = 0; i < WorldObjectPositionList.size(); ++i)
+	{
+		if (WorldObjectPositionList[i])
+			delete WorldObjectPositionList[i];
+	}
+	for (int i = 0; i < m_AnimalList.size(); ++i)
+	{
+		if (m_AnimalList[i])
+			delete m_AnimalList[i];
+	}
+	for (int i = 0; i < m_EnemyList.size(); ++i)
+	{
+		if (m_EnemyList[i])
+			delete m_EnemyList[i];
 	}
 
 	SaveWorld();

@@ -3,6 +3,7 @@
 
 #include "Vector3.h"
 #include "Vertex.h"
+#include <vector>
 
 class CEnemy
 {
@@ -23,7 +24,7 @@ public:
 	ENEMY_TYPE type;
 
 	CEnemy(ENEMY_TYPE typeValue = GO_ZOMBIE);
-	void Update(double dt);
+	void Update(double dt, std::vector<Vector3*> WorldObjectPositionList);
 	~CEnemy();
 
 	//Get Functions
@@ -49,6 +50,9 @@ public:
 	void SetSpeed(float m_fSpeed);
 	void SetStrength(float m_fStrength);
 	void SetAttacking(bool m_bAttacked);
+
+	void SetPlayersDamage(float m_fPlayersDamage);
+
 private:
 	//Behaviour
 	Enemy_Behaviour theCurrentBehaviour;
@@ -75,6 +79,10 @@ private:
 	float m_fStrength;
 	float m_fAttackingTime;
 	bool m_bAttacked;
+	float m_fPlayersDamage;
+
+	bool Newpos;
+
 };
 
 #endif

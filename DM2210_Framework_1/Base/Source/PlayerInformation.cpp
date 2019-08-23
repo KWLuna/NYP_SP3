@@ -19,7 +19,7 @@ PlayerInformation::PlayerInformation()
 	m_iCraftingSlotOne = -1;
 	m_iCraftingSlotTwo = -1;
 	m_iSwitchInventorySlot = -1;
-
+	m_fPlayersDamage = 2.f;
 	m_bFurnaceStatus = false;
 	m_bJump = false;
 	m_bFall = true;
@@ -275,7 +275,7 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	return new Item(-1, 0);
 }
 
-void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char tilearray[])
+void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::vector<CEnemy*> enemylist, char tilearray[])
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
@@ -630,8 +630,11 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 
 			Constrain();
 
+			UpdatePlayersStrength();
+
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
-			curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist);
+			curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist, m_fPlayersDamage);
+			curtool->UpdateEnemy(dt, dir, attachedCamera->position, enemylist, m_fPlayersDamage);
 			curtool->SetStandinOn(false);
 			curtool->SetTileType('N');
 			curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
@@ -642,7 +645,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 			if (!bLButtonState &&Application::IsMousePressed(0))
 			{
 				bLButtonState = true;
-
+				curtool->SetLClick();
 				if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
 				{
 					//std::cout << "left " << playerphysics.GetDist();
@@ -664,7 +667,15 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 			if (!bRButtonState && Application::IsMousePressed(1))
 			{
 				bRButtonState = true;
-				
+				curtool->SetRClick();
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+				{
+					curtool->SetCurSwing();
+				}
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT|| getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+				{
+					curtool->SetCurSwing();
+				}
 				if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
 				{
 					std::cout << "right " << playerphysics.GetDist();
@@ -752,4 +763,54 @@ void PlayerInformation::SetThirst(double m_dThirst)
 double PlayerInformation::getThirst()
 {
 	return m_dThirst;
+}
+void PlayerInformation::UpdatePlayersStrength()
+{
+	switch (getItem(getCurrentSlot())->getID())
+	{
+	//Sword
+	case Item::ITEM_WOODEN_SWORD:
+		m_fPlayersDamage = 10.f;
+		break;
+	case Item::ITEM_STONE_SWORD:
+		m_fPlayersDamage = 10.f;
+		break;
+	case Item::ITEM_GOLD_SWORD:
+		m_fPlayersDamage = 15.f;
+		break;
+	//Pickaxe
+	case Item::ITEM_WOODEN_PICKAXE:
+		m_fPlayersDamage = 6.f;
+		break;
+	case Item::ITEM_STONE_PICKAXE:
+		m_fPlayersDamage = 8.f;
+		break;
+	case Item::ITEM_GOLD_PICKAXE:
+		m_fPlayersDamage = 10.f;
+		break;
+	//Axe
+	case Item::ITEM_WOODEN_AXE:
+		m_fPlayersDamage = 6.f;
+		break;
+	case Item::ITEM_STONE_AXE:
+		m_fPlayersDamage = 8.f;
+		break;
+	case Item::ITEM_GOLD_AXE:
+		m_fPlayersDamage = 10.f;
+		break;
+	//Hoe
+	case Item::ITEM_WOODEN_HOE:
+		m_fPlayersDamage = 5.f;
+		break;
+	case Item::ITEM_STONE_HOE:
+		m_fPlayersDamage = 6.f;
+		break;
+	case Item::ITEM_GOLD_HOE:
+		m_fPlayersDamage = 7.f;
+		break;
+	default:
+		m_fPlayersDamage = 2.f;
+		break;
+	}
+	
 }

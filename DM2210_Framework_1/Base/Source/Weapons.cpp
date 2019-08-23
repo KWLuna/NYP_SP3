@@ -29,7 +29,7 @@ void Weapons::Init(void)
 	blockset.Set(-100, -100, -100);
 }
 
-void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist)
+void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist, float m_fPlayersDamage)
 {
 	if (type == MELEE)
 	{
@@ -104,6 +104,15 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 					{
 						/*std::cout << "dank";*/
+						if (!rclick)
+						{
+							animalist[i]->SetBehaviour(4);
+							animalist[i]->SetPlayersDamage(m_fPlayersDamage);
+						}
+						else
+						{
+							animalist[i]->SetFed(true);
+						}
 					}
 				}
 			}
@@ -120,6 +129,7 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 					curr = rightmaxr;
 					curswing = false;
 				}
+				
 				for (int i = 0; i < animalist.size(); i++)
 				{
 					if (!animalist[i]->GetActive())
@@ -128,118 +138,62 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 					}
 					Vector3 temp1;
 					Vector3 temp2;
-					//if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_COW)
-					//{
-					//	temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
-					//	Vector3 temptemp;
-					//	temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp1 += animalist[i]->GetPosition();
-					//	temp1.y += 14;
-					//	temp1.z += 3;
-					//	temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
-					//	temptemp = temp2;
-					//	temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp2 += animalist[i]->GetPosition();
-					//	temp2.y += 14;
-					//	temp2.z += 3;
-					//}
-					//else if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_CHICKEN)
-					//{
-					//	temp1.Set(10 * -0.5f, 12 * -0.5f, 14 * -0.5f);
-					//	/*temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-					//	temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;*/
-					//	temp1 += animalist[i]->GetPosition();
-					//	temp1.y += 8;
-					//	temp1.z += 2;
-					//	temp2.Set(10 * 0.5f, 12 * 0.5f, 14 * 0.5f);
-					//	/*temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-					//	temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;*/
-					//	temp2 += animalist[i]->GetPosition();
-					//	temp2.y += 8;
-					//	temp2.z += 2;
-					//}
-					//else if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_PIG)
-					//{
-					//	temp1.Set(14 * -0.5f, 22 * -0.5f, 29 * -0.5f);
-					//	temp1 += animalist[i]->GetPosition();
-					//	temp1.y += 11;
-					//	temp1.z += 4;
-					//	Vector3 temptemp = temp1;
-					//	temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp2.Set(14 * 0.5f, 22 * 0.5f, 29 * 0.5f);
-					//	temp2 += animalist[i]->GetPosition();
-					//	temp2.y += 11;
-					//	temp2.z += 4;
-					//	temptemp = temp2;
-					//	temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//	temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temptemp.z;
-					//}
-					//Vector3 tempdir = dir;
-					//dir.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * tempdir.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * tempdir.z;
-					//dir.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * tempdir.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * tempdir.z;
-					//if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
-					//{
-					//	std::cout << "dank";
-					//}
-					for (int i = 0; i < animalist.size(); i++)
+					if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_COW)
 					{
-						if (!animalist[i]->GetActive())
+						temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
+						temp1 += animalist[i]->GetPosition();
+						temp1.y += 14;
+						temp1.z += 3;
+						temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
+						temp2 += animalist[i]->GetPosition();
+						temp2.y += 14;
+						temp2.z += 3;
+					}
+					else if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_CHICKEN)
+					{
+						temp1.Set(10 * -0.5f, 12 * -0.5f, 14 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
+						temp1 += animalist[i]->GetPosition();
+						temp1.y += 8;
+						temp1.z += 2;
+						temp2.Set(10 * 0.5f, 12 * 0.5f, 14 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
+						temp2 += animalist[i]->GetPosition();
+						temp2.y += 8;
+						temp2.z += 2;
+					}
+					else if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_PIG)
+					{
+						temp1.Set(14 * -0.5f, 22 * -0.5f, 29 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
+						temp1 += animalist[i]->GetPosition();
+						temp1.y += 11;
+						temp1.z += 4;
+						temp2.Set(14 * 0.5f, 22 * 0.5f, 29 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
+						temp2 += animalist[i]->GetPosition();
+						temp2.y += 11;
+						temp2.z += 4;
+					}
+					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
+					{
+						std::cout << "dank";
+						if (!rclick)
 						{
-							continue;
+							animalist[i]->SetBehaviour(4);
+							animalist[i]->SetPlayersDamage(m_fPlayersDamage);
 						}
-						Vector3 temp1;
-						Vector3 temp2;
-						if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_COW)
+						else
 						{
-							temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
-							temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-							temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-							temp1 += animalist[i]->GetPosition();
-							temp1.y += 14;
-							temp1.z += 3;
-							temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
-							temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-							temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-							temp2 += animalist[i]->GetPosition();
-							temp2.y += 14;
-							temp2.z += 3;
-						}
-						else if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_CHICKEN)
-						{
-							temp1.Set(10 * -0.5f, 12 * -0.5f, 14 * -0.5f);
-							temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-							temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-							temp1 += animalist[i]->GetPosition();
-							temp1.y += 8;
-							temp1.z += 2;
-							temp2.Set(10 * 0.5f, 12 * 0.5f, 14 * 0.5f);
-							temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-							temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-							temp2 += animalist[i]->GetPosition();
-							temp2.y += 8;
-							temp2.z += 2;
-						}
-						else if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_PIG)
-						{
-							temp1.Set(14 * -0.5f, 22 * -0.5f, 29 * -0.5f);
-							temp1.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-							temp1.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp1.z;
-							temp1 += animalist[i]->GetPosition();
-							temp1.y += 11;
-							temp1.z += 4;
-							temp2.Set(14 * 0.5f, 22 * 0.5f, 29 * 0.5f);
-							temp2.x = cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-							temp2.z = sinf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(animalist[i]->GetAngle())) * temp2.z;
-							temp2 += animalist[i]->GetPosition();
-							temp2.y += 11;
-							temp2.z += 4;
-						}
-						if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
-						{
-							/*std::cout << "dank";*/
+							animalist[i]->SetFed(true);
 						}
 					}
 				}
@@ -252,6 +206,146 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 	}
 }
 
+void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vector<CEnemy*> enemylist, float m_fPlayersDamage)
+{
+	if (type == MELEE)
+	{
+		if (curswing)
+		{
+			if (side)
+			{
+				curt += ((leftmaxt - rightmaxt) / swingtime * dt);
+				curr += ((leftmaxr - rightmaxr) / swingtime * dt);
+				if (curt <= leftmaxt)
+				{
+					curt = leftmaxt;
+				}
+				if (curr >= leftmaxr)
+				{
+					curr = leftmaxr;
+					curswing = false;
+				}
+				for (int i = 0; i < enemylist.size(); i++)
+				{
+					if (!enemylist[i]->GetActive())
+					{
+						continue;
+					}
+					Vector3 temp1;
+					Vector3 temp2;
+
+					if (enemylist[i]->type == CEnemy::ENEMY_TYPE::GO_ZOMBIE)
+					{
+						temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1 += enemylist[i]->GetPosition();
+						temp1.y += 14;
+						temp1.z += 3;
+						temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2 += enemylist[i]->GetPosition();
+						temp2.y += 14;
+						temp2.z += 3;
+					}
+					else if (enemylist[i]->type == CEnemy::ENEMY_TYPE::GO_WITCH)
+					{
+						temp1.Set(10 * -0.5f, 12 * -0.5f, 14 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1 += enemylist[i]->GetPosition();
+						temp1.y += 8;
+						temp1.z += 2;
+						temp2.Set(10 * 0.5f, 12 * 0.5f, 14 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2 += enemylist[i]->GetPosition();
+						temp2.y += 8;
+						temp2.z += 2;
+					}
+					
+					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
+					{
+						/*std::cout << "dank";*/
+						if (!rclick)
+						{
+							enemylist[i]->SetBehaviour(4);
+							enemylist[i]->SetPlayersDamage(m_fPlayersDamage);
+						}
+					}
+				}
+			}
+			else
+			{
+				curt += ((rightmaxt - leftmaxt) / swingtime * dt);
+				curr += ((rightmaxr - leftmaxr) / swingtime * dt);
+				if (curt >= rightmaxt)
+				{
+					curt = rightmaxt;
+				}
+				if (curr <= rightmaxr)
+				{
+					curr = rightmaxr;
+					curswing = false;
+				}
+
+				for (int i = 0; i < enemylist.size(); i++)
+				{
+					if (!enemylist[i]->GetActive())
+					{
+						continue;
+					}
+					Vector3 temp1;
+					Vector3 temp2;
+					if (enemylist[i]->type == CEnemy::ENEMY_TYPE::GO_ZOMBIE)
+					{
+						temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1 += enemylist[i]->GetPosition();
+						temp1.y += 14;
+						temp1.z += 3;
+						temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2 += enemylist[i]->GetPosition();
+						temp2.y += 14;
+						temp2.z += 3;
+					}
+					else if (enemylist[i]->type == CEnemy::ENEMY_TYPE::GO_WITCH)
+					{
+						temp1.Set(14 * -0.5f, 22 * -0.5f, 29 * -0.5f);
+						temp1.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
+						temp1 += enemylist[i]->GetPosition();
+						temp1.y += 11;
+						temp1.z += 4;
+						temp2.Set(14 * 0.5f, 22 * 0.5f, 29 * 0.5f);
+						temp2.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
+						temp2 += enemylist[i]->GetPosition();
+						temp2.y += 11;
+						temp2.z += 4;
+					}
+					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
+					{
+						std::cout << "dank";
+						if (!rclick)
+						{
+							enemylist[i]->SetBehaviour(4);
+							enemylist[i]->SetPlayersDamage(m_fPlayersDamage);
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (type == RANGE)
+	{
+
+	}
+}
 void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[])
 {
 	Vector3 smallestvertex;
@@ -668,4 +762,14 @@ bool Weapons::GetStandinOn()
 Vector3 Weapons::GetBlockPlacement()
 {
 	return blockset;
+}
+
+void Weapons::SetRClick()
+{
+	rclick = true;
+}
+
+void Weapons::SetLClick()
+{
+	rclick = false;
 }

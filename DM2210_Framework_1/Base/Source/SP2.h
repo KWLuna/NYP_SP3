@@ -277,7 +277,7 @@ public:
 	//Ke Wei
 		//Animal
 	CAnimal* AnimalFetchGO();
-	void SpawningAnimal();
+	void SpawningAnimal(double dt);
 	void RenderAnimal(CAnimal* animal);
 	void AnimalChecker(double dt);
 	void SaveAnimalData();
@@ -406,6 +406,8 @@ private:
 
 	bool m_bMenu;
 	bool m_bContinue;
+	
+	std::vector<Vector3 *> WorldObjectPositionList;
 };
 
 #endif

@@ -30,9 +30,9 @@ void Sword::Init()
 	//std::cout << rightmaxt;
 }
 
-void Sword::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist)
+void Sword::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist, float m_fPlayersDamage)
 {
-	Weapons::UpdateAnimal(dt, dir, origin, animalist);
+	Weapons::UpdateAnimal(dt, dir, origin, animalist, m_fPlayersDamage);
 	Response();
 }
 
