@@ -540,6 +540,9 @@ void SP2::Init()
 	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
 	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
+	meshList[GEO_NO_BERRY] = MeshBuilder::GenerateOBJ("GEO_NO_BERRY", "OBJ//Bush.obj");
+	meshList[GEO_NO_BERRY]->textureArray[0] = LoadTGA("Image//Bush_Empty.tga");
+
 	meshList[GEO_WALL] = MeshBuilder::GenerateOBJ("GEO_WALL", "OBJ//Wall.obj");
 	meshList[GEO_WALL]->textureArray[0] = LoadTGA("Image//Wall.tga");
 	//
@@ -1208,6 +1211,20 @@ void SP2::Update(double dt)
 		//Update all the furnaces present in the level.
 		for (unsigned int i = 0; i < FurnaceList.size(); ++i)
 			FurnaceList[i]->update(dt, player);
+
+		//Update all the bushes that have been harvested
+		for (unsigned int i = 0; i < HarvestedBushList.size(); ++i)
+		{
+			HarvestedBushList[i]->Update(dt);
+
+			//After updating , check if the bush is ready to respawn.
+			if (HarvestedBushList[i]->GetRespawnYet() == true)
+			{
+				//If so , set the tile back to a BERRY obj and delete the dead bush from the list.
+				world[HarvestedBushList[i]->GetXTile()][HarvestedBushList[i]->GetZTile()] = 'B';
+				delete HarvestedBushList[i];
+			}
+		}
 
 		//Rmb to update to pointer.
 		SP2_Seasons->Update(dt);
@@ -2329,6 +2346,13 @@ void SP2::RenderGroundObjects()
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
 						RenderMesh(meshList[GEO_BERRY], true);
+						modelStack.PopMatrix();
+						break;
+					case 'b':
+						modelStack.PushMatrix();
+						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
+						modelStack.Scale(scale, scale, scale);
+						RenderMesh(meshList[GEO_NO_BERRY], true);
 						modelStack.PopMatrix();
 						break;
 					case 'D':
