@@ -8,7 +8,7 @@ public:
 		SEED,
 	}; 
 
-	Crops(int TYPE , int xPos , int zPos);
+	Crops(int TYPE , int xPos , int zPos , double timeSincePlanted);
 	~Crops();
 	
 	bool GetGrowth;

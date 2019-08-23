@@ -85,6 +85,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="AnimalSaveFile.txt" />
+    <Text Include="CropSaveFile.txt" />
+    <Text Include="FurnaceSaveFile.txt" />
     <Text Include="PlayerSaveFile.txt" />
     <Text Include="WorldSaveFile.txt" />
   </ItemGroup>

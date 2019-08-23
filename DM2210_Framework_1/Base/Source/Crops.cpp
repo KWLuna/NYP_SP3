@@ -1,13 +1,14 @@
 #include "Crops.h"
 #include <iostream>
-Crops::Crops(int TYPE , int xPos , int zPos)
+Crops::Crops(int TYPE , int xPos , int zPos , double timeSincePlanted)
 {
-	m_dTimeSincePlanted = 0;
 	m_iCropType = TYPE;
 	m_iCropState = 0;
 
 	m_iXTile = xPos;
 	m_iZTile = zPos;
+
+	m_dTimeSincePlanted = timeSincePlanted;
 }
 
 int Crops::GetXTile()
@@ -56,11 +57,11 @@ void Crops::setTimeSincePlanted(double time)
 
 void Crops::update(double dt)
 {
-	m_dTimeSincePlanted += 1 * dt;
-
 	if (m_dTimeSincePlanted >= TIME_TO_GROW)
 	{
 		m_iCropState = 1;
 		m_bFinishedGrowing = true;
 	}
+	else
+		m_dTimeSincePlanted += 1 * dt;
 }

@@ -49,6 +49,7 @@ void SP2::SaveWorld()
 		{
 			cropFile << CropList[i]->GetXTile() << std::endl;
 			cropFile << CropList[i]->GetZTile() << std::endl;
+			cropFile << CropList[i]->GetCropType() << std::endl;
 			cropFile << CropList[i]->getTimeSincePlanted() << std::endl;
 		}
 		cropFile.close();
@@ -80,13 +81,41 @@ void SP2::LoadWorld()
 
 	int cropLines = 0;
 	row = "";
+	std::ifstream cropFileLines("CropSaveFile.txt"); //Open text file to read
+	if (cropFileLines.is_open())
+	{
+		while (std::getline(cropFileLines, row))
+			cropLines += 1;
+		cropFileLines.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+
 	std::ifstream cropFile("CropSaveFile.txt"); //Open text file to read
+	int count = 0;
+	int xTile, zTile, cropType;
+	double timeSince;
+
 	if (cropFile.is_open())
 	{
-		while (std::getline(cropFile, row))
-			cropLines += 1;
-
-		std::cout << cropLines << std::endl;
+		while (!cropFile.eof())
+		{
+			std::cout << "x" << std::endl;
+			count += 1;
+			if (count == 1)
+				cropFile >> xTile;
+			else if (count == 2)
+				cropFile >> zTile;
+			else if (count == 3)
+				cropFile >> cropType;
+			else if (count == 4)
+			{
+				cropFile >> timeSince;
+				CropList.push_back(new Crops(cropType, xTile, zTile, timeSince));
+				count = 0;
+				std::cout << "new crop" << std::endl;
+			}
+		}
 		cropFile.close();
 	}
 	else
@@ -709,7 +738,7 @@ void SP2::Init()
 	//Crops assign to where the player plants it. so get the tile position and multiply by scale.
 	//CropList.push_back(new Crops(0 , 12250 , 12250));
 
-	CropList.push_back(new Crops(0 , 125, 125));
+	//CropList.push_back(new Crops(0 , 125, 125));
 
 	//instructions
 	instructionorder = 0;
@@ -900,7 +929,7 @@ void SP2::Update(double dt)
 
 		if (Application::IsKeyPressed('H') && m_dBounceTime <= 0)
 		{
-			std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
+			/*std::cout << static_cast<int>(camera.position.x / 100) << " " << static_cast<int>(camera.position.z / 100) << std::endl;
 			player->addItem(new Item(Item::ITEM_WOOD, 1));
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
@@ -912,16 +941,15 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_CARROT, 10));
 			player->addItem(new Item(Item::ITEM_WHEAT, 10));
 			player->addItem(new Item(Item::ITEM_SEED, 10));
-			player->addItem(new Item(Item::ITEM_STONE, 10));
+			player->addItem(new Item(Item::ITEM_STONE, 10));*/
 
-			/*std::cout << "converting a world tile ..." << std::endl;*/
-	/*		player->addItem(new Item(Item::ITEM_SEED, 10));
+			player->addItem(new Item(Item::ITEM_SEED, 10));
 			player->addItem(new Item(Item::ITEM_CARROT, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));*/
+			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
 
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
-			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
+			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
 			world[125][125] = 'D';
 
@@ -1076,7 +1104,7 @@ void SP2::Update(double dt)
 			{
 				std::cout << "planted something" << std::endl;
 				world[x][y] = 'w';
-				CropList.push_back(new Crops(1, x, y));
+				CropList.push_back(new Crops(1, x, y , 0));
 				player->getItem(player->getCurrentSlot())->addQuantity(-1);
 			}
 		}
@@ -1089,7 +1117,7 @@ void SP2::Update(double dt)
 			{
 				std::cout << "planted something" << std::endl;
 				world[x][y] = 'c';
-				CropList.push_back(new Crops(0, x, y));
+				CropList.push_back(new Crops(0, x, y , 0));
 				player->getItem(player->getCurrentSlot())->addQuantity(-1);
 			}
 		}
