@@ -13,6 +13,12 @@ class Furnace
 	};
 public:
 	Furnace(int xPos , int zPos);
+
+	Furnace(int xPos, int zPos , int fuelID , int fuelTotal ,
+		    int smeltingID , int smeltingTotal , int resultID , int resultTotal,
+		    double smeltingTime , double fuelTime);
+
+
 	~Furnace();
 
 	// Pass in the player from the scene along with dt.
@@ -28,11 +34,13 @@ public:
 	void SetStatus(bool condition);
 
 	int GetResultID();
+	int GetResultTotal();
 
 	int GetXTile();
 	int GetZTile();
 
-	int GetResultTotal();
+	double GetSmeltingTime();
+	double GetFuelTime();
 
 	int GetSlot();
 private:

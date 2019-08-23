@@ -56,6 +56,31 @@ void SP2::SaveWorld()
 	}
 	else
 		std::cout << " cant save !" << std::endl;
+
+	std::ofstream frunaceFile("FurnaceSaveFile.txt");
+	if (frunaceFile.is_open())
+	{
+		for (int i = 0; i < FurnaceList.size(); ++i)
+		{
+			frunaceFile << FurnaceList[i]->GetXTile() << std::endl;
+			frunaceFile << FurnaceList[i]->GetZTile() << std::endl;
+			
+			frunaceFile << FurnaceList[i]->GetFuelID() << std::endl;
+			frunaceFile << FurnaceList[i]->GetFuelTotal() << std::endl;
+			
+			frunaceFile << FurnaceList[i]->GetSmeltingID() << std::endl;
+			frunaceFile << FurnaceList[i]->GetSmeltingTotal() << std::endl;
+			
+			frunaceFile << FurnaceList[i]->GetResultID() << std::endl;
+			frunaceFile << FurnaceList[i]->GetResultTotal() << std::endl;
+			
+			frunaceFile << FurnaceList[i]->GetSmeltingTime() << std::endl;
+			frunaceFile << FurnaceList[i]->GetFuelTime() << std::endl;
+		}
+		frunaceFile.close();
+	}
+	else
+		std::cout << " cant save !" << std::endl;
 }
 
 void SP2::LoadWorld()
@@ -78,7 +103,8 @@ void SP2::LoadWorld()
 	}
 	else
 		std::cout << "Impossible to open save file!" << std::endl;
-
+	
+	//Count the lines in the text file
 	int cropLines = 0;
 	row = "";
 	std::ifstream cropFileLines("CropSaveFile.txt"); //Open text file to read
@@ -90,6 +116,7 @@ void SP2::LoadWorld()
 	}
 	else
 		std::cout << "Impossible to open save file!" << std::endl;
+	//
 
 	std::ifstream cropFile("CropSaveFile.txt"); //Open text file to read
 	int count = 0;
@@ -117,6 +144,58 @@ void SP2::LoadWorld()
 			}
 		}
 		cropFile.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+
+	int furnaceLines = 0;
+	row = "";
+	std::ifstream furnaceFileLines("FurnaceSaveFile.txt"); //Open text file to read
+	if (furnaceFileLines.is_open())
+	{
+		while (std::getline(furnaceFileLines, row))
+			cropLines += 1;
+		furnaceFileLines.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+
+	std::ifstream furnaceFile("FurnaceSaveFile.txt"); //Open text file to read
+	int count2 = 0;
+	int/* xTile , zTile , */smeltID , smeltCount , fuelID , fuelCount , resultID , resultCount;
+	double smeltTime, fuelTime;
+	if (furnaceFile.is_open())
+	{
+		while (!furnaceFile.eof())
+		{
+			count2 += 1;
+			
+			if (count2 == 1)
+				furnaceFile >> xTile;
+			else if (count2 == 2)
+				furnaceFile >> zTile;
+			else if (count2 == 3)
+				furnaceFile >> fuelID;
+			else if (count2 == 4)
+				furnaceFile >> fuelCount;
+			else if (count2 == 5)
+				furnaceFile >> smeltID;
+			else if (count2 == 6)
+				furnaceFile >> smeltCount;
+			else if (count2 == 7)
+				furnaceFile >> resultID;
+			else if (count2 == 8)
+				furnaceFile >> resultCount;
+			else if (count2 == 9)
+				furnaceFile >> smeltTime;
+			else if (count2 == 10)
+			{
+				count2 = 0;
+				furnaceFile >> fuelTime;
+				FurnaceList.push_back(new Furnace(xTile, zTile, fuelID, fuelCount, smeltID, smeltCount, resultID, resultCount, smeltTime , fuelTime));
+			}
+		}
+		furnaceFile.close();
 	}
 	else
 		std::cout << "Impossible to open save file!" << std::endl;
@@ -943,17 +1022,17 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_SEED, 10));
 			player->addItem(new Item(Item::ITEM_STONE, 10));*/
 
-			player->addItem(new Item(Item::ITEM_SEED, 10));
-			player->addItem(new Item(Item::ITEM_CARROT, 10));
+			player->addItem(new Item(Item::ITEM_COAL, 10));
+			player->addItem(new Item(Item::ITEM_MEAT, 10));
 			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
 
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
-			world[125][125] = 'D';
+		/*	world[125][125] = 'D';
 
-			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'c';
+			world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'c';*/
 
 			m_dBounceTime = 0.5;
 		}
@@ -1022,11 +1101,9 @@ void SP2::Update(double dt)
 		if (Application::IsKeyPressed('4'))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-
 		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
 			FurnaceList[0]->SetStatus(true);
-
 			m_dBounceTime = 0.2;
 		}
 

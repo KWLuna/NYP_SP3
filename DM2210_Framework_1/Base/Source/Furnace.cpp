@@ -21,12 +21,38 @@ Furnace::Furnace(int xPos, int zPos)
 	m_dFuel_Time = 0;
 
 	Smeltables.push_back(Item::ITEM_MEAT);
-
 	Burnables.push_back(Item::ITEM_COAL);
 	Burnables.push_back(Item::ITEM_WOOD);
 
 	m_iTileX = xPos;
 	m_iTileZ = zPos;
+}
+
+Furnace::Furnace(int xPos, int zPos, int fuelID, int fuelTotal,
+	int smeltingID, int smeltingTotal, int resultID, int resultTotal,
+	double smeltingTime, double fuelTime)
+{
+	m_dBounceTime = 0;
+	m_iCurrentSlot = SMELTING;
+	m_bAccessFurnace = false;
+	Smeltables.push_back(Item::ITEM_MEAT);
+	Burnables.push_back(Item::ITEM_COAL);
+	Burnables.push_back(Item::ITEM_WOOD);
+
+	m_iTileX = xPos;
+	m_iTileZ = zPos;
+
+	m_iFuelID = fuelID;
+	m_iFuelTotal = fuelTotal;
+
+	m_iSmeltingID = smeltingID;
+	m_iSmeltingTotal = smeltingTotal;
+
+	m_iResultID = resultID;
+	m_iResultTotal = resultTotal;
+
+	m_dSmelt_Time = smeltingTime;
+	m_dFuel_Time = fuelTime;
 }
 
 Furnace::~Furnace()
@@ -67,6 +93,16 @@ bool Furnace::GetStatus()
 	return m_bAccessFurnace;
 }
 
+double Furnace::GetSmeltingTime()
+{
+	return m_dSmelt_Time;
+}
+
+double Furnace::GetFuelTime()
+{
+	return m_dFuel_Time;
+}
+
 int Furnace::ReturnResult(int ID)
 {
 	if (ID == Item::ITEM_MEAT)
@@ -105,7 +141,7 @@ void Furnace::SmeltingProccess(double dt)
 	/*	If there is no conflict between what is in the smelting slot
 	*	Or if the smelting id is nothing
 	*/
-	if (m_iSmeltingID == ReturnResult(m_iSmeltingID) || m_iResultID == 0)
+	if (ReturnResult(m_iSmeltingID) == m_iResultID || m_iResultID == 0)
 	{
 		/*	If there is fuel and there is a smeltable item
 	*	This should always be first to allow continuous combustion.
@@ -165,6 +201,7 @@ void Furnace::AccessFurnace(double dt , PlayerInformation * player)
 	//Navigation for slots in the furnace.
 	if (Application::IsKeyPressed(VK_DOWN) && m_dBounceTime <= 0)
 	{
+		std::cout << "trigger" << std::endl;
 		m_iCurrentSlot -= 1;
 		if (m_iCurrentSlot == START)
 			m_iCurrentSlot = RESULT;
@@ -174,6 +211,8 @@ void Furnace::AccessFurnace(double dt , PlayerInformation * player)
 	else
 	if (Application::IsKeyPressed(VK_UP) && m_dBounceTime <= 0)
 	{
+		std::cout << "trigger" << std::endl;
+
 		m_iCurrentSlot += 1;
 		if (m_iCurrentSlot == END)
 			m_iCurrentSlot = SMELTING;
