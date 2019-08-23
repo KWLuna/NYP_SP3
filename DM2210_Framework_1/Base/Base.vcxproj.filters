@@ -267,5 +267,8 @@
     <Text Include="WorldSaveFile.txt">
       <Filter>SP2\TextFiles</Filter>
     </Text>
+    <Text Include="AnimalSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
   </ItemGroup>
 </Project>

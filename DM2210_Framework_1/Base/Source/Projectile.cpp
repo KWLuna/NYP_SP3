@@ -10,7 +10,7 @@ ProjectileObject::ProjectileObject(PROJECTILE_TYPE typeValue)
 	m_fRotationSpeed(0),
 	m_bActive(false),
 	m_fSpeed(10.f),
-	m_fTimeTravelled(0),
+	m_fTimeTravelled(0.f),
 	m_bGotPlayersPos(false)
 {
 
@@ -28,21 +28,8 @@ void ProjectileObject::Update(double dt)
 	if (TargetPos.z < -1)
 		TargetPos.z = 0;
 
-	if (m_bActive)
-	{
 		m_fTimeTravelled += dt;
-
-		Vel += m_fSpeed * static_cast<float>(dt);
-		Pos += Vel * static_cast<float>(dt);
-
-		Vector3 temp = (TargetPos - Pos) * dt;
-		Pos += temp;
-		Vector3 dir;
-
-		dir = (TargetPos - Pos).Normalize();
-
-		m_fRotation = atan2(dir.x, dir.z);
-	}
+		Pos += TargetPos * 0.01f;
 }
 //Get Functions
 PROJECTILE_TYPE ProjectileObject::GetType()
@@ -78,7 +65,7 @@ void ProjectileObject::SetType(PROJECTILE_TYPE Type)
 {
 	this->Type = Type;
 }
-void ProjectileObject::SetPos(Vector3 pos)
+void ProjectileObject::SetPos(Vector3 Pos)
 {
 	this->Pos = Pos;
 }
@@ -86,7 +73,7 @@ void ProjectileObject::SetTargetPos(Vector3 TargetPos)
 {
 	this->TargetPos = TargetPos;
 }
-void ProjectileObject::SetVelocity(Vector3 vel)
+void ProjectileObject::SetVelocity(Vector3 Vel)
 {
 	this->Vel = Vel;
 }
@@ -94,7 +81,7 @@ void ProjectileObject::SetScale(Vector3 Scale)
 {
 	this->Scale = Scale;
 }
-void ProjectileObject::SetRotationSpeed(float m_RotationSpeed)
+void ProjectileObject::SetRotationSpeed(float m_fRotationSpeed)
 {
 	this->m_fRotationSpeed = m_fRotationSpeed;
 }
@@ -105,4 +92,8 @@ void ProjectileObject::SetActive(bool m_bActive)
 void ProjectileObject::SetGotPlayersPos(bool m_bGotPlayersPos)
 {
 	this->m_bGotPlayersPos = m_bGotPlayersPos;
+}
+void ProjectileObject::SetTimeTravelled(float m_fTimeTravelled)
+{
+	this->m_fTimeTravelled = m_fTimeTravelled;
 }

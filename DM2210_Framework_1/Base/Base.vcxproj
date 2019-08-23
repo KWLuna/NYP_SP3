@@ -84,6 +84,7 @@
     <None Include="Shader\Shadow.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="AnimalSaveFile.txt" />
     <Text Include="PlayerSaveFile.txt" />
     <Text Include="WorldSaveFile.txt" />
   </ItemGroup>

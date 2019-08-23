@@ -31,6 +31,7 @@ public:
 	void SetRotationSpeed(float m_RotationSpeed);
 	void SetActive(bool m_bActive);
 	void SetGotPlayersPos(bool m_bGotPlayersPos);
+	void SetTimeTravelled(float m_fTimeTravelled);
 private:
 	PROJECTILE_TYPE Type; //Type of Projectile
 	Vector3 Pos;	//Position of Projectile

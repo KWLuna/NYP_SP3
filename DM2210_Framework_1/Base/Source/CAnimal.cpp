@@ -2,6 +2,7 @@
 
 CAnimal::CAnimal(ANIMAL_TYPE typeValue)
 	: type(typeValue),
+	m_iAnimalType(0),
 	pos(1, 1, 1),
 	Targetpos(1, 1, 1),
 	scale(6, 6, 6),
@@ -48,6 +49,9 @@ CAnimal::CAnimal(ANIMAL_TYPE typeValue)
 	{
 		scale.Set(6, 6, 6);
 	}
+	
+	m_iAnimalType = type;
+	//LoadData();
 }
 
 CAnimal::~CAnimal()
@@ -56,6 +60,8 @@ CAnimal::~CAnimal()
 
 void CAnimal::Update(double dt)
 {
+	m_iAnimalType = type;
+	type = (ANIMAL_TYPE)(m_iAnimalType);
 	theCurrentBehaviour = (Behaviour)(m_iCurrentBehaviour);
 
 	switch (theCurrentBehaviour)
@@ -237,6 +243,14 @@ bool CAnimal::GetBreeded()
 {
 	return m_bBreeded;
 }
+bool CAnimal::GetIsABaby()
+{
+	return m_bIsABaby;
+}
+float CAnimal::GetGrowUpTimer()
+{
+	return m_fGrowUpTimer;
+}
 //Set Functions
 void CAnimal::SetBehaviour(int m_iCurrentBehaviour)
 {
@@ -282,4 +296,8 @@ void CAnimal::SetBreeded(bool m_bBreeded)
 void CAnimal::SetAngle(float m_fAngle)
 {
 	this->m_fAngle = m_fAngle;
+}
+void CAnimal::SetGrowUpTimer(float m_fGrowUpTimer)
+{
+	this->m_fGrowUpTimer = m_fGrowUpTimer;
 }
