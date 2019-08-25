@@ -38,6 +38,7 @@ PlayerInformation::PlayerInformation()
 	}
 	action = STANDING;
 	placedown = false;
+	breakblock = false;
 }
 
 PlayerInformation::~PlayerInformation()
@@ -268,7 +269,7 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	return new Item(-1, 0);
 }
 
-void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::vector<CEnemy*> enemylist, char tilearray[])
+void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::vector<CEnemy*> enemylist, char tilearray[], std::vector<char> FurnaceX, std::vector<char> FurnaceZ)
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
@@ -552,11 +553,16 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			}
 		}
 
+		if (m_bFurnaceStatus == true)
+		{
+			curtool->ResetFurnaceID();
+		}
+
 		if (m_bCrafting == false && m_bFurnaceStatus == false)
 		{
 			Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 			Vector3 rightUV;
-
+			
 			if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
 			{
 				if (m_iSwitchInventorySlot == -1)
@@ -634,12 +640,26 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			UpdatePlayersStrength();
 
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
+			curtool->SetFeedAnimal(false);
+			if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT || getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+			{
+				curtool->SetFeedAnimal(true);
+			}
 			curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist, m_fPlayersDamage);
 			curtool->UpdateEnemy(dt, dir, attachedCamera->position, enemylist, m_fPlayersDamage);
 			curtool->SetStandinOn(false);
 			curtool->SetTileType('N');
+			curtool->ResetFurnaceID(); 
+			curtool->SetFurnaceClick(false);
 			curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
-			PlaceBlock();
+			if (curtool->GetFurnaceClick())
+			{
+				curtool->UpdateFurnace(FurnaceX, FurnaceZ);
+			}
+			else
+			{
+				PlaceBlock();
+			}
 
 			static bool bLButtonState = false;
 
@@ -653,10 +673,17 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				}
 				else
 					//std::cout << "lnotcollide";
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+				curtool->SetCurSwing();
+				/*if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
 				{
 					curtool->SetCurSwing();
 				}
+				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE ||
+					getItem(getCurrentSlot())->getID() == Item::ITEM_STONE_PICKAXE ||
+					getItem(getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE)
+				{
+					
+				}*/
 			}
 			else if (bLButtonState && !Application::IsMousePressed(0))
 			{
@@ -669,33 +696,34 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			{
 				bRButtonState = true;
 				curtool->SetRClick();
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
-				{
-					curtool->SetCurSwing();
-				}
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT|| getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
-				{
-					curtool->SetCurSwing();
-				}
-				if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
-				{
-					std::cout << "right " << playerphysics.GetDist();
-				}
-				else
-					std::cout << "rnotcollide";
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE ||
-					getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT ||
-					getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
-				{
-					curtool->SetCurSwing();
-				//	PlaceBlock();
-				}
-				if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE || 
-					getItem(getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
-					getItem(getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
-				{
-					curtool->SetCurSwing();
-				}
+				curtool->SetCurSwing();
+				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
+				//{
+				//	curtool->SetCurSwing();
+				//}
+				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT|| getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+				//{
+				//	curtool->SetCurSwing();
+				//}
+				//if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
+				//{
+				//	std::cout << "right " << playerphysics.GetDist();
+				//}
+				//else
+				//	std::cout << "rnotcollide";
+				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE ||
+				//	getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT ||
+				//	getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+				//{
+				//	curtool->SetCurSwing();
+				////	PlaceBlock();
+				//}
+				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE || 
+				//	getItem(getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
+				//	getItem(getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
+				//{
+				//	curtool->SetCurSwing();
+				//}
 			}
 			else if (bRButtonState && !Application::IsMousePressed(1))
 			{
@@ -718,12 +746,23 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 void PlayerInformation::PlaceBlock()
 {
 	placedown = false;
+	breakblock = false;
 	if (!curtool->GetStandinOn())
 	{
 		//Tiles that player can edit.
-		if (curtool->GetTileType() == 'G' || curtool->GetTileType() == 't')
+		if (curtool->GetClick())
 		{
-			placedown = true;
+			if (curtool->GetTileType() == 'G' || curtool->GetTileType() == 't')
+			{
+				placedown = true;
+			}
+		}
+		else if (!curtool->GetClick())
+		{
+			if (curtool->GetTileType() == 'F')
+			{
+				breakblock = true;
+			}
 		}
 	}
 }
@@ -731,6 +770,11 @@ void PlayerInformation::PlaceBlock()
 bool PlayerInformation::GetPlaceDown()
 {
 	return placedown;
+}
+
+bool PlayerInformation::GetBreakBlock()
+{
+	return breakblock;
 }
 
 double PlayerInformation::getHunger()

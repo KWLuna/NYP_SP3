@@ -15,6 +15,7 @@ Weapons::Weapons()
 	, leftrestr(15.5)
 	, leftrestt(-0.2)
 	, resttiltup(30.0)
+	, activateonce (true)
 {
 }
 
@@ -111,7 +112,10 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 						}
 						else
 						{
-							animalist[i]->SetFed(true);
+							if (feedanimal)
+							{
+								animalist[i]->SetFed(true);
+							}						
 						}
 					}
 				}
@@ -190,10 +194,6 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 						{
 							animalist[i]->SetBehaviour(4);
 							animalist[i]->SetPlayersDamage(m_fPlayersDamage);
-						}
-						else
-						{
-							animalist[i]->SetFed(true);
 						}
 					}
 				}
@@ -478,9 +478,25 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'F')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
 				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
 				{
 					std::cout << "tile collide";
+					if (rclick)
+					{
+						if (tiletype == 'F')
+						{
+							furnaceclick = true;
+						}
+					}
+					else
+					{
+
+					}
 				}
 			}
 			else
@@ -607,6 +623,16 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'F')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+					/*if (activateonce)
+					{
+						furnaceclick = true;
+						activateonce = false;
+					}*/
+				}
 				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
 				{
 					std::cout << "tile collide";
@@ -617,6 +643,21 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 	else if (type == RANGE)
 	{
 
+	}
+}
+
+void Weapons::UpdateFurnace(std::vector<char> FurnaceX, std::vector<char> FurnaceZ)
+{
+	for (int i = 0; i < FurnaceX.size(); i++)
+	{
+		if (blockset.x >= (FurnaceX[i]*100-50) && blockset.x <= ((FurnaceX[i]+1)*100-50))
+		{
+			if (blockset.z >= (FurnaceZ[i] * 100 - 50) && blockset.z <= ((FurnaceZ[i] + 1) * 100 - 50))
+			{
+				FurnaceID = i;
+				return;
+			}
+		}
 	}
 }
 
@@ -772,4 +813,34 @@ void Weapons::SetRClick()
 void Weapons::SetLClick()
 {
 	rclick = false;
+}
+
+bool Weapons::GetFurnaceClick()
+{
+	return furnaceclick;
+}
+
+void Weapons::SetFurnaceClick(bool set)
+{
+	furnaceclick = set;
+}
+
+int Weapons::GetFurnaceID()
+{
+	return FurnaceID;
+}
+
+void Weapons::ResetFurnaceID()
+{
+	FurnaceID = -1;
+}
+
+bool Weapons::GetClick()
+{
+	return rclick;
+}
+
+void Weapons::SetFeedAnimal(bool set)
+{
+	feedanimal = set;
 }

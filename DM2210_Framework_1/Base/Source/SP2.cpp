@@ -1029,7 +1029,7 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_COAL, 10));
 			player->addItem(new Item(Item::ITEM_MEAT, 10));
 			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
-
+			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 10));
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
@@ -1155,9 +1155,27 @@ void SP2::Update(double dt)
 	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
 	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
 	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
-	player->update(dt, m_AnimalList,m_EnemyList, PlayerTile);
+	std::vector<char> FurnaceX;
+	std::vector<char> FurnaceZ;
+	for (int i = 0; i < FurnaceList.size(); i++)
+	{
+		FurnaceX.push_back(FurnaceList[i]->GetXTile());
+		FurnaceZ.push_back(FurnaceList[i]->GetZTile());
+	}
+	player->update(dt, m_AnimalList,m_EnemyList, PlayerTile, FurnaceX, FurnaceZ);
 	
 	//Code for block placing based off item in player inventory
+	if (player->getcurtool()->GetFurnaceID() >= 0)
+	{
+		m_currentfurnace = player->getcurtool()->GetFurnaceID();
+		FurnaceList[player->getcurtool()->GetFurnaceID()]->SetStatus(true);
+		player->SetFurnaceStatus(true);
+	}
+	if (Application::IsKeyPressed('L'))
+	{
+		FurnaceList[m_currentfurnace]->SetStatus(false);
+		player->SetFurnaceStatus(false);
+	}
 	if (player->GetPlaceDown())
 	{
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
@@ -1174,7 +1192,10 @@ void SP2::Update(double dt)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-			world[x][y] = 't';
+			if (world[x][y] != 'F')
+			{
+				world[x][y] = 't';
+			}
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_SEED)
 		{
@@ -1203,7 +1224,21 @@ void SP2::Update(double dt)
 			}
 		}
 	}
-
+	if (player->GetBreakBlock())
+	{
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE ||
+		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_PICKAXE ||
+		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE)
+		{
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			if (world[x][y] == 'F')
+			{
+				world[x][y] = 'G';
+			}
+			player->addItem(new Item(Item::ITEM_FURNACE, 1));
+		}
+	}
 		//Update all crops present in the world.
 		for (unsigned int i = 0; i < CropList.size(); ++i)
 			CropList[i]->update(dt);

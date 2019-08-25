@@ -45,6 +45,12 @@ protected:
 
 	bool rclick;
 
+	bool furnaceclick;
+	int FurnaceID;
+	bool activateonce;
+
+	bool feedanimal;
+
 	Physics weaponphysics;
 
 public:
@@ -52,6 +58,7 @@ public:
 	virtual void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist, float m_fPlayersDamage);
 	virtual void UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vector<CEnemy*> enemylist, float m_fPlayersDamage);
 	virtual void UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[]);
+	void UpdateFurnace(std::vector<char> XFurnace, std::vector<char> ZFurnace);
 
 	void SetPosition(Vector3 vPosition);
 	Vector3 GetPosition(void) const;
@@ -93,5 +100,13 @@ public:
 
 	void SetRClick();
 	void SetLClick();
+	bool GetClick();
+
+	bool GetFurnaceClick();
+	void SetFurnaceClick(bool set);
+	int GetFurnaceID();
+	void ResetFurnaceID();
+
+	void SetFeedAnimal(bool set);
 };
 

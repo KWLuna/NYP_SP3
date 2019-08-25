@@ -413,6 +413,8 @@ private:
 	bool m_bContinue;
 	
 	std::vector<Vector3 *> WorldObjectPositionList;
+
+	int m_currentfurnace;
 };
 
 #endif

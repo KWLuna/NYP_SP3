@@ -32,7 +32,7 @@ public:
 
 	void Constrain(void);
 	void AttachCamera(Camera3* _cameraPtr);
-	void update(double dt, std::vector<CAnimal*> animlist, std::vector<CEnemy*> enemylist, char tilearray[]);
+	void update(double dt, std::vector<CAnimal*> animlist, std::vector<CEnemy*> enemylist, char tilearray[], std::vector<char> FurnaceX, std::vector<char> FurnaceZ);
 
 	bool addItem(Item * object);
 	Item * getItem(int ID);
@@ -62,6 +62,7 @@ public:
 
 	void PlaceBlock();
 	bool GetPlaceDown();
+	bool GetBreakBlock();
 	void UpdatePlayersStrength();
 private:
 
@@ -97,4 +98,5 @@ private:
 	Weapons * curtool;
 	float m_fPlayersDamage;
 	bool placedown;
+	bool breakblock;
 };
