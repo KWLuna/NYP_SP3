@@ -273,7 +273,7 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	return new Item(-1, 0);
 }
 
-void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char tilearray[])
+void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::vector<int> FurnaceX, std::vector<int> FurnaceZ ,char tilearray[])
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
@@ -630,6 +630,11 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 		curtool->SetStandinOn(false);
 		curtool->SetTileType('N');
 		curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
+		if (curtool->GetFurnace())
+		{
+			curtool->UpdateFurnace(dt, dir, attachedCamera->position, FurnaceX, FurnaceZ);
+		}
+		PlaceBlock();
 
 		static bool bLButtonState = false;
 
@@ -668,8 +673,20 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, char 
 			if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE)
 			{
 				curtool->SetCurSwing();
-				PlaceBlock();
+				/*PlaceBlock();*/
 			}
+			if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE ||
+				getItem(getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
+				getItem(getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
+			{
+				curtool->SetCurSwing();
+			}
+			/*curtool->SetCurSwing();
+			activatefurnace = false;
+			if (curtool->GetFurnace())
+			{
+				activatefurnace = true;
+			}*/
 		}
 		else if (bRButtonState && !Application::IsMousePressed(1))
 		{
@@ -735,4 +752,9 @@ void PlayerInformation::SetThirst(double m_dThirst)
 double PlayerInformation::getThirst()
 {
 	return m_dThirst;
+}
+
+bool PlayerInformation::GetFurnace()
+{
+	return activatefurnace;
 }

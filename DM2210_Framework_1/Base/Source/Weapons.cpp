@@ -15,6 +15,9 @@ Weapons::Weapons()
 	, leftrestr(15.5)
 	, leftrestt(-0.2)
 	, resttiltup(30.0)
+	, activatefurnace(false)
+	, FurnaceID(-1)
+	, activeonce(true)
 {
 }
 
@@ -103,7 +106,7 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 					}
 					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 					{
-						/*std::cout << "dank";*/
+						std::cout << "dank";
 					}
 				}
 			}
@@ -239,7 +242,7 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 						}
 						if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 						{
-							/*std::cout << "dank";*/
+							std::cout << "dank";
 						}
 					}
 				}
@@ -252,8 +255,78 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 	}
 }
 
+void Weapons::UpdateFurnace(const double dt, Vector3 dir, Vector3 origin, std::vector<int> FurnaceX, std::vector<int> FurnaceZ)
+{
+	if (type == MELEE)
+	{
+		if (curswing)
+		{
+			if (side)
+			{
+				curt += ((leftmaxt - rightmaxt) / swingtime * dt);
+				curr += ((leftmaxr - rightmaxr) / swingtime * dt);
+				if (curt <= leftmaxt)
+				{
+					curt = leftmaxt;
+				}
+				if (curr >= leftmaxr)
+				{
+					curr = leftmaxr;
+					curswing = false;
+				}
+				for (int i = 0; i < FurnaceX.size(); i++)
+				{
+					Vector3 temp1;
+					Vector3 temp2;
+					temp1.Set(FurnaceX[i] * 100, 0, FurnaceZ[i] * 100);
+					temp2.Set((FurnaceX[i]+1) * 100, 100, (FurnaceZ[i]+1) * 100);
+					
+					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
+					{
+						FurnaceID = i;
+						return;
+					}
+				}
+			}
+			else
+			{
+				curt += ((rightmaxt - leftmaxt) / swingtime * dt);
+				curr += ((rightmaxr - leftmaxr) / swingtime * dt);
+				if (curt >= rightmaxt)
+				{
+					curt = rightmaxt;
+				}
+				if (curr <= rightmaxr)
+				{
+					curr = rightmaxr;
+					curswing = false;
+				}
+				for (int i = 0; i < FurnaceX.size(); i++)
+				{
+					Vector3 temp1;
+					Vector3 temp2;
+					temp1.Set(FurnaceX[i] * 100, 0, FurnaceZ[i] * 100);
+					temp2.Set((FurnaceX[i] + 1) * 100, 100, (FurnaceZ[i] + 1) * 100);
+
+					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
+					{
+						FurnaceID = i;
+						return;
+					}
+				}
+			}
+		}
+	}
+	else if (type == RANGE)
+	{
+
+	}
+}
+
 void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[])
 {
+	standingonem = false;
+	activatefurnace = false;
 	Vector3 smallestvertex;
 	Vector3 biggestvertex;
 	if (type == MELEE)
@@ -384,8 +457,17 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'F')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
 				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
 				{
+					if (tiletype == 'F')
+					{
+						activatefurnace = true;
+					}
 					std::cout << "tile collide";
 				}
 			}
@@ -513,8 +595,17 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'F')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
 				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
 				{
+					if (tiletype == 'F')
+					{
+						activatefurnace = true;
+					}
 					std::cout << "tile collide";
 				}
 			}
@@ -522,7 +613,7 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 	}
 	else if (type == RANGE)
 	{
-
+		
 	}
 }
 
@@ -668,4 +759,19 @@ bool Weapons::GetStandinOn()
 Vector3 Weapons::GetBlockPlacement()
 {
 	return blockset;
+}
+
+bool Weapons::GetFurnace()
+{
+	return activatefurnace;
+}
+
+void Weapons::SetFurnaceID(int ID)
+{
+	FurnaceID = ID;
+}
+
+int Weapons::GetFurnaceID()
+{
+	return FurnaceID;
 }

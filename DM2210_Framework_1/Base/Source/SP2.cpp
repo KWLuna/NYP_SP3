@@ -862,6 +862,7 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_WHEAT, 10));
 			player->addItem(new Item(Item::ITEM_SEED, 10));
 			player->addItem(new Item(Item::ITEM_STONE, 10));
+			player->addItem(new Item(Item::ITEM_STONE_HOE, 1));
 
 			/*std::cout << "converting a world tile ..." << std::endl;*/
 
@@ -943,7 +944,7 @@ void SP2::Update(double dt)
 
 		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
-			FurnaceList.push_back(new Furnace);
+			/*FurnaceList.push_back(new Furnace);*/
 			FurnaceList[0]->SetStatus(true);
 
 			m_dBounceTime = 0.2;
@@ -990,7 +991,14 @@ void SP2::Update(double dt)
 	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
 	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
 	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
-	player->update(dt, m_AnimalList, PlayerTile);
+	std::vector<int>FurnaceX;
+	std::vector<int>FurnaceZ;
+	for (int i = 0; i < FurnaceList.size(); i++)
+	{
+		FurnaceX.push_back(FurnaceList[i]->GetXTile());
+		FurnaceZ.push_back(FurnaceList[i]->GetZTile());
+	}
+	player->update(dt, m_AnimalList, FurnaceX, FurnaceZ, PlayerTile);
 	if (player->GetPlaceDown())
 	{
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
@@ -998,9 +1006,36 @@ void SP2::Update(double dt)
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
 			world[x][y] = 'F';
-			FurnaceList.push_back(new Furnace);
+			FurnaceList.push_back(new Furnace(x,y));
+		}
+		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE ||
+			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
+			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
+		{
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			world[x][y] = 'D';
 		}
 	}
+	if (player->getcurtool()->GetFurnaceID() >= 0)
+	{
+		FurnaceList[player->getcurtool()->GetFurnaceID()]->SetStatus(true);
+	}
+	if (Application::IsKeyPressed('L'))
+	{
+		FurnaceList[player->getcurtool()->GetFurnaceID()]->SetStatus(false);
+	}
+	//if (player->GetFurnace())
+	//{
+	//	for (int i = 0; i < FurnaceList.size(); ++i)
+	//	{
+	//		if (GetPlayerCurrentTile(camera,)) //check if player tilex == FurnaceList[i]->getTileX() && player tileZ == FurnaceList[i]->getTileZ()
+	//		{
+	//			FurnaceList[i]->SetStatus(true);
+	//			break;
+	//		}
+	//	}
+	//}
 
 		//Update all crops present in the world.
 		for (unsigned int i = 0; i < CropList.size(); ++i)

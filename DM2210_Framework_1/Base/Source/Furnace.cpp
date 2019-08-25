@@ -1,13 +1,13 @@
 #include "Furnace.h"
 
-Furnace::Furnace()
+Furnace::Furnace(int xPos, int zPos)
 {
 	m_iFuelID = 0;
 	m_iFuelTotal = 0;
 
 	m_iSmeltingID = 0;
 	m_iSmeltingTotal = 0;
-	
+
 	m_bAccessFurnace = false;
 
 	m_iResultID = 0;
@@ -24,6 +24,9 @@ Furnace::Furnace()
 
 	Burnables.push_back(Item::ITEM_COAL);
 	Burnables.push_back(Item::ITEM_WOOD);
+
+	m_iTileX = xPos;
+	m_iTileZ = zPos;
 }
 
 Furnace::~Furnace()
@@ -39,6 +42,16 @@ Furnace::~Furnace()
 		std::cout << "drop m_iSmeltingID ";
 
 	std::cout << std::endl;
+}
+
+int Furnace::GetXTile()
+{
+	return m_iTileX;
+}
+
+int Furnace::GetZTile()
+{
+	return m_iTileZ;
 }
 
 int Furnace::GetSmeltingID()
@@ -94,7 +107,6 @@ int Furnace::GetResultTotal()
 	return m_iResultTotal;
 }
 
-
 void Furnace::SmeltingProccess(double dt)
 {
 	if (m_dFuel_Time > 0)
@@ -143,7 +155,7 @@ void Furnace::SmeltingProccess(double dt)
 			//Check if there is a need to set the id of the resultant.
 			if (m_iResultID == 0)
 				m_iResultID = ReturnResult(m_iSmeltingID);
-			
+
 			m_dSmelt_Time = 0;
 			m_iSmeltingTotal -= 1;
 			m_iResultTotal += 1;
@@ -159,7 +171,7 @@ void Furnace::SmeltingProccess(double dt)
 
 }
 
-void Furnace::AccessFurnace(double dt , PlayerInformation * player)
+void Furnace::AccessFurnace(double dt, PlayerInformation * player)
 {
 	player->SetFurnaceStatus(true);
 	//Navigation for slots in the furnace.
@@ -172,14 +184,14 @@ void Furnace::AccessFurnace(double dt , PlayerInformation * player)
 		m_dBounceTime = 0.2;
 	}
 	else
-	if (Application::IsKeyPressed(VK_UP) && m_dBounceTime <= 0)
-	{
-		m_iCurrentSlot += 1;
-		if (m_iCurrentSlot == END)
-			m_iCurrentSlot = SMELTING;
+		if (Application::IsKeyPressed(VK_UP) && m_dBounceTime <= 0)
+		{
+			m_iCurrentSlot += 1;
+			if (m_iCurrentSlot == END)
+				m_iCurrentSlot = SMELTING;
 
-		m_dBounceTime = 0.2;
-	}
+			m_dBounceTime = 0.2;
+		}
 
 	//If player press enter , trying to add to current slot
 	if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
@@ -262,14 +274,14 @@ void Furnace::AccessFurnace(double dt , PlayerInformation * player)
 			}
 		}
 
-	
+
 		m_dBounceTime = 0.2;
 	}
 }
-void Furnace::update(double dt , PlayerInformation * player)
+void Furnace::update(double dt, PlayerInformation * player)
 {
 	m_dBounceTime -= 1 * dt;
-	
+
 	SmeltingProccess(dt);
 
 	if (m_bAccessFurnace == true)

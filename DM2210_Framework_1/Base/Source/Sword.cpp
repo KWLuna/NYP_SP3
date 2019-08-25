@@ -27,6 +27,7 @@ void Sword::Init()
 	resttiltup = 45.0;
 	curr = rightmaxr;
 	curt = rightmaxt;
+	activeonce = false;
 	//std::cout << rightmaxt;
 }
 

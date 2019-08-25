@@ -14,6 +14,9 @@ protected:
 		MELEE,
 		RANGE,
 	};
+
+	bool activeonce;
+
 	WEAPON_TYPE type;
 	Vector3 vPosition;
 	float fRotation;
@@ -43,11 +46,17 @@ protected:
 	bool standingonem;
 	Vector3 blockset;
 
+	bool activatefurnace;
+	int FurnaceID;
+
+	bool activateonce;
+
 	Physics weaponphysics;
 
 public:
 	virtual void Init(void);
 	virtual void UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vector<CAnimal*> animalist);
+	void UpdateFurnace(const double dt, Vector3 dir, Vector3 origin, std::vector<int> FurnaceX, std::vector<int> FurnaceZ);
 	virtual void UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[]);
 
 	void SetPosition(Vector3 vPosition);
@@ -87,5 +96,9 @@ public:
 	void SetStandinOn(bool stand);
 	bool GetStandinOn();
 	Vector3 GetBlockPlacement();
+
+	bool GetFurnace();
+	void SetFurnaceID(int ID);
+	int GetFurnaceID();
 };
 
