@@ -635,8 +635,6 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				action = STANDING;
 			}
 
-			Constrain();
-
 			UpdatePlayersStrength();
 
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
@@ -739,6 +737,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					}
 				}
 			}
+			Constrain();
 		}
 	}
 }
@@ -759,7 +758,7 @@ void PlayerInformation::PlaceBlock()
 		}
 		else if (!curtool->GetClick())
 		{
-			if (curtool->GetTileType() == 'F')
+			if (curtool->GetTileType() == 'F' || curtool->GetTileType() == 'O' || curtool->GetTileType() == 'C')
 			{
 				breakblock = true;
 			}
