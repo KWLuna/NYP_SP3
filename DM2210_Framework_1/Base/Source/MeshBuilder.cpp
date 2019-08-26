@@ -417,6 +417,14 @@ Mesh* MeshBuilder::GenerateQuad(const std::string &meshName, Color color, float 
 	index_buffer_data.push_back(1);
 	index_buffer_data.push_back(2);
 	index_buffer_data.push_back(0);
+
+
+	index_buffer_data.push_back(2);
+	index_buffer_data.push_back(0);
+	index_buffer_data.push_back(3);
+	index_buffer_data.push_back(0);
+	index_buffer_data.push_back(2);
+	index_buffer_data.push_back(1);
 	
 	Mesh *mesh = new Mesh(meshName);
 	

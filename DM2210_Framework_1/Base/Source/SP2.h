@@ -400,6 +400,8 @@ private:
 	float lightningX;
 	float lightningZ;
 
+	float m_fConstantRotate;
+
 	//instructions
 	int instructionorder;
 	float instructiontimer;
