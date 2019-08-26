@@ -829,6 +829,29 @@ void SP2::Init()
 	//Projectile
 	MAX_PROJECTILE = 500;
 	m_iProjectileCount = 0;
+
+	//Sound
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Pig_Resting", "Image//Pig_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Pig_Dying", "Image//Pig_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Chicken_Resting", "Image//Chicken_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Chicken_Dying", "Image//Chicken_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Cow_Resting", "Image//Cow_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Cow_Dying", "Image//Cow_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Zombie_Resting", "Image//Zombie_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Zombie_Dying", "Image//Zombie_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Witch_Resting", "Image//Witch_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Witch_Dying", "Image//Villager_Dying.mp3");
+
 }
 
 void SP2::RenderFurnace()
@@ -1361,10 +1384,11 @@ void SP2::EnemyChecker(double dt)
 								Projectile->SetVelocity(Vector3(1, 1, 1));
 								Projectile->SetRotationSpeed(Math::RandFloatMinMax(20.f, 40.f));
 								Projectile->SetPos(Vector3(go->GetPosition().x, 30, go->GetPosition().z));
-								Projectile->SetTargetPos(Vector3(camera.position.x - go->GetPosition().x, camera.position.y - 5, camera.position.z - go->GetPosition().z ));
+								Projectile->SetTargetPos(Vector3(camera.position.x - go->GetPosition().x,0, camera.position.z - go->GetPosition().z ));
 								Projectile->SetGotPlayersPos(true);
 								Projectile->SetActive(true);
 								Projectile->SetTimeTravelled(0.f);
+
 							}
 						}
 						break;
@@ -1617,7 +1641,7 @@ void SP2::SpawningEnemy()
 				{
 					if (world[i][k] == 'd')
 					{
-						int choice = Math::RandIntMinMax(0, 5);
+						int choice = Math::RandIntMinMax(0, 10);
 						if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 						{
 							CEnemy *go = EnemyFetchGO();

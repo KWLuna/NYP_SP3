@@ -636,6 +636,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			}
 
 			Constrain();
+			CSoundEngine::GetInstance()->setListenerPosition(attachedCamera->position, Vector3(-1, 0, 0), attachedCamera->up);
 
 			UpdatePlayersStrength();
 

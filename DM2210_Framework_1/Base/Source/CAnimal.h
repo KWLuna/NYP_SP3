@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "SoundEngine.h"
 
 class CAnimal
 {

@@ -75,6 +75,20 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			m_fIsResting = 0.f;
 			m_iCurrentBehaviour = 1;
 			m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
+			if (type == GO_PIG)
+			{
+				CSoundEngine::GetInstance()->PlayASound3D("Pig_Resting", pos);
+
+			}
+			else if (type == GO_CHICKEN)
+			{
+				CSoundEngine::GetInstance()->PlayASound3D("Chicken_Resting", pos);
+
+			}
+			else if (type == GO_COW)
+			{
+				CSoundEngine::GetInstance()->PlayASound3D("Cow_Resting", pos);
+			}
 		}
 		break;
 	case CAnimal::WANDERING: //1
@@ -242,6 +256,18 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			m_fHP = 100;
 			m_bSpawned = false;
 			m_bActive = false;
+			if (type == GO_PIG)
+			{
+				CSoundEngine::GetInstance()->PlayASound3D("Pig_Dying", pos);
+			}
+			else if (type == GO_CHICKEN)
+			{
+				CSoundEngine::GetInstance()->PlayASound3D("Chicken_Dying", pos);
+			}
+			else if (type == GO_COW)
+			{
+				CSoundEngine::GetInstance()->PlayASound3D("Cow_Dying", pos);
+			}
 		}
 		//Knocked back.
 		

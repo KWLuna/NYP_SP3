@@ -1,4 +1,5 @@
 #include "CEnemy.h"
+#include "SoundEngine.h"
 
 CEnemy::CEnemy(ENEMY_TYPE typeValue)
 	: type(typeValue),
@@ -40,6 +41,11 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			m_fIsResting = 0.f;
 			m_iCurrentBehaviour = 1;
 			m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
+			if (type == GO_ZOMBIE)
+				CSoundEngine::GetInstance()->PlayASound3D("Zombie_Resting", pos);
+			else if (type == GO_WITCH)
+				CSoundEngine::GetInstance()->PlayASound3D("Witch_Resting", pos);
+
 		}
 		break;
 	case CEnemy::WANDERING: //1
@@ -206,6 +212,10 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			m_fHP = 100;
 			m_bSpawned = false;
 			m_bActive = false;
+			if (type == GO_ZOMBIE)
+				CSoundEngine::GetInstance()->PlayASound3D("Zombie_Dying", pos);
+			else if (type == GO_WITCH)
+				CSoundEngine::GetInstance()->PlayASound3D("Witch_Dying", pos);
 		}
 
 		m_iCurrentBehaviour = 2;
@@ -265,6 +275,7 @@ bool CEnemy::GetRotated()
 void CEnemy::SetBehaviour(int m_iCurrentBehaviour)
 {
 	this->m_iCurrentBehaviour = m_iCurrentBehaviour;
+	theCurrentBehaviour = (Enemy_Behaviour)(m_iCurrentBehaviour);
 }
 void CEnemy::SetPosition(Vector3 P)
 {

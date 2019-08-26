@@ -189,7 +189,6 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 					}
 					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 					{
-						std::cout << "dank";
 						if (!rclick)
 						{
 							animalist[i]->SetBehaviour(4);
@@ -333,7 +332,7 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 						std::cout << "dank";
 						if (!rclick)
 						{
-							enemylist[i]->SetBehaviour(4);
+							enemylist[i]->SetBehaviour(enemylist[i]->ATTACKED);
 							enemylist[i]->SetPlayersDamage(m_fPlayersDamage);
 						}
 					}
