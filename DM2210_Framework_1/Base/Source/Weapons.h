@@ -36,6 +36,8 @@ protected:
 	float curt;
 	float swingtime;
 
+	int maxswings;
+
 	bool curswing;
 	bool side;
 
@@ -48,6 +50,8 @@ protected:
 	bool furnaceclick;
 	int FurnaceID;
 	bool activateonce;
+
+	bool berryclick;
 
 	bool feedanimal;
 
@@ -108,5 +112,7 @@ public:
 	void ResetFurnaceID();
 
 	void SetFeedAnimal(bool set);
+
+	int GetIntMaxSwings();
 };
 

@@ -87,6 +87,8 @@ private:
 	double m_dConstrainY; // Height which the player is limited to
 	int m_iCurrentStance;
 
+	double m_dDropTime;
+
 	bool m_bSwitchStance;
 	bool m_bFurnaceStatus;
 	bool m_bJump;

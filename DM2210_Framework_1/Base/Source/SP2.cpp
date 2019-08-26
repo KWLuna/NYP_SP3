@@ -397,6 +397,18 @@ void SP2::Init()
 	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
 	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
+	m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
+	m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
+	m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
+	m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
+	m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
+	m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
+	m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
+	m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
+	m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
+	m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
+	m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
+
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled[0]");
 	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture[0]");
@@ -432,7 +444,19 @@ void SP2::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection.Set(0.f, 1.f, 0.f);
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+	lights[1].type = Light::LIGHT_POINT;
+	lights[1].position.Set(0 , 50, 10);
+	lights[1].color.Set(1, 1, 1);
+	lights[1].power = 5.f;
+	lights[1].kC = 1.f;
+	lights[1].kL = 0.01f;
+	lights[1].kQ = 0.001f;
+	lights[1].cosCutoff = cos(Math::DegreeToRadian(45));
+	lights[1].cosInner = cos(Math::DegreeToRadian(30));
+	lights[1].exponent = 3.f;
+	lights[1].spotDirection.Set(0.f, 1.f, 0.f);
+
+	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
 
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
@@ -444,6 +468,16 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], lights[0].cosCutoff);
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], lights[0].cosInner);
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+
+	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
+	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
+	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+	glUniform1f(m_parameters[U_LIGHT1_KC], lights[1].kC);
+	glUniform1f(m_parameters[U_LIGHT1_KL], lights[1].kL);
+	glUniform1f(m_parameters[U_LIGHT1_KQ], lights[1].kQ);
+	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], lights[1].cosCutoff);
+	glUniform1f(m_parameters[U_LIGHT1_COSINNER], lights[1].cosInner);
+	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
 
 	m_lightDepthFBO.Init(2048, 2048);
 
@@ -832,6 +866,7 @@ void SP2::Init()
 	//Projectile
 	MAX_PROJECTILE = 500;
 	m_iProjectileCount = 0;
+	m_swingcount = 0;
 }
 
 void SP2::RenderFurnace()
@@ -927,6 +962,7 @@ char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
+	m_fConstantRotate += 20 * dt;
 	if (m_bMenu == true)
 	{
 		if (Application::IsKeyPressed(VK_DOWN) && m_dBounceTime <= 0)
@@ -1231,10 +1267,11 @@ void SP2::Update(double dt)
 			}
 		}
 	}
-	//Break Blocks
+	//Break blocks
 	if (player->GetBreakBlock())
 	{
-		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE||
+		// Item held
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE) 
 		{
@@ -1286,7 +1323,26 @@ void SP2::Update(double dt)
 
 			if (world[x][y] == 'T') // Tree
 			{
+				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
+				{
+					// Tile to transform
+					world[x][y] = 'G';
+					// Item player receives from breaking tile
+					player->addItem(new Item(Item::ITEM_FURNACE, 1));
+					m_swingcount = 0;
+				}
+				m_swingcount++;
+			}
+			else if (world[x][y] == 'O') // Gold Ore
+			{
 				world[x][y] = 'G';
+				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+			}
+			else if (world[x][y] == 'C') // Coal
+			{
+				world[x][y] = 'G';
+				int randVal = Math::RandIntMinMax(1, 3);
+				player->addItem(new Item(Item::ITEM_COAL, randVal));
 				player->addItem(new Item(Item::ITEM_WOOD, 1));
 			}
 			else if (world[x][y] == 'B')
@@ -2726,9 +2782,10 @@ void SP2::RenderWorld()
 		for (int i = 0; i < player->getTotalDropItems(); ++i)
 		{
 			modelStack.PushMatrix();
-			modelStack.Translate(player->getDroppedItem(i)->getXPos(), 0, player->getDroppedItem(i)->getZPos());
-			modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - player->getDroppedItem(i)->getXPos()
-													, camera.position.z - player->getDroppedItem(i)->getZPos())), 0, 1, 0);
+			modelStack.Translate(player->getDroppedItem(i)->getXPos(), 10, player->getDroppedItem(i)->getZPos());
+			/*modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - player->getDroppedItem(i)->getXPos()
+													, camera.position.z - player->getDroppedItem(i)->getZPos())), 0, 1, 0);*/
+			modelStack.Rotate(m_fConstantRotate, 0, 1, 0);
 			modelStack.Scale(10, 10, 10);
 			RenderMesh(meshList[GEO_ITEMS_START + player->getDroppedItem(i)->getID()], false);
 			modelStack.PopMatrix();
@@ -2873,24 +2930,28 @@ void SP2::RenderPassMain()
 	);
 	modelStack.LoadIdentity();
 
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+	for (int i = 0; i < 2; ++i)
 	{
-		Vector3 lightDir(lights[0].position.x, lights[0].position.y, lights[0].position.z);
-		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
+		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+		{
+			Vector3 lightDir(lights[i].position.x, lights[i].position.y, lights[i].position.z);
+			Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + i * 11], 1, &lightDirection_cameraspace.x);
+		}
+		else if (lights[1].type == Light::LIGHT_SPOT)
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[1].position;
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION + i * 11], 1, &lightPosition_cameraspace.x);
+			Vector3 spotDirection_cameraspace = viewStack.Top() * lights[1].spotDirection;
+			glUniform3fv(m_parameters[U_LIGHT1_SPOTDIRECTION + i * 11], 1, &spotDirection_cameraspace.x);
+		}
+		else
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[1].position;
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION + i * 11], 1, &lightPosition_cameraspace.x);
+		}
 	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-		Vector3 spotDirection_cameraspace = viewStack.Top() * lights[0].spotDirection;
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-	}
-	else
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-	}
+	
 	if (m_bMenu == true)
 	{
 		if (m_bContinue == false)
@@ -2966,6 +3027,10 @@ void SP2::RenderPassMain()
 			ss.str("");
 			ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
 			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 200);
+
+			ss.str("");
+			ss << std::to_string(m_swingcount) << "/" << std::to_string(player->getcurtool()->GetIntMaxSwings());
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 100);
 		}
 	}
 }

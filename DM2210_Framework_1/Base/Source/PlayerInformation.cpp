@@ -13,7 +13,7 @@ PlayerInformation::PlayerInformation()
 	ThirstyOrHungry = 5;
 	m_bCrafting = false;
 	m_iCurrentStance = STAND;
-
+	m_dDropTime = 0;
 	m_iInventorySlot = 0;
 	m_dConstrainY = 40;
 	m_iCraftingSlotOne = -1;
@@ -290,6 +290,8 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 {
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
+	m_dDropTime -= 1 * dt;
+
 	if (m_dHP <= 0)
 	{
 		if (Application::IsKeyPressed(VK_RETURN))
@@ -536,7 +538,11 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					{
 						if (addItem(result) == false)
 						{
-							// drop item , waiting for raycast
+							//if inventory full , drop item from crafting section
+							DroppedItemList.push_back(new DroppedItem(result->getID(), result->getQuantity(),
+														attachedCamera->position.x, attachedCamera->position.z));
+						
+							m_dDropTime = 1;
 						}
 						else
 						{
@@ -596,6 +602,10 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				m_dBounceTime = 0.2;
 			}
 
+			// Prevent player from picking up the item if player just chucked the item.
+			
+			
+
 			if (Application::IsKeyPressed('Q') && m_dBounceTime <= 0)
 			{
 				if (ItemList[m_iInventorySlot]->getQuantity() > 0)
@@ -605,6 +615,23 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					ItemList[m_iInventorySlot]->addQuantity(-1);
 				}
 				m_dBounceTime = 0.1;
+				m_dDropTime = 1;
+			}
+
+			std::cout << DroppedItemList.size() << std::endl;
+			if (m_dDropTime <= 0 && DroppedItemList.size() > 0)
+			{
+				for (int i = 0; i < DroppedItemList.size(); ++i)
+				{
+					float xPosSum = (attachedCamera->position.x - DroppedItemList[i]->getXPos());
+					float zPosSum = (attachedCamera->position.z - DroppedItemList[i]->getZPos());
+
+					if (sqrt((xPosSum * xPosSum) + (zPosSum * zPosSum)) <= 25)
+					{
+						addItem(new Item(DroppedItemList[i]->getID(), 1));
+						DroppedItemList.erase(DroppedItemList.begin() + i);
+					}
+				}
 			}
 
 			//Movement
@@ -666,20 +693,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 
 			Constrain();
 
-			for (int i = 0; i < DroppedItemList.size(); ++i)
-			{
-				float xPosSum = (attachedCamera->position.x - DroppedItemList[i]->getXPos());
-				float zPosSum = (attachedCamera->position.z - DroppedItemList[i]->getZPos());
-
-				if (sqrt((xPosSum * xPosSum) + (zPosSum * zPosSum)) <= 25)
-				{
-					if (DroppedItemList[i]->getQuantity() > 0)
-					{
-						addItem(new Item(DroppedItemList[i]->getID(), 1));
-						DroppedItemList[i]->addQuantity(-1);
-					}
-				}
-			}
+			
 
 			UpdatePlayersStrength();
 
@@ -775,7 +789,7 @@ void PlayerInformation::PlaceBlock()
 		}
 		else if (!curtool->GetClick())
 		{
-			if (curtool->GetTileType() == 'F')
+			if (curtool->GetTileType() == 'F' || curtool->GetTileType() == 'O' || curtool->GetTileType() == 'C')
 			{
 				breakblock = true;
 			}
