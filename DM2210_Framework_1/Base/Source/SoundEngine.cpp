@@ -126,6 +126,16 @@ void CSoundEngine::PlayASound2D(const std::string& _soundIndex)
 		theSoundEngine->play2D(aSound.c_str(), false, false);
 	}
 }
+void CSoundEngine::PlayASound2DLoop(const std::string& _soundIndex, bool Looping)
+{
+	std::string aSound = GetSound(_soundIndex);
+
+	if (!theSoundEngine->isCurrentlyPlaying(aSound.c_str()))
+	{
+		// Play a sound
+		theSoundEngine->play2D(aSound.c_str(), Looping, false);
+	}
+}
 
 void CSoundEngine::PlayASound3D(const std::string& _soundIndex, Vector3 position)
 {

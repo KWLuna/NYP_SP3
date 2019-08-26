@@ -24,6 +24,7 @@ public:
 	ENEMY_TYPE type;
 
 	CEnemy(ENEMY_TYPE typeValue = GO_ZOMBIE);
+	CEnemy(int type, Vector3 pos, float HP, float Strength, bool spawned);
 	void Update(double dt, std::vector<Vector3*> WorldObjectPositionList);
 	~CEnemy();
 
