@@ -445,9 +445,9 @@ void SP2::Init()
 	lights[0].spotDirection.Set(0.f, 1.f, 0.f);
 
 	lights[1].type = Light::LIGHT_POINT;
-	lights[1].position.Set(0 , 50, 10);
+	lights[1].position.Set(0 , 50, 0);
 	lights[1].color.Set(1, 1, 1);
-	lights[1].power = 5.f;
+	lights[1].power = 500.f;
 	lights[1].kC = 1.f;
 	lights[1].kL = 0.01f;
 	lights[1].kQ = 0.001f;
@@ -493,6 +493,8 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
 	camera.Init(Vector3(0, 50, 0), Vector3(0, 200, -10), Vector3(0, 1, 0));
+	//camera.Init(Vector3(12500, 50, 12500), Vector3(0, 200, -10), Vector3(0, 1, 0));
+
 	player = new PlayerInformation();
 	player->AttachCamera(&camera);
 	
@@ -719,7 +721,10 @@ void SP2::Init()
 
 	meshList[GEO_STONE_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_STONE_SWORD_MODEL", "OBJ//sword.obj");
 	meshList[GEO_STONE_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
-	
+	//wORLD
+	meshList[GEO_CASTLE] = MeshBuilder::GenerateOBJ("GEO_CASTLE", "OBJ//Castle.obj");
+	meshList[GEO_CASTLE]->textureArray[0] = LoadTGA("Image//StoneBricks.tga");
+
 	//Lightning model
 	meshList[GEO_LIGHTNING] = MeshBuilder::GenerateQuad("GEO_LIGHTNING", Color(1, 1, 1), 1.0f);
 	
@@ -963,6 +968,7 @@ void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
 	m_fConstantRotate += 20 * dt;
+
 	if (m_bMenu == true)
 	{
 		if (Application::IsKeyPressed(VK_DOWN) && m_dBounceTime <= 0)
@@ -1013,6 +1019,22 @@ void SP2::Update(double dt)
 	}
 	else if (m_bMenu == false)
 	{
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_TORCH)
+		{
+			std::cout << "x" << std::endl;
+			lights[1].position.x = camera.position.x;
+			lights[1].position.y = camera.position.y;
+			lights[1].position.z = camera.position.z;
+			lights[1].power = 10;
+			glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+		}
+		else
+		{
+			lights[1].power = 0;
+			glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+		}
+
+
 		// Duration of lightning strike = 0.12
 		if (m_fTimeTillLightning <= 0.2)
 		{
@@ -1067,7 +1089,10 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_COAL, 10));
 			player->addItem(new Item(Item::ITEM_MEAT, 10));
 			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 10));
+			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
+			player->addItem(new Item(Item::ITEM_WOODEN_AXE, 1));
+
+			player->addItem(new Item(Item::ITEM_TORCH, 1));
 			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
@@ -1399,6 +1424,8 @@ void SP2::Update(double dt)
 			instructiontimer = 0;
 		}
 	}
+	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+
 }
 void SP2::EnemyChecker(double dt)
 {
@@ -2777,14 +2804,18 @@ void SP2::RenderPlayerInfo()
 }
 void SP2::RenderWorld()
 {
+	modelStack.PushMatrix();
+	modelStack.Translate(12500, 0, 12500);
+	modelStack.Scale(25150, 250, 25150);
+	RenderMesh(meshList[GEO_CASTLE], false);
+	modelStack.PopMatrix();
+
 	if (m_bMenu == false)
 	{
 		for (int i = 0; i < player->getTotalDropItems(); ++i)
 		{
 			modelStack.PushMatrix();
 			modelStack.Translate(player->getDroppedItem(i)->getXPos(), 10, player->getDroppedItem(i)->getZPos());
-			/*modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - player->getDroppedItem(i)->getXPos()
-													, camera.position.z - player->getDroppedItem(i)->getZPos())), 0, 1, 0);*/
 			modelStack.Rotate(m_fConstantRotate, 0, 1, 0);
 			modelStack.Scale(10, 10, 10);
 			RenderMesh(meshList[GEO_ITEMS_START + player->getDroppedItem(i)->getID()], false);
