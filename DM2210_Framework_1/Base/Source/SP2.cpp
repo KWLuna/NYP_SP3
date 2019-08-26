@@ -1499,6 +1499,7 @@ void SP2::AnimalChecker(double dt)
 										go3->SetTargetPos(go->GetPosition());
 										go3->SetSpawned(true);
 										go3->SetIsBaby(true);
+										go3->SetScale(Vector3(3, 3, 3));
 										go->SetBreeded(true);
 										go2->SetBreeded(true);
 										break;
