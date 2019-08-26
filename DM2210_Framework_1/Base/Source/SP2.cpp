@@ -829,6 +829,7 @@ void SP2::Init()
 	//Projectile
 	MAX_PROJECTILE = 500;
 	m_iProjectileCount = 0;
+	m_swingcount = 0;
 }
 
 void SP2::RenderFurnace()
@@ -1224,19 +1225,40 @@ void SP2::Update(double dt)
 			}
 		}
 	}
+	//Break blocks
 	if (player->GetBreakBlock())
 	{
+		// Item held
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			// Tile checked
 			if (world[x][y] == 'F')
 			{
-				world[x][y] = 'G';
+				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
+				{
+					// Tile to transform
+					world[x][y] = 'G';
+					// Item player receives from breaking tile
+					player->addItem(new Item(Item::ITEM_FURNACE, 1));
+					m_swingcount = 0;
+				}
+				m_swingcount++;
 			}
-			player->addItem(new Item(Item::ITEM_FURNACE, 1));
+			else if (world[x][y] == 'O') // Gold Ore
+			{
+				world[x][y] = 'G';
+				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+			}
+			else if (world[x][y] == 'C') // Coal
+			{
+				world[x][y] = 'G';
+				int randVal = Math::RandIntMinMax(1, 3);
+				player->addItem(new Item(Item::ITEM_COAL, randVal));
+			}
 		}
 	}
 		//Update all crops present in the world.
@@ -2898,6 +2920,10 @@ void SP2::RenderPassMain()
 			ss.str("");
 			ss << std::to_string(int((camera.position.x + scale / 2) / scale)) << " " << std::to_string(int((camera.position.z + scale / 2) / scale));
 			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 200);
+
+			ss.str("");
+			ss << std::to_string(m_swingcount) << "/" << std::to_string(player->getcurtool()->GetIntMaxSwings());
+			RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(0, 1, 0), 50, -600, 100);
 		}
 	}
 }

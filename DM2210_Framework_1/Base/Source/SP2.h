@@ -415,6 +415,8 @@ private:
 	std::vector<Vector3 *> WorldObjectPositionList;
 
 	int m_currentfurnace;
+
+	int m_swingcount;
 };
 
 #endif

@@ -16,6 +16,7 @@ Weapons::Weapons()
 	, leftrestt(-0.2)
 	, resttiltup(30.0)
 	, activateonce (true)
+	, maxswings(5)
 {
 }
 
@@ -365,7 +366,6 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 				if (curr >= leftmaxr)
 				{
 					curr = leftmaxr;
-					curswing = false;
 				}
 				Vector3 facingtile;
 				facingtile = origin + dir * 100;
@@ -478,6 +478,16 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'O')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'C')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
 				else if (tiletype == 'F')
 				{
 					smallestvertex.y = 0;
@@ -492,10 +502,10 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 						{
 							furnaceclick = true;
 						}
-					}
-					else
-					{
-
+						if (tiletype == 'B')
+						{
+							berryclick = true;
+						}
 					}
 				}
 			}
@@ -619,6 +629,16 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					biggestvertex.y = 100;
 				}
 				else if (tiletype == 'T')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'O')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'C')
 				{
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
@@ -843,4 +863,9 @@ bool Weapons::GetClick()
 void Weapons::SetFeedAnimal(bool set)
 {
 	feedanimal = set;
+}
+
+int Weapons::GetIntMaxSwings()
+{
+	return maxswings;
 }
