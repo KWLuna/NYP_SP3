@@ -111,6 +111,7 @@ class SP2 : public Scene
 		GEO_BREAD,
 		GEO_CARROT,
 		GEO_SEED,
+		GEO_BERRY,
 
 		GEO_WOOD,
 		GEO_STICK,
@@ -169,9 +170,9 @@ class SP2 : public Scene
 			//Dungeon
 			GEO_STONE_BRICK_FLOOR,
 			//Ground Objects
-			GEO_BERRY,
+			GEO_BERRY_BUSH,
 
-			GEO_NO_BERRY,
+			GEO_NO_BERRY_BUSH,
 
 			GEO_GOLD_ORE,
 			GEO_COAL_ORE,

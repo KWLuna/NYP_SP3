@@ -15,6 +15,7 @@ public:
 		ITEM_BREAD,
 		ITEM_CARROT,
 		ITEM_SEED,
+		ITEM_BERRY,
 
 		ITEM_WOOD,
 		ITEM_STICK,
@@ -55,7 +56,7 @@ public:
 
 	void setQuantity(int quantity);
 
-private:
+protected:
 	std::vector <int * > smeltables;
 
 	int m_iID;

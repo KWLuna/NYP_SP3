@@ -1,4 +1,5 @@
 #include "Furnace.h"
+#include "Application.h"
 
 Furnace::Furnace(int xPos, int zPos)
 {
@@ -309,6 +310,12 @@ void Furnace::update(double dt , PlayerInformation * player)
 {
 	m_dBounceTime -= 1 * dt;
 	
+	if (Application::IsKeyPressed('E'))
+	{
+		m_bAccessFurnace = false;
+		m_dBounceTime = 0.2;
+	}
+
 	SmeltingProccess(dt);
 
 	if (m_bAccessFurnace == true)
