@@ -666,6 +666,21 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 
 			Constrain();
 
+			for (int i = 0; i < DroppedItemList.size(); ++i)
+			{
+				float xPosSum = (attachedCamera->position.x - DroppedItemList[i]->getXPos());
+				float zPosSum = (attachedCamera->position.z - DroppedItemList[i]->getZPos());
+
+				if (sqrt((xPosSum * xPosSum) + (zPosSum * zPosSum)) <= 25)
+				{
+					if (DroppedItemList[i]->getQuantity() > 0)
+					{
+						addItem(new Item(DroppedItemList[i]->getID(), 1));
+						DroppedItemList[i]->addQuantity(-1);
+					}
+				}
+			}
+
 			UpdatePlayersStrength();
 
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
