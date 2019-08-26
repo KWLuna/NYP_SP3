@@ -8,7 +8,7 @@
 #include "Application.h"
 #include <string>
 #include <iostream>
-
+#include "SoundEngine.h"
 #include "DroppedItem.h"
 class PlayerInformation
 {

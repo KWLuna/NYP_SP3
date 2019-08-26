@@ -312,7 +312,11 @@ void SP2::InitGround()
 
 void SP2::Init()
 {
-	CSoundEngine::GetInstance()->AddSound("awa", "poo");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Interaction", "Image//Interaction.mp3");
+	CSoundEngine::GetInstance()->AddSound("Tilling_Ground", "Image//Tilling_Ground.mp3");
+
+
 	m_bMenu = true;
 	m_bContinue = false;
 	Math::InitRNG();
@@ -1240,12 +1244,14 @@ void SP2::Update(double dt)
 
 	if (Application::IsMousePressed(1) && m_dBounceTime <= 0 && player->GetFurnaceStatus() == true)
 	{
+		CSoundEngine::GetInstance()->PlayASound2D("Interaction");
 		FurnaceList[m_currentfurnace]->SetStatus(false);
 		player->SetFurnaceStatus(false);
 		m_dBounceTime = 0.2;
 	}
 	if (player->GetPlaceDown())
 	{
+
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
@@ -1253,6 +1259,8 @@ void SP2::Update(double dt)
 			world[x][y] = 'F';
 			player->getItem(player->getCurrentSlot())->addQuantity(-1);
 			FurnaceList.push_back(new Furnace(x, y));
+
+			CSoundEngine::GetInstance()->PlayASound2D("Interaction");
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE ||
 			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
@@ -1264,6 +1272,9 @@ void SP2::Update(double dt)
 			{
 				world[x][y] = 't';
 			}
+
+			CSoundEngine::GetInstance()->PlayASound2D("Tilling_Ground");
+
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_SEED)
 		{
@@ -1276,6 +1287,8 @@ void SP2::Update(double dt)
 				world[x][y] = 'w';
 				CropList.push_back(new Crops(1, x, y , 0));
 				player->getItem(player->getCurrentSlot())->addQuantity(-1);
+				CSoundEngine::GetInstance()->PlayASound2D("Tilling_Ground");
+
 			}
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_CARROT)
@@ -1289,6 +1302,7 @@ void SP2::Update(double dt)
 				world[x][y] = 'c';
 				CropList.push_back(new Crops(0, x, y , 0));
 				player->getItem(player->getCurrentSlot())->addQuantity(-1);
+				CSoundEngine::GetInstance()->PlayASound2D("Tilling_Ground");
 			}
 		}
 	}
@@ -1302,7 +1316,8 @@ void SP2::Update(double dt)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int z = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-			
+			CSoundEngine::GetInstance()->PlayASound2D("Interaction");
+
 			if (world[x][z] == 'F') // Furnace
 			{
 				world[x][z] = 'G';
@@ -1424,6 +1439,7 @@ void SP2::Update(double dt)
 			instructiontimer = 0;
 		}
 	}
+
 	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
 
 }
