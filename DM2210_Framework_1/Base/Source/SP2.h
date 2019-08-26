@@ -311,6 +311,8 @@ public:
 	void SpawningEnemy();
 	void RenderEnemy(CEnemy* enemy);
 	void EnemyChecker(double dt);
+	void SaveEnemyData();
+	void LoadEnemyData();
 		//Projectile
 	void UpdateProjectile(double dt);
 	void RenderProjectile(ProjectileObject * Projectile);

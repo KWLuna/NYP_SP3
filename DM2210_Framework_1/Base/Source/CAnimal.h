@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "SoundEngine.h"
 
 class CAnimal
 {
@@ -29,6 +30,9 @@ public:
 	int m_iAnimalType;
 
 	CAnimal(ANIMAL_TYPE typeValue = GO_PIG);
+
+	CAnimal(int animalType, Vector3 Pos, Vector3 Scale, bool spawned, bool baby, double growTimer);
+
 	void Update(double dt, std::vector<Vector3*> WorldObjectPositionList);
 	~CAnimal();
 
@@ -43,7 +47,7 @@ public:
 	bool GetFed();
 	bool GetBreeded();
 	bool GetIsABaby();
-	float GetGrowUpTimer();
+	double GetGrowUpTimer();
 	//Set Functions
 	void SetBehaviour(int m_iCurrentBehaviour);
 	void SetPosition(Vector3 P);
@@ -56,7 +60,7 @@ public:
 	void SetIsBaby(bool m_bIsABaby);
 	void SetBreeded(bool m_bBreeded);
 	void SetAngle(float m_fAngle);
-	void SetGrowUpTimer(float m_fGrowUpTimer);
+	void SetGrowUpTimer(double m_fGrowUpTimer);
 
 	void SetPlayersDamage(float m_fPlayersDamage);
 private:
@@ -86,7 +90,7 @@ private:
 	//For Taming&Breeding
 	bool m_bFed;
 	bool m_bIsABaby;
-	float m_fGrowUpTimer;
+	double m_fGrowUpTimer;
 	bool m_bBreeded;
 
 
