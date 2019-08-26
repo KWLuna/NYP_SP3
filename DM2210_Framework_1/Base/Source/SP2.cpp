@@ -537,11 +537,11 @@ void SP2::Init()
 	meshList[GEO_COAL_ORE] = MeshBuilder::GenerateOBJ("Ore", "OBJ//Ore.obj");
 	meshList[GEO_COAL_ORE]->textureArray[0] = LoadTGA("Image//Coal_Ore.tga");
 
-	meshList[GEO_BERRY] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
-	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Bush.tga");
+	meshList[GEO_BERRY_BUSH] = MeshBuilder::GenerateOBJ("Berry", "OBJ//Bush.obj");
+	meshList[GEO_BERRY_BUSH]->textureArray[0] = LoadTGA("Image//Bush.tga");
 
-	meshList[GEO_NO_BERRY] = MeshBuilder::GenerateOBJ("GEO_NO_BERRY", "OBJ//Bush.obj");
-	meshList[GEO_NO_BERRY]->textureArray[0] = LoadTGA("Image//Bush_Empty.tga");
+	meshList[GEO_NO_BERRY_BUSH] = MeshBuilder::GenerateOBJ("GEO_NO_BERRY", "OBJ//Bush.obj");
+	meshList[GEO_NO_BERRY_BUSH]->textureArray[0] = LoadTGA("Image//Bush_Empty.tga");
 
 	meshList[GEO_WALL] = MeshBuilder::GenerateOBJ("GEO_WALL", "OBJ//Wall.obj");
 	meshList[GEO_WALL]->textureArray[0] = LoadTGA("Image//Wall.tga");
@@ -607,6 +607,9 @@ void SP2::Init()
 
 	meshList[GEO_SEED] = MeshBuilder::GenerateQuad("GEO_SEED", Color(1, 1, 1), 1.0f);
 	meshList[GEO_SEED]->textureArray[0] = LoadTGA("Image//Seed.tga");
+
+	meshList[GEO_BERRY] = MeshBuilder::GenerateQuad("GEO_SEED", Color(1, 1, 1), 1.0f);
+	meshList[GEO_BERRY]->textureArray[0] = LoadTGA("Image//Berry.tga");
 
 	meshList[GEO_WOOD] = MeshBuilder::GenerateQuad("GEO_WOOD", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WOOD]->textureArray[0] = LoadTGA("Image//Wooden_Log.tga");
@@ -894,7 +897,6 @@ void SP2::RenderFurnace()
 			break;
 		}
 	}
-
 }
 
 void SP2::UpdateWorldVars()
@@ -926,6 +928,7 @@ char SP2::GetPlayerCurrentTile(float xPos , float yPos)
 void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
+	m_fConstantRotate += 20 * dt;
 	if (m_bMenu == true)
 	{
 		if (Application::IsKeyPressed(VK_DOWN) && m_dBounceTime <= 0)
@@ -1156,8 +1159,10 @@ void SP2::Update(double dt)
 	PlayerTile[6] = GetPlayerCurrentTile(maxx, minz);
 	PlayerTile[7] = GetPlayerCurrentTile(maxx, camera.position.z);
 	PlayerTile[8] = GetPlayerCurrentTile(maxx, maxz);
+	
 	std::vector<char> FurnaceX;
 	std::vector<char> FurnaceZ;
+
 	for (int i = 0; i < FurnaceList.size(); i++)
 	{
 		FurnaceX.push_back(FurnaceList[i]->GetXTile());
@@ -1166,16 +1171,19 @@ void SP2::Update(double dt)
 	player->update(dt, m_AnimalList,m_EnemyList, PlayerTile, FurnaceX, FurnaceZ);
 	
 	//Code for block placing based off item in player inventory
-	if (player->getcurtool()->GetFurnaceID() >= 0)
+	if (player->getcurtool()->GetFurnaceID() >= 0 && m_dBounceTime <= 0)
 	{
 		m_currentfurnace = player->getcurtool()->GetFurnaceID();
 		FurnaceList[player->getcurtool()->GetFurnaceID()]->SetStatus(true);
 		player->SetFurnaceStatus(true);
+		m_dBounceTime = 0.2;
 	}
-	if (Application::IsKeyPressed('L'))
+
+	if (Application::IsMousePressed(1) && m_dBounceTime <= 0 && player->GetFurnaceStatus() == true)
 	{
 		FurnaceList[m_currentfurnace]->SetStatus(false);
 		player->SetFurnaceStatus(false);
+		m_dBounceTime = 0.2;
 	}
 	if (player->GetPlaceDown())
 	{
@@ -1231,12 +1239,55 @@ void SP2::Update(double dt)
 		// Item held
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_PICKAXE ||
-		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE)
+		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE) 
+		{
+			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+			int z = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+			
+			if (world[x][z] == 'F') // Furnace
+			{
+				world[x][z] = 'G';
+				player->addItem(new Item(Item::ITEM_FURNACE, 1));
+
+				for (int i = 0; i < FurnaceList.size(); ++i)
+				{
+					if (FurnaceList[i]->GetXTile() == x && FurnaceList[i]->GetZTile() == z)
+					{
+						//Add items to player inventory 
+						player->addItem(new Item(FurnaceList[i]->GetFuelID(), FurnaceList[i]->GetFuelTotal()));
+						player->addItem(new Item(FurnaceList[i]->GetResultID(), FurnaceList[i]->GetResultTotal()));
+						player->addItem(new Item(FurnaceList[i]->GetSmeltingID(), FurnaceList[i]->GetSmeltingTotal()));
+
+						delete FurnaceList[i];
+						break;
+					}
+				}
+
+			}
+			else if (world[x][z] == 'O') // Gold Ore
+			{
+				world[x][z] = 'G';
+				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+			}
+			else if (world[x][z] == 'C') // Coal
+			{
+				world[x][z] = 'G';
+				int randVal = Math::RandIntMinMax(1, 3);
+				player->addItem(new Item(Item::ITEM_COAL, randVal));
+			}
+			else
+			{
+
+			}
+		}
+		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_AXE ||
+			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_AXE ||
+			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_AXE)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-			// Tile checked
-			if (world[x][y] == 'F')
+
+			if (world[x][y] == 'T') // Tree
 			{
 				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
 				{
@@ -1258,6 +1309,12 @@ void SP2::Update(double dt)
 				world[x][y] = 'G';
 				int randVal = Math::RandIntMinMax(1, 3);
 				player->addItem(new Item(Item::ITEM_COAL, randVal));
+				player->addItem(new Item(Item::ITEM_WOOD, 1));
+			}
+			else if (world[x][y] == 'B')
+			{
+				world[x][y] = 'G';
+				player->addItem(new Item(Item::ITEM_BERRY, 3));
 			}
 		}
 	}
@@ -2426,7 +2483,7 @@ void SP2::RenderGroundObjects()
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						RenderMesh(meshList[GEO_BERRY], true);
+						RenderMesh(meshList[GEO_BERRY_BUSH], true);
 						modelStack.PopMatrix();
 						WorldObjectPositionList.push_back(new Vector3(i * scale, 0, k * scale));
 
@@ -2435,7 +2492,7 @@ void SP2::RenderGroundObjects()
 						modelStack.PushMatrix();
 						modelStack.Translate(0 + i * scale, 0, 0 + k * scale);
 						modelStack.Scale(scale, scale, scale);
-						RenderMesh(meshList[GEO_NO_BERRY], true);
+						RenderMesh(meshList[GEO_NO_BERRY_BUSH], true);
 						modelStack.PopMatrix();
 						break;
 					case 'D':
@@ -2688,6 +2745,18 @@ void SP2::RenderWorld()
 {
 	if (m_bMenu == false)
 	{
+		for (int i = 0; i < player->getTotalDropItems(); ++i)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(player->getDroppedItem(i)->getXPos(), 10, player->getDroppedItem(i)->getZPos());
+			/*modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - player->getDroppedItem(i)->getXPos()
+													, camera.position.z - player->getDroppedItem(i)->getZPos())), 0, 1, 0);*/
+			modelStack.Rotate(m_fConstantRotate, 0, 1, 0);
+			modelStack.Scale(10, 10, 10);
+			RenderMesh(meshList[GEO_ITEMS_START + player->getDroppedItem(i)->getID()], false);
+			modelStack.PopMatrix();
+		}
+
 		modelStack.PushMatrix();
 		modelStack.Translate(12500, 0, 12500);
 		modelStack.Scale(6, 6, 6);
@@ -3063,15 +3132,16 @@ void SP2::Exit()
 
 	for (int i = 0; i < CropList.size(); ++i)
 	{
-		if (CropList[i])
+		if (CropList[i] != nullptr)
 			delete CropList[i];
 	}
 
 	for (int i = 0; i < FurnaceList.size(); ++i)
 	{
-		if (FurnaceList[i])
+		if (FurnaceList[i] != nullptr)
 			delete FurnaceList[i];
 	}
+
 	for (int i = 0; i < WorldObjectPositionList.size(); ++i)
 	{
 		if (WorldObjectPositionList[i])

@@ -109,6 +109,7 @@ int PlayerInformation::getCurrentSlot()
 {
 	return m_iInventorySlot;
 }
+
 void PlayerInformation::AttachCamera(Camera3* _cameraPtr)
 {
 	attachedCamera = _cameraPtr;
@@ -189,10 +190,21 @@ int PlayerInformation::getTotalItems()
 	return ItemList.size();
 }
 
+int PlayerInformation::getTotalDropItems()
+{
+	return DroppedItemList.size();
+}
+
 bool PlayerInformation::getIsCrafting()
 {
 	return m_bCrafting;
 }
+
+DroppedItem * PlayerInformation::getDroppedItem(int ID)
+{
+	return DroppedItemList[ID];
+}
+
 
 Item * PlayerInformation::craft(int firstItem, int secondItem)
 {
@@ -267,6 +279,11 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 	}
 
 	return new Item(-1, 0);
+}
+
+bool PlayerInformation::GetFurnaceStatus()
+{
+	return m_bFurnaceStatus;
 }
 
 void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::vector<CEnemy*> enemylist, char tilearray[], std::vector<char> FurnaceX, std::vector<char> FurnaceZ)
@@ -504,6 +521,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			break;
 		}
 
+		//If crafting is true
 		if (m_bCrafting == true)
 		{
 			if (Application::IsKeyPressed(VK_RETURN) && m_dBounceTime <= 0)
@@ -576,6 +594,17 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					m_iSwitchInventorySlot = -1;
 				}
 				m_dBounceTime = 0.2;
+			}
+
+			if (Application::IsKeyPressed('Q') && m_dBounceTime <= 0)
+			{
+				if (ItemList[m_iInventorySlot]->getQuantity() > 0)
+				{
+					DroppedItemList.push_back(new DroppedItem(ItemList[m_iInventorySlot]->getID(), ItemList[m_iInventorySlot]->getQuantity(),
+						attachedCamera->position.x, attachedCamera->position.z));
+					ItemList[m_iInventorySlot]->addQuantity(-1);
+				}
+				m_dBounceTime = 0.1;
 			}
 
 			//Movement
@@ -686,7 +715,6 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			else if (bLButtonState && !Application::IsMousePressed(0))
 			{
 				bLButtonState = false;
-
 			}
 
 			static bool bRButtonState = false;
@@ -695,33 +723,6 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				bRButtonState = true;
 				curtool->SetRClick();
 				curtool->SetCurSwing();
-				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_SWORD)
-				//{
-				//	curtool->SetCurSwing();
-				//}
-				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT|| getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
-				//{
-				//	curtool->SetCurSwing();
-				//}
-				//if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
-				//{
-				//	std::cout << "right " << playerphysics.GetDist();
-				//}
-				//else
-				//	std::cout << "rnotcollide";
-				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_FURNACE ||
-				//	getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT ||
-				//	getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
-				//{
-				//	curtool->SetCurSwing();
-				////	PlaceBlock();
-				//}
-				//if (getItem(getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE || 
-				//	getItem(getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
-				//	getItem(getCurrentSlot())->getID() == Item::ITEM_GOLD_HOE)
-				//{
-				//	curtool->SetCurSwing();
-				//}
 			}
 			else if (bRButtonState && !Application::IsMousePressed(1))
 			{

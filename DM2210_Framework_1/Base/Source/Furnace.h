@@ -11,6 +11,7 @@ class Furnace
 		RESULT,
 		END
 	};
+
 public:
 	Furnace(int xPos , int zPos);
 

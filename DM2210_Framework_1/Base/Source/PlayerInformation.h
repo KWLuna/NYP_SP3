@@ -1,6 +1,5 @@
 #pragma once
 #include "Camera3.h"
-#include "item.h"
 #include "Physics.h"
 #include "Weapons.h"
 #include "Sword.h"
@@ -9,6 +8,8 @@
 #include "Application.h"
 #include <string>
 #include <iostream>
+
+#include "DroppedItem.h"
 class PlayerInformation
 {
 	enum POSITION
@@ -36,8 +37,11 @@ public:
 
 	bool addItem(Item * object);
 	Item * getItem(int ID);
+	DroppedItem * getDroppedItem(int ID);
 
 	int getTotalItems();
+	int getTotalDropItems();
+
 	bool getIsCrafting();
 
 	int getCurrentSlot();
@@ -64,6 +68,8 @@ public:
 	bool GetPlaceDown();
 	bool GetBreakBlock();
 	void UpdatePlayersStrength();
+
+	bool GetFurnaceStatus();
 private:
 
 	Camera3 * attachedCamera; // Attach camera to player
@@ -87,6 +93,8 @@ private:
 	bool m_bFall;
 
 	std::vector<Item*> ItemList;
+	std::vector<DroppedItem*> DroppedItemList;
+
 	float m_fSpeed;
 	float walkingtime;
 	double m_dHunger;

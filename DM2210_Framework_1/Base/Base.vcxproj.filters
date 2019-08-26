@@ -55,6 +55,9 @@
     <Filter Include="SP2\Bush">
       <UniqueIdentifier>{4fc52c1b-621b-4872-b3fe-e4c5800679fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SP2\PlayerInformation\Items">
+      <UniqueIdentifier>{8fbda144-fd7c-4a00-aeb7-156f9cbbdaf2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp">
@@ -114,9 +117,6 @@
     <ClCompile Include="Source\CAnimal.cpp">
       <Filter>SP2\AnimalAI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Item.cpp">
-      <Filter>SP2\PlayerInformation</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Physics.cpp">
       <Filter>SP2\Physics</Filter>
     </ClCompile>
@@ -146,6 +146,12 @@
     </ClCompile>
     <ClCompile Include="Source\Bush.cpp">
       <Filter>SP2\Bush</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Item.cpp">
+      <Filter>SP2\PlayerInformation\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DroppedItem.cpp">
+      <Filter>SP2\PlayerInformation\Items</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +227,6 @@
     <ClInclude Include="Source\CAnimal.h">
       <Filter>SP2\AnimalAI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Item.h">
-      <Filter>SP2\PlayerInformation</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Physics.h">
       <Filter>SP2\Physics</Filter>
     </ClInclude>
@@ -253,6 +256,12 @@
     </ClInclude>
     <ClInclude Include="Source\Bush.h">
       <Filter>SP2\Bush</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Item.h">
+      <Filter>SP2\PlayerInformation\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DroppedItem.h">
+      <Filter>SP2\PlayerInformation\Items</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
