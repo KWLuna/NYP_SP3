@@ -1,1 +1,23 @@
-﻿
+﻿  Application.cpp
+  PlayerInformation.cpp
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(68): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(71): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(96): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(102): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(156): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(197): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(204): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(211): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(218): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(244): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(255): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(406): warning C4018: '<': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(534): warning C4018: '>': signed/unsigned mismatch
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(539): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(547): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(557): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\yanny\onedrive\documents\github\sp3\dm2210_framework_1\base\source\playerinformation.cpp(732): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  All 2240 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Base.vcxproj -> C:\Users\yanny\OneDrive\Documents\GitHub\SP3\DM2210_Framework_1\Release\Base.exe
