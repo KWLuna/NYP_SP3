@@ -1505,8 +1505,12 @@ void SP2::EnemyChecker(double dt)
 								if (go->GetAttackedPlayer())
 								{
 									player->SetHP(player->getHP() - go->GetStrength());
-									camera.position.x += (camera.position.x - go->GetPosition().x);
-									camera.position.z += (camera.position.z - go->GetPosition().z);
+									//Knockback
+									//camera.position.x += (camera.position.x - go->GetPosition().x);
+									//camera.position.z += (camera.position.z - go->GetPosition().z);
+								
+									//Vector3 viewVector = camera.target - camera.position;
+									//camera.target = camera.position - viewVector;
 								}
 							}
 							break;
@@ -2183,8 +2187,8 @@ void SP2::UpdateProjectile(double dt)
 				m_iProjectileCount--;
 				player->SetHP(player->getHP() - 5.f);
 				//add knockback
-				camera.position.x += (camera.position.x - Projectile->GetPos().x);
-				camera.position.z += (camera.position.z - Projectile->GetPos().z);
+				//camera.position.x += (camera.position.x - Projectile->GetPos().x);
+				//camera.position.z += (camera.position.z - Projectile->GetPos().z);
 			}
 			else if (Projectile->GetTimeTravelled() > 5)
 			{
