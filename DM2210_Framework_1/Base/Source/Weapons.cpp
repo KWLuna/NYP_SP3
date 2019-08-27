@@ -50,7 +50,7 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 				if (curr >= leftmaxr)
 				{
 					curr = leftmaxr;
-					curswing = false;
+					side = false;
 				}
 				for (int i = 0; i < animalist.size(); i++)
 				{
@@ -116,10 +116,21 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 						}
 						else
 						{
-							if (feedanimal)
+							if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_PIG && foodheld == 1)
 							{
-								animalist[i]->SetFed(true);
-							}						
+								feedanimalpig = true;
+								animalID = i;
+							}
+							if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_COW && foodheld == 2)
+							{
+								feedanimalcow = true;
+								animalID = i;
+							}
+							if (animalist[i]->type == CAnimal::ANIMAL_TYPE::GO_CHICKEN && foodheld == 3)
+							{
+								feedanimalchicken = true;
+								animalID = i;
+							}
 						}
 					}
 				}
@@ -218,17 +229,6 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 		{
 			if (side)
 			{
-				curt += ((leftmaxt - rightmaxt) / swingtime * dt);
-				curr += ((leftmaxr - rightmaxr) / swingtime * dt);
-				if (curt <= leftmaxt)
-				{
-					curt = leftmaxt;
-				}
-				if (curr >= leftmaxr)
-				{
-					curr = leftmaxr;
-					curswing = false;
-				}
 				for (int i = 0; i < enemylist.size(); i++)
 				{
 					if (!enemylist[i]->GetActive())
@@ -240,38 +240,33 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 
 					if (enemylist[i]->type == CEnemy::ENEMY_TYPE::GO_ZOMBIE)
 					{
-						temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
+						temp1.Set(15 * -0.5f, 48 * -0.5f, 15 * -0.5f);
 						temp1.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
 						temp1.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
 						temp1 += enemylist[i]->GetPosition();
-						temp1.y += 14;
-						temp1.z += 3;
-						temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
+						temp1.y += 20;
+						temp2.Set(15 * 0.5f, 48 * 0.5f, 15 * 0.5f);
 						temp2.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
 						temp2.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
 						temp2 += enemylist[i]->GetPosition();
-						temp2.y += 14;
-						temp2.z += 3;
+						temp2.y += 20;
 					}
 					else if (enemylist[i]->type == CEnemy::ENEMY_TYPE::GO_WITCH)
 					{
-						temp1.Set(10 * -0.5f, 12 * -0.5f, 14 * -0.5f);
+						temp1.Set(15 * -0.5f, 48 * -0.5f, 15 * -0.5f);
 						temp1.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
 						temp1.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp1.z;
 						temp1 += enemylist[i]->GetPosition();
-						temp1.y += 8;
-						temp1.z += 2;
-						temp2.Set(10 * 0.5f, 12 * 0.5f, 14 * 0.5f);
+						temp1.y += 20;
+						temp2.Set(15 * 0.5f, 48 * 0.5f, 15 * 0.5f);
 						temp2.x = cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x - sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
 						temp2.z = sinf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.x + cosf(Math::DegreeToRadian(enemylist[i]->GetAngle())) * temp2.z;
 						temp2 += enemylist[i]->GetPosition();
-						temp2.y += 8;
-						temp2.z += 2;
+						temp2.y += 20;
 					}
 					
 					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 					{
-						/*std::cout << "dank";*/
 						if (!rclick)
 						{
 							enemylist[i]->SetBehaviour(4);
@@ -283,18 +278,6 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 			}
 			else
 			{
-				curt += ((rightmaxt - leftmaxt) / swingtime * dt);
-				curr += ((rightmaxr - leftmaxr) / swingtime * dt);
-				if (curt >= rightmaxt)
-				{
-					curt = rightmaxt;
-				}
-				if (curr <= rightmaxr)
-				{
-					curr = rightmaxr;
-					curswing = false;
-				}
-
 				for (int i = 0; i < enemylist.size(); i++)
 				{
 					if (!enemylist[i]->GetActive())
@@ -361,16 +344,6 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 		{
 			if (side)
 			{
-				curt += ((leftmaxt - rightmaxt) / swingtime * dt);
-				curr += ((leftmaxr - rightmaxr) / swingtime * dt);
-				if (curt <= leftmaxt)
-				{
-					curt = leftmaxt;
-				}
-				if (curr >= leftmaxr)
-				{
-					curr = leftmaxr;
-				}
 				Vector3 facingtile;
 				facingtile = origin + dir * 100;
 				facingtile.x += 50;
@@ -519,17 +492,6 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 			}
 			else
 			{
-				curt += ((rightmaxt - leftmaxt) / swingtime * dt);
-				curr += ((rightmaxr - leftmaxr) / swingtime * dt);
-				if (curt >= rightmaxt)
-				{
-					curt = rightmaxt;
-				}
-				if (curr <= rightmaxr)
-				{
-					curr = rightmaxr;
-					curswing = false;
-				}
 				Vector3 facingtile;
 				facingtile = origin + dir * 100;
 				facingtile.x += 50;
@@ -779,12 +741,7 @@ void Weapons::SetCurSwing()
 	if (!curswing)
 	{
 		curswing = true;
-		if (side == true)
-		{
-			side = false;
-		}
-		else
-			side = true;
+		side = true;
 	}
 }
 
@@ -868,9 +825,49 @@ bool Weapons::GetClick()
 	return rclick;
 }
 
-void Weapons::SetFeedAnimal(bool set)
+bool Weapons::GetFeedAnimalPig()
 {
-	feedanimal = set;
+	return feedanimalpig;
+}
+
+void Weapons::SetFeedAnimalPig(bool set)
+{
+	feedanimalpig = set;
+}
+
+bool Weapons::GetFeedAnimalCow()
+{
+	return feedanimalcow;
+}
+
+void Weapons::SetFeedAnimalCow(bool set)
+{
+	feedanimalcow = set;
+}
+
+bool Weapons::GetFeedAnimalChicken()
+{
+	return feedanimalchicken;
+}
+
+void Weapons::SetFeedAnimalChicken(bool set)
+{
+	feedanimalchicken = set;
+}
+
+void Weapons::SetAnimalID(int set)
+{
+	animalID = set;
+}
+
+int Weapons::GetAnimalID()
+{
+	return animalID;
+}
+
+void Weapons::SetFoodHeld(int held)
+{
+	foodheld = held;
 }
 
 bool Weapons::GetBerryClick()
