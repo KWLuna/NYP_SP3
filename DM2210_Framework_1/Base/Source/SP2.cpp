@@ -1459,7 +1459,7 @@ void SP2::Update(double dt)
 			{
 				//If so , set the tile back to a BERRY obj and delete the dead bush from the list.
 				world[HarvestedBushList[i]->GetXTile()][HarvestedBushList[i]->GetZTile()] = 'B';
-				delete HarvestedBushList[i];
+				HarvestedBushList.erase(HarvestedBushList.begin() + i);
 			}
 		}
 
