@@ -1127,8 +1127,10 @@ void SP2::Update(double dt)
 
 		
 			player->addItem(new Item(Item::ITEM_ICE_CUBE, 1));
-			player->addItem(new Item(Item::ITEM_TORCH, 1));
-			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
+			player->addItem(new Item(Item::ITEM_GOLD_HOE, 1));
+			player->addItem(new Item(Item::ITEM_SEED, 1));
+			player->addItem(new Item(Item::ITEM_CARROT, 1));
+
 
 
 
@@ -1353,13 +1355,52 @@ void SP2::Update(double dt)
 	//Break blocks
 	if (player->GetBreakBlock())
 	{
+		int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+		int z = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+
+		if (world[x][z] == 'c') // Furnace
+		{
+			world[x][z] = 't';
+
+			for (int i = 0; i < CropList.size(); ++i)
+			{
+				if (x == CropList[i]->GetXTile() && z == CropList[i]->GetZTile())
+				{
+					if (CropList[i]->GetState() == 0)
+						player->addItem(new Item(Item::ITEM_CARROT, 1));
+					else
+						player->addItem(new Item(Item::ITEM_CARROT, 3));
+
+					CropList.erase(CropList.begin() + i);
+					break;
+				}
+			}
+		}
+		else if (world[x][z] == 'w') // Furnace
+		{
+			world[x][z] = 't';
+
+			for (int i = 0; i < CropList.size(); ++i)
+			{
+				if (x == CropList[i]->GetXTile() && z == CropList[i]->GetZTile())
+				{
+					if (CropList[i]->GetState() == 0)
+						player->addItem(new Item(Item::ITEM_WHEAT, 1));
+					else
+						player->addItem(new Item(Item::ITEM_WHEAT, 3));
+
+					CropList.erase(CropList.begin() + i);
+					break;
+				}
+			}
+		}
+
+
 		// Item held
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_PICKAXE ||
 		player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_PICKAXE) 
 		{
-			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
-			int z = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
 			CSoundEngine::GetInstance()->PlayASound2D("Interaction");
 
 			if (world[x][z] == 'F') // Furnace
@@ -1380,7 +1421,6 @@ void SP2::Update(double dt)
 						break;
 					}
 				}
-
 			}
 			else if (world[x][z] == 'O') // Gold Ore
 			{
@@ -1407,36 +1447,33 @@ void SP2::Update(double dt)
 			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_AXE ||
 			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_GOLD_AXE)
 		{
-			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
-			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-
-			if (world[x][y] == 'T') // Tree
+			if (world[x][z] == 'T') // Tree
 			{
 				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
 				{
 					// Tile to transform
-					world[x][y] = 'G';
+					world[x][z] = 'G';
 					// Item player receives from breaking tile
 					player->addItem(new Item(Item::ITEM_FURNACE, 1));
 					m_swingcount = 0;
 				}
 				m_swingcount++;
 			}
-			else if (world[x][y] == 'O') // Gold Ore
+			else if (world[x][z] == 'O') // Gold Ore
 			{
-				world[x][y] = 'G';
+				world[x][z] = 'G';
 				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
 			}
-			else if (world[x][y] == 'C') // Coal
+			else if (world[x][z] == 'C') // Coal
 			{
-				world[x][y] = 'G';
+				world[x][z] = 'G';
 				int randVal = Math::RandIntMinMax(1, 3);
 				player->addItem(new Item(Item::ITEM_COAL, randVal));
 				player->addItem(new Item(Item::ITEM_WOOD, 1));
 			}
-			else if (world[x][y] == 'B')
+			else if (world[x][z] == 'B')
 			{
-				world[x][y] = 'G';
+				world[x][z] = 'G';
 				player->addItem(new Item(Item::ITEM_BERRY, 3));
 			}
 		}
