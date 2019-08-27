@@ -2802,7 +2802,7 @@ void SP2::RenderPlayerInfo()
 		}
 		else
 		{
-			if (static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
+			if (player->getHP() > 0 && static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
 				RenderImageToScreen(meshList[GEO_HEALTH_HALF], false, 40, 40,
 					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 0);
 			else
@@ -2820,7 +2820,7 @@ void SP2::RenderPlayerInfo()
 		}
 		else
 		{
-			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
+			if (player->getThirst() > 0 && static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
 				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
 					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 0);
 			else
@@ -2831,7 +2831,7 @@ void SP2::RenderPlayerInfo()
 	//Thirst
 	for (int i = 0; i < 10; ++i)
 	{
-		if (i < static_cast<int>(player->getThirst() * 0.1f))
+		if (player->getThirst() > 0 && i < static_cast<int>(player->getThirst() * 0.1f))
 		{
 			RenderImageToScreen(meshList[GEO_THIRST_FULL], false, 40, 40,
 				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 0);

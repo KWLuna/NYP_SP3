@@ -603,22 +603,22 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			switch (getItem(getCurrentSlot())->getID())
 			{
 			case Item::ITEM_MEAT:
-				m_dHunger += 0.5f;
-				m_dThirst -= 0.2f;
+				m_dHunger += 1.f;
+				m_dThirst -= 0.5f;
 				break;
 			case Item::ITEM_COOKED_MEAT:
-				m_dHunger += 1.5f;
+				m_dHunger += 3.f;
 				break;
 			case Item::ITEM_CARROT:
-				m_dHunger += 0.2f;
-				m_dThirst += 0.2f;
+				m_dHunger += 0.5f;
+				m_dThirst += 0.5f;
 				break;
 			case Item::ITEM_BREAD:
-				m_dHunger += 1.f;
+				m_dHunger += 2.f;
 				m_dThirst += 0.2f;
 				break;
 			case Item::ITEM_WATER_BOTTLE:
-				m_dThirst += 0.2f;
+				m_dThirst += 2.0f;
 				break;
 			default:
 				break;
@@ -897,6 +897,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					if (getItem(getCurrentSlot())->getID() == Item::ITEM_WATER_BOTTLE)
 					{
 						action = PlayerInformation::EATING;
+						getItem(getCurrentSlot())->addQuantity(-1);
 					}
 				}
 			}
