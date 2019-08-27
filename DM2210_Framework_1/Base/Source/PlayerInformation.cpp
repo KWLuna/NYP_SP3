@@ -16,10 +16,6 @@ PlayerInformation::PlayerInformation()
 
 	CSoundEngine::GetInstance()->AddSound("Drop_Item", "Image///Drop_Item.mp3");
 
-
-
-
-
 	m_dHP = 100;
 	m_dMaxHP = 100;
 	m_dHunger = 100;
@@ -294,6 +290,18 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 			return new Item(Item::ITEM_STICK, 2);
 	}
 
+	if (firstItem == Item::Item::ITEM_ICE_CUBE)
+	{
+		if (secondItem == Item::Item::ITEM_TORCH)
+			return new Item(Item::ITEM_WATER_BOTTLE, 1);
+	}
+	else if(firstItem == Item::Item::ITEM_TORCH)
+	{
+		if (secondItem == Item::Item::ITEM_ICE_CUBE)
+			return new Item(Item::ITEM_WATER_BOTTLE, 1);
+	}
+	
+
 	return new Item(-1, 0);
 }
 
@@ -533,6 +541,9 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				break;
 			case Item::ITEM_BREAD:
 				m_dHunger += 1.f;
+				m_dThirst += 0.2f;
+				break;
+			case Item::ITEM_WATER_BOTTLE:
 				m_dThirst += 0.2f;
 				break;
 			default:
@@ -801,6 +812,13 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					{
 						action = PlayerInformation::EATING;
 						getItem(getCurrentSlot())->addQuantity(-1);
+					}
+				}
+				if (m_dThirst < 100)
+				{
+					if (getItem(getCurrentSlot())->getID() == Item::ITEM_WATER_BOTTLE)
+					{
+						action = PlayerInformation::EATING;
 					}
 				}
 			}

@@ -633,6 +633,12 @@ void SP2::Init()
 	meshList[GEO_COOKED_MEAT] = MeshBuilder::GenerateQuad("GEO_COOKED_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_COOKED_MEAT]->textureArray[0] = LoadTGA("Image//Cooked_Meat.tga");
 
+	meshList[GEO_ICE_CUBE] = MeshBuilder::GenerateQuad("GEO_ICE_CUBE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_ICE_CUBE]->textureArray[0] = LoadTGA("Image//Ice_Cube.tga");
+
+	meshList[GEO_WATER_BOTTLE] = MeshBuilder::GenerateQuad("GEO_WATER_BOTTLE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WATER_BOTTLE]->textureArray[0] = LoadTGA("Image//Water_Bottle.tga");
+
 	meshList[GEO_WHEAT] = MeshBuilder::GenerateQuad("GEO_WHEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WHEAT]->textureArray[0] = LoadTGA("Image//Wheat.tga");
 
@@ -1046,6 +1052,12 @@ void SP2::Update(double dt)
 	}
 	else if (m_bMenu == false)
 	{
+		if (Application::IsKeyPressed(VK_RETURN))
+		{
+			int x = camera.position.x / scale;
+			int z = camera.position.z / scale;
+		}
+		
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_TORCH)
 		{
 			std::cout << "x" << std::endl;
@@ -1113,14 +1125,12 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_SEED, 10));
 			player->addItem(new Item(Item::ITEM_STONE, 10));*/
 
-			player->addItem(new Item(Item::ITEM_COAL, 10));
-			player->addItem(new Item(Item::ITEM_MEAT, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
-			player->addItem(new Item(Item::ITEM_WOODEN_AXE, 1));
-
+		
+			player->addItem(new Item(Item::ITEM_ICE_CUBE, 1));
 			player->addItem(new Item(Item::ITEM_TORCH, 1));
-			player->addItem(new Item(Item::ITEM_FURNACE, 1));
+			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
+
+
 
 			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
@@ -1197,7 +1207,9 @@ void SP2::Update(double dt)
 
 		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
-			FurnaceList[0]->SetStatus(true);
+			if (FurnaceList.size() > 0)
+				FurnaceList[0]->SetStatus(true);
+			
 			m_dBounceTime = 0.2;
 		}
 
@@ -1356,6 +1368,11 @@ void SP2::Update(double dt)
 			{
 				world[x][z] = 'G';
 				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+			}
+			else if (world[x][z] == 'W') // Ice Ore
+			{
+				if (SP2_Seasons->getSeason() == 3)
+					player->addItem(new Item(Item::ITEM_ICE_CUBE, 1));
 			}
 			else if (world[x][z] == 'C') // Coal
 			{

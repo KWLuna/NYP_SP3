@@ -120,6 +120,9 @@ class SP2 : public Scene
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
 
+		GEO_ICE_CUBE,
+		GEO_WATER_BOTTLE,
+
 		GEO_WHEAT,
 		GEO_BREAD,
 		GEO_CARROT,
