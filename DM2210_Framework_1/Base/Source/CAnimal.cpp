@@ -158,10 +158,12 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 		{
 			if (!m_bRotated)
 			{
-				if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
+				if (Targetpos.x - pos.x == 0 && Targetpos.z - pos.z == 0)
 				{
-					dir = (Targetpos - pos).Normalize();
 				}
+				else
+					dir = (Targetpos - pos).Normalize();
+
 				float m_fTempAngle = atan2(dir.x, dir.z);
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 				{
@@ -206,9 +208,7 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 				}
 				
 				if (pos.x - prevpos.x == 0 || pos.z - prevpos.z == 0)
-				{
-
-				}
+				{	}
 				else
 					dir = (pos - prevpos).Normalize();
 
@@ -234,8 +234,11 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 
 		if (!m_bRotated)
 		{
-			if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
+			if (Targetpos.x - pos.x == 0 && Targetpos.z - pos.z == 0)
+			{ }
+			else
 				dir = (Targetpos - pos).Normalize();
+
 			float m_fTempAngle = atan2(dir.x, dir.z);
 			if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 			{
@@ -276,7 +279,10 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 				}
 			}
 
-			if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
+			if (pos.x - prevpos.x == 0 || pos.z - prevpos.z == 0)
+			{
+			}
+			else
 				dir = (pos - prevpos).Normalize();
 
 			m_fAngle = atan2(dir.x, dir.z);
@@ -306,7 +312,6 @@ void CAnimal::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 		
 		if (m_fHP < 0)//animal dead
 		{
-			m_fHP = 100;
 			m_bSpawned = false;
 			m_bActive = false;
 			if (type == GO_PIG)

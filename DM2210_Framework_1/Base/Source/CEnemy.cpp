@@ -113,8 +113,11 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 		{
 			if (!m_bRotated)
 			{
-				if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
+				if (Targetpos.x - pos.x == 0 && Targetpos.z - pos.z == 0)
+				{ }
+				else
 					dir = (Targetpos - pos).Normalize();
+
 				float m_fTempAngle = atan2(dir.x, dir.z);
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 				{
@@ -157,9 +160,7 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 				}
 
 				if (pos.x - prevpos.x == 0 || pos.z - prevpos.z == 0)
-				{
-
-				}
+				{		}
 				else
 					dir = (pos - prevpos).Normalize();
 
@@ -191,8 +192,11 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			
 		if (!m_bRotated)
 		{
-			if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
-			dir = (Targetpos - pos).Normalize();
+			if (Targetpos.x - pos.x == 0 && Targetpos.z - pos.z == 0)
+			{		}
+			else
+				dir = (Targetpos - pos).Normalize();
+
 			float m_fTempAngle = atan2(dir.x, dir.z);
 			if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 			{
@@ -233,7 +237,9 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 				}
 			}
 
-			if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
+			if ((pos - prevpos).z == 0 || (pos - prevpos).x == 0)
+			{ }
+			else
 				dir = (pos - prevpos).Normalize();
 
 			m_fAngle = atan2(dir.x, dir.z);

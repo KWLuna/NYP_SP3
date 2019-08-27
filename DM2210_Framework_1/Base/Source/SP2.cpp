@@ -1506,6 +1506,16 @@ void SP2::EnemyChecker(double dt)
 	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
 	{
 		CEnemy *go = (CEnemy *)*it;
+		if (go->GetHP() < 0)
+		{
+			m_EnemyList.erase(it);
+			break;
+		}
+	}
+	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
+	{
+		CEnemy *go = (CEnemy *)*it;
+		
 		if (go->GetSpawned())
 		{
 			if (go->GetPosition().x > MinX && go->GetPosition().x < MaxX && go->GetPosition().z > MinZ && go->GetPosition().z < MaxZ)
@@ -1602,6 +1612,16 @@ void SP2::AnimalChecker(double dt)
 		SpawningAnimal(dt);
 
 	m_NumOfAnimal = 0;
+	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+	{
+		CAnimal *go = (CAnimal *)*it;
+		if (go->GetHP() < 0)
+		{
+			player->addItem(new Item(Item::ITEM_MEAT, 1));
+			m_AnimalList.erase(it);
+			break;
+		}
+	}
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 	{
 		CAnimal *go = (CAnimal *)*it;
@@ -2510,6 +2530,7 @@ void SP2::RenderPassGPass()
 void SP2::RenderGroundObjects()
 {
 	WorldObjectPositionList.clear();
+
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
