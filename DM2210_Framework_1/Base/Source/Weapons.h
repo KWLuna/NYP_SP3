@@ -55,7 +55,11 @@ protected:
 
 	bool waterclick;
 
-	bool feedanimal;
+	bool feedanimalpig;
+	bool feedanimalcow;
+	bool feedanimalchicken;
+	int animalID;
+	int foodheld;
 
 	Physics weaponphysics;
 
@@ -113,7 +117,15 @@ public:
 	int GetFurnaceID();
 	void ResetFurnaceID();
 
-	void SetFeedAnimal(bool set);
+	bool GetFeedAnimalPig();
+	void SetFeedAnimalPig(bool set);
+	bool GetFeedAnimalCow();
+	void SetFeedAnimalCow(bool set);
+	bool GetFeedAnimalChicken();
+	void SetFeedAnimalChicken(bool set);
+	void SetAnimalID(int set);
+	int GetAnimalID();
+	void SetFoodHeld(int held);
 
 	bool GetBerryClick();
 	void SetBerryClick(bool set);

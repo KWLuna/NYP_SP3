@@ -1282,6 +1282,11 @@ void SP2::Update(double dt)
 		int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
 		player->SetThirst(player->getThirst() + 10);
 	}
+	if (player->getcurtool()->GetAnimalID() >= 0)
+	{
+		m_AnimalList[player->getcurtool()->GetAnimalID()]->SetFed(true);
+		player->getItem(player->getCurrentSlot())->addQuantity(-1);
+	}
 	if (Application::IsMousePressed(1) && m_dBounceTime <= 0 && player->GetFurnaceStatus() == true)
 	{
 		CSoundEngine::GetInstance()->PlayASound2D("Interaction");
@@ -1291,7 +1296,6 @@ void SP2::Update(double dt)
 	}
 	if (player->GetPlaceDown())
 	{
-
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
@@ -2084,6 +2088,16 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_COW], true);
 		modelStack.PopMatrix();
+
+		//for testing collision boxes
+		/*modelStack.PushMatrix();
+		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 14, animal->GetPosition().z+3);
+		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
+		modelStack.Scale(15, 24, 30);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
+		//
+
 		break;
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
@@ -2108,6 +2122,13 @@ void SP2::RenderEnemy(CEnemy* enemy)
 		modelStack.Scale(enemy->GetScale().x, enemy->GetScale().y, enemy->GetScale().z);
 		RenderMesh(meshList[GEO_ZOMBIE], true);
 		modelStack.PopMatrix();
+
+		/*modelStack.PushMatrix();
+		modelStack.Translate(enemy->GetPosition().x, enemy->GetPosition().y + 20, enemy->GetPosition().z);
+		modelStack.Rotate(enemy->GetAngle(), 0, 1, 0);
+		modelStack.Scale(15, 48, 15);
+		RenderMesh(meshList[GEO_CUBE], true);
+		modelStack.PopMatrix();*/
 		break;
 	case CEnemy::GO_WITCH:
 		modelStack.PushMatrix();

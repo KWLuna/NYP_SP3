@@ -819,10 +819,25 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			UpdatePlayersStrength();
 
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
-			curtool->SetFeedAnimal(false);
-			if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT || getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT || getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+			curtool->SetFeedAnimalPig(false);
+			curtool->SetFeedAnimalCow(false);
+			curtool->SetFeedAnimalChicken(false);
+			curtool->SetAnimalID(-1);
+			if (getItem(getCurrentSlot())->getID() == Item::ITEM_CARROT)
 			{
-				curtool->SetFeedAnimal(true);
+				curtool->SetFoodHeld(1);
+			}
+			else if (getItem(getCurrentSlot())->getID() == Item::ITEM_WHEAT)
+			{
+				curtool->SetFoodHeld(2);
+			}
+			else if (getItem(getCurrentSlot())->getID() == Item::ITEM_SEED)
+			{
+				curtool->SetFoodHeld(3);
+			}
+			else
+			{
+				curtool->SetFoodHeld(0);
 			}
 			curtool->UpdateAnimal(dt, dir, attachedCamera->position, animalist, m_fPlayersDamage);
 			curtool->UpdateEnemy(dt, dir, attachedCamera->position, enemylist, m_fPlayersDamage);
