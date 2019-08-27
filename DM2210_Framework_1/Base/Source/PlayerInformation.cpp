@@ -935,7 +935,7 @@ void PlayerInformation::PlaceBlock()
 		}
 		else if (!curtool->GetClick())
 		{
-			if (curtool->GetTileType() == 'F' || curtool->GetTileType() == 'O' || curtool->GetTileType() == 'C')
+			if (curtool->GetTileType() == 'F' || curtool->GetTileType() == 'O' || curtool->GetTileType() == 'C' || curtool->GetTileType() == 'c' || curtool->GetTileType() == 'w')
 			{
 				breakblock = true;
 			}

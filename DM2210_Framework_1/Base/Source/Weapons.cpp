@@ -470,6 +470,16 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'c')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
+				else if (tiletype == 'w')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
 				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
 				{
 					std::cout << "tile collide";
