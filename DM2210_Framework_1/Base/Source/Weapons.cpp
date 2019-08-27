@@ -17,6 +17,8 @@ Weapons::Weapons()
 	, resttiltup(30.0)
 	, activateonce (true)
 	, maxswings(5)
+	, berryclick(false)
+	, waterclick(false)
 {
 }
 
@@ -506,6 +508,10 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 						{
 							berryclick = true;
 						}
+						if (tiletype == 'W')
+						{
+							waterclick = true;
+						}
 					}
 				}
 			}
@@ -863,6 +869,26 @@ bool Weapons::GetClick()
 void Weapons::SetFeedAnimal(bool set)
 {
 	feedanimal = set;
+}
+
+bool Weapons::GetBerryClick()
+{
+	return berryclick;
+}
+
+void Weapons::SetBerryClick(bool set)
+{
+	berryclick = set;
+}
+
+bool Weapons::GetWaterClick()
+{
+	return waterclick;
+}
+
+void Weapons::SetWaterClick(bool set)
+{
+	waterclick = set;
 }
 
 int Weapons::GetIntMaxSwings()

@@ -115,23 +115,97 @@ void PlayerInformation::AttachCamera(Camera3* _cameraPtr)
 	attachedCamera = _cameraPtr;
 }
 
-void PlayerInformation::Constrain()
+void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 {
+	Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 	if (attachedCamera->position.x < 0)
+	{
 		attachedCamera->position.x = 0;
+		attachedCamera->target = attachedCamera->position + viewVector;
+	}
 	else if (attachedCamera->position.x > 25000)
+	{
 		attachedCamera->position.x = 25000;
+		attachedCamera->target = attachedCamera->position + viewVector;
+	}
 
 	if (attachedCamera->position.z < 0)
+	{
 		attachedCamera->position.z = 0;
+		attachedCamera->target = attachedCamera->position + viewVector;
+	}
 	else if (attachedCamera->position.z > 25000)
+	{
 		attachedCamera->position.z = 25000;
+		attachedCamera->target = attachedCamera->position + viewVector;
+	}
 
-	//Anchor player to the ground
-	Vector3 viewVector = attachedCamera->target - attachedCamera->position;
-
+	viewVector = attachedCamera->target - attachedCamera->position;
 	attachedCamera->position.y = m_dConstrainY;
-
+	attachedCamera->target = attachedCamera->position + viewVector;
+	
+	int checksides[4];
+	//Anchor player to the ground
+	if (PlayerTile[2] == 'F')
+	{
+		checksides[0] = ((int)((prevpos.x + 50) / 100) * 100 - 50);
+	}
+	else
+	{
+		checksides[0] = -100;
+	}
+	if (PlayerTile[7] == 'F')
+	{
+		checksides[1] = ((int)((prevpos.x + 150) / 100) * 100 - 50);
+	}
+	else
+	{
+		checksides[1] = -100;
+	}
+	if (PlayerTile[4] == 'F')
+	{
+		checksides[2] = ((int)((prevpos.z + 50) / 100) * 100 - 50);
+	}
+	else
+	{
+		checksides[2] = -100;
+	}
+	if (PlayerTile[5] == 'F')
+	{
+		checksides[3] = ((int)((prevpos.z + 150) / 100) * 100 - 50);
+	}
+	else
+	{
+		checksides[3] = -100;
+	}
+	if (checksides[0] != -100)
+	{
+		if (attachedCamera->position.x < checksides[0])
+		{
+			attachedCamera->position.x = checksides[0];
+		}
+	}
+	if (checksides[1] != -100)
+	{
+		if (attachedCamera->position.x >= checksides[1])
+		{
+			attachedCamera->position.x = checksides[1];
+		}
+	}
+	if (checksides[2] != -100)
+	{
+		if (attachedCamera->position.z < checksides[2])
+		{
+			attachedCamera->position.z = checksides[2];
+		}
+	}
+	if (checksides[3] != -100)
+	{
+		if (attachedCamera->position.z >= checksides[3])
+		{
+			attachedCamera->position.z = checksides[3];
+		}
+	}
 	attachedCamera->target = attachedCamera->position + viewVector;
 }
 
@@ -608,12 +682,14 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			}
 
 			//Movement
+			Vector3 prevpos = attachedCamera->position;
 			if (Application::IsKeyPressed('W') || Application::IsKeyPressed('A') || Application::IsKeyPressed('S') || Application::IsKeyPressed('D'))
 			{
 				Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 				Vector3 rightUV;
 				if (Application::IsKeyPressed('W'))
 				{
+					movedir = 'W';
 					if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT) && m_iCurrentStance == STAND))
 					{
 						attachedCamera->position += viewVector.Normalized() * m_fSpeed * 3.0f * (float)dt;
@@ -664,6 +740,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				action = STANDING;
 			}
 
+			Constrain(tilearray, prevpos);
 			UpdatePlayersStrength();
 
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
@@ -678,6 +755,8 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			curtool->SetTileType('N');
 			curtool->ResetFurnaceID(); 
 			curtool->SetFurnaceClick(false);
+			curtool->SetBerryClick(false);
+			curtool->SetWaterClick(false);
 			curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
 			if (curtool->GetFurnaceClick())
 			{
@@ -738,7 +817,6 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					}
 				}
 			}
-			Constrain();
 		}
 	}
 }

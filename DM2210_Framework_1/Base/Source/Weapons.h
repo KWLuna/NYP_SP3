@@ -53,6 +53,8 @@ protected:
 
 	bool berryclick;
 
+	bool waterclick;
+
 	bool feedanimal;
 
 	Physics weaponphysics;
@@ -112,6 +114,12 @@ public:
 	void ResetFurnaceID();
 
 	void SetFeedAnimal(bool set);
+
+	bool GetBerryClick();
+	void SetBerryClick(bool set);
+
+	bool GetWaterClick();
+	void SetWaterClick(bool set);
 
 	int GetIntMaxSwings();
 };

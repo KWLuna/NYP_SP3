@@ -31,7 +31,7 @@ public:
 	PlayerInformation();
 	~PlayerInformation();
 
-	void Constrain(void);
+	void Constrain(char PlayerTile[], Vector3 prevpos);
 	void AttachCamera(Camera3* _cameraPtr);
 	void update(double dt, std::vector<CAnimal*> animlist, std::vector<CEnemy*> enemylist, char tilearray[], std::vector<char> FurnaceX, std::vector<char> FurnaceZ);
 
@@ -107,4 +107,6 @@ private:
 	float m_fPlayersDamage;
 	bool placedown;
 	bool breakblock;
+
+	char movedir;
 };

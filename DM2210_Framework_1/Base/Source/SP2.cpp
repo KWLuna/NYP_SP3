@@ -1178,7 +1178,21 @@ void SP2::Update(double dt)
 		player->SetFurnaceStatus(true);
 		m_dBounceTime = 0.2;
 	}
-
+	if (player->getcurtool()->GetBerryClick())
+	{
+		int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+		int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+		world[x][y] = 'b';
+		int randVal = Math::RandIntMinMax(1, 3);
+		player->addItem(new Item(Item::ITEM_BERRY, randVal));
+		HarvestedBushList.push_back(new Bush(x, y));
+	}
+	if (player->getcurtool()->GetWaterClick())
+	{
+		int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+		int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+		player->SetThirst(player->getThirst() + 10);
+	}
 	if (Application::IsMousePressed(1) && m_dBounceTime <= 0 && player->GetFurnaceStatus() == true)
 	{
 		FurnaceList[m_currentfurnace]->SetStatus(false);
