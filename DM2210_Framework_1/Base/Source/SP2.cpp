@@ -1510,6 +1510,16 @@ void SP2::EnemyChecker(double dt)
 	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
 	{
 		CEnemy *go = (CEnemy *)*it;
+		if (go->GetHP() < 0)
+		{
+			m_EnemyList.erase(it);
+			break;
+		}
+	}
+	for (std::vector<CEnemy *>::iterator it = m_EnemyList.begin(); it != m_EnemyList.end(); ++it)
+	{
+		CEnemy *go = (CEnemy *)*it;
+		
 		if (go->GetSpawned())
 		{
 			if (go->GetPosition().x > MinX && go->GetPosition().x < MaxX && go->GetPosition().z > MinZ && go->GetPosition().z < MaxZ)
@@ -1606,6 +1616,16 @@ void SP2::AnimalChecker(double dt)
 		SpawningAnimal(dt);
 
 	m_NumOfAnimal = 0;
+	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+	{
+		CAnimal *go = (CAnimal *)*it;
+		if (go->GetHP() < 0)
+		{
+			player->addItem(new Item(Item::ITEM_MEAT, 1));
+			m_AnimalList.erase(it);
+			break;
+		}
+	}
 	for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 	{
 		CAnimal *go = (CAnimal *)*it;
@@ -2531,6 +2551,7 @@ void SP2::RenderPassGPass()
 void SP2::RenderGroundObjects()
 {
 	WorldObjectPositionList.clear();
+
 	// each tile is a scale of x. load 50 blocks. aka 50 * x outwards.
 	for (int i = minOutwardsFromPlayerX; i < maxOutwardsFromPlayerX; ++i)
 	{
@@ -2802,7 +2823,7 @@ void SP2::RenderPlayerInfo()
 		}
 		else
 		{
-			if (static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
+			if (player->getHP() > 0 && static_cast<int>(player->getHP()) % 2 == 1 && i * 10 < static_cast<int>(player->getHP()))
 				RenderImageToScreen(meshList[GEO_HEALTH_HALF], false, 40, 40,
 					120 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 20, 0);
 			else
@@ -2820,7 +2841,7 @@ void SP2::RenderPlayerInfo()
 		}
 		else
 		{
-			if (static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
+			if (player->getThirst() > 0 && static_cast<int>(player->getHunger()) % 2 == 1 && i * 10 < static_cast<int>(player->getHunger()))
 				RenderImageToScreen(meshList[GEO_HUNGER_HALF], false, 40, 40,
 					650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f - 40, 0);
 			else
@@ -2831,7 +2852,7 @@ void SP2::RenderPlayerInfo()
 	//Thirst
 	for (int i = 0; i < 10; ++i)
 	{
-		if (i < static_cast<int>(player->getThirst() * 0.1f))
+		if (player->getThirst() > 0 && i < static_cast<int>(player->getThirst() * 0.1f))
 		{
 			RenderImageToScreen(meshList[GEO_THIRST_FULL], false, 40, 40,
 				650 + 40 + i * 40, Application::GetWindowHeight() * 0.2f + 10, 0);
