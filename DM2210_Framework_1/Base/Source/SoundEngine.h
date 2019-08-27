@@ -36,7 +36,8 @@ public:
 	// Play a sound from this map
 	void PlayASound3D(const std::string& _soundIndex , Vector3 position);
 	void PlayASound2D(const std::string& _soundIndex);
-
+	void PlayASound2DLoop(const std::string& _soundIndex, bool Looping);
+	void DroppingSound();
 	void setListenerPosition(Vector3 position, Vector3 direction, Vector3 up);
 
 private:

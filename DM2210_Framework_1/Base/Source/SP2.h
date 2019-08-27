@@ -36,6 +36,7 @@ class SP2 : public Scene
 		U_MATERIAL_SHININESS,
 		U_LIGHTENABLED,
 		U_NUMLIGHTS,
+		
 		U_LIGHT0_TYPE,
 		U_LIGHT0_POSITION,
 		U_LIGHT0_COLOR,
@@ -47,6 +48,18 @@ class SP2 : public Scene
 		U_LIGHT0_COSCUTOFF,
 		U_LIGHT0_COSINNER,
 		U_LIGHT0_EXPONENT,
+
+		U_LIGHT1_TYPE,
+		U_LIGHT1_POSITION,
+		U_LIGHT1_COLOR,
+		U_LIGHT1_POWER,
+		U_LIGHT1_KC,
+		U_LIGHT1_KL,
+		U_LIGHT1_KQ,
+		U_LIGHT1_SPOTDIRECTION,
+		U_LIGHT1_COSCUTOFF,
+		U_LIGHT1_COSINNER,
+		U_LIGHT1_EXPONENT,
 		
 		//Week 4
 		U_COLOR_TEXTURE_ENABLED,
@@ -106,6 +119,9 @@ class SP2 : public Scene
 		//Make sure its symetrical with item.h DONT TOUCH IF YOU DONT KNOW WHAT YOURE DOING
 		GEO_MEAT,
 		GEO_COOKED_MEAT,
+
+		GEO_ICE_CUBE,
+		GEO_WATER_BOTTLE,
 
 		GEO_WHEAT,
 		GEO_BREAD,
@@ -233,6 +249,7 @@ class SP2 : public Scene
 		GEO_PLAYER_SELECTION,
 		GEO_NAVIGATOR,
 		GEO_GAME_OVER,
+		GEO_CASTLE,
 
 		NUM_GEOMETRY,
 	};
@@ -297,6 +314,8 @@ public:
 	void SpawningEnemy();
 	void RenderEnemy(CEnemy* enemy);
 	void EnemyChecker(double dt);
+	void SaveEnemyData();
+	void LoadEnemyData();
 		//Projectile
 	void UpdateProjectile(double dt);
 	void RenderProjectile(ProjectileObject * Projectile);
@@ -334,7 +353,7 @@ private:
 	MS viewStack;
 	MS projectionStack;
 
-	Light lights[1];
+	Light lights[2];
 
 	bool bLightEnabled;
 	float fps;

@@ -1,4 +1,5 @@
 #include "CEnemy.h"
+#include "SoundEngine.h"
 
 CEnemy::CEnemy(ENEMY_TYPE typeValue)
 	: type(typeValue),
@@ -15,11 +16,40 @@ CEnemy::CEnemy(ENEMY_TYPE typeValue)
 	m_fStrength(5.f),
 	m_fAttackingTime(0.f),
 	m_bAttacked(false),
-	Newpos(false)
+	Newpos(false),
+	m_fPlayersDamage(0.f)
 {
 	m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
 	m_fSpeed = Math::RandFloatMinMax(0.1f, 0.5f);
+	Targetpos.Set(Math::RandFloatMinMax(pos.x - 100.f, pos.x + 100.f), 1, Math::RandFloatMinMax(pos.z - 100.f, pos.z + 100.f));
+}
+CEnemy::CEnemy(int type, Vector3 pos, float HP, float Strength, bool spawned)
+	: Targetpos(1, 1, 1),
+	Scale(6, 6, 6),
+	gravity(0, -9.8f, 0),
+	dir(1, 1, 1),
+	m_bActive(false),
+	m_bSpawned(false),
+	m_fMass(55.f),
+	m_fHP(100),
+	m_iCurrentBehaviour(0),
+	m_fStrength(5.f),
+	m_fAttackingTime(0.f),
+	m_bAttacked(false),
+	m_bRotated(false),
+	m_fAngle(0.f),
+	Newpos(false),
+	m_fPlayersDamage(0.f)
+{
+	m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
+	m_fSpeed = Math::RandFloatMinMax(0.1f, 0.5f);
+	Targetpos.Set(Math::RandFloatMinMax(pos.x - 100.f, pos.x + 100.f), 1, Math::RandFloatMinMax(pos.z - 100.f, pos.z + 100.f));
 
+	this->type = (ENEMY_TYPE)(type);
+	this->pos = pos;
+	this->m_fHP = HP;
+	this->m_fStrength = Strength;
+	this->m_bSpawned = spawned;
 }
 
 CEnemy::~CEnemy()
@@ -28,6 +58,14 @@ CEnemy::~CEnemy()
 
 void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 {
+	if (Targetpos.x < 0)
+		Targetpos.x = 0;
+	else if (Targetpos.x > 25000)
+		Targetpos.x = 25000;
+	if (Targetpos.z < 0)
+		Targetpos.z = 0;
+	else if (Targetpos.z > 25000)
+		Targetpos.z = 25000;
 
 	theCurrentBehaviour = (Enemy_Behaviour)(m_iCurrentBehaviour);
 
@@ -40,6 +78,10 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			m_fIsResting = 0.f;
 			m_iCurrentBehaviour = 1;
 			m_fRandRestTime = Math::RandFloatMinMax(0.f, 12.f);
+			if (type == GO_ZOMBIE)
+				CSoundEngine::GetInstance()->PlayASound3D("Zombie_Resting", pos);
+			else if (type == GO_WITCH)
+				CSoundEngine::GetInstance()->PlayASound3D("Witch_Resting", pos);
 		}
 		break;
 	case CEnemy::WANDERING: //1
@@ -48,17 +90,21 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 
 		if (Targetpos == pos)
 		{
-			Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 500.f), 1, Math::RandFloatMinMax(pos.z - 500.f, pos.z + 500.f));
+			Targetpos.Set(Math::RandFloatMinMax(pos.x - 100.f, pos.x + 100.f), 1, Math::RandFloatMinMax(pos.z - 100.f, pos.z + 100.f));
 			m_iCurrentBehaviour = 0;
 		}
-		if (Targetpos.x < -1)
+		if (Targetpos.x < 0)
 			Targetpos.x = 0;
-		if (Targetpos.z < -1)
+		else if (Targetpos.x > 25000)
+			Targetpos.x = 25000;
+		if (Targetpos.z < 0)
 			Targetpos.z = 0;
+		else if (Targetpos.z > 25000)
+			Targetpos.z = 25000;
 	
 		if (m_fWalkingTarget > 6.f)
 		{
-			Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 500.f), 1, Math::RandFloatMinMax(pos.z - 500.f, pos.z + 500.f));
+			Targetpos.Set(Math::RandFloatMinMax(pos.x - 100.f, pos.x + 100.f), 1, Math::RandFloatMinMax(pos.z - 100.f, pos.z + 100.f));
 			m_iCurrentBehaviour = 0;
 			m_fWalkingTarget = 0;
 			m_bRotated = false;
@@ -67,7 +113,8 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 		{
 			if (!m_bRotated)
 			{
-				dir = (Targetpos - pos).Normalize();
+				if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
+					dir = (Targetpos - pos).Normalize();
 				float m_fTempAngle = atan2(dir.x, dir.z);
 				if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
 				{
@@ -95,7 +142,7 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 						{
 							if (!Newpos)
 							{
-								Targetpos.Set(Math::RandFloatMinMax(pos.x - 200.f, pos.x + 200.f), 1, Math::RandFloatMinMax(pos.z - 200.f, pos.z + 200.f));
+								Targetpos.Set(Math::RandFloatMinMax(pos.x - 100.f, pos.x + 100.f), 1, Math::RandFloatMinMax(pos.z - 100.f, pos.z + 100.f));
 								Newpos = true;
 								m_bRotated = false;
 							}
@@ -109,7 +156,11 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 					}
 				}
 
-				if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
+				if (pos.x - prevpos.x == 0 || pos.z - prevpos.z == 0)
+				{
+
+				}
+				else
 					dir = (pos - prevpos).Normalize();
 
 				m_fAngle = atan2(dir.x, dir.z);
@@ -123,10 +174,15 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 		m_fSpeed = Math::RandFloatMinMax(0.1f, 1.0f);
 
 		//if player holds the specific food the animal likes in his hand, they follow the player.
-		if (Targetpos.x < -1)
+		if (Targetpos.x < 0)
 			Targetpos.x = 0;
-		if (Targetpos.z < -1)
+		else if (Targetpos.x > 25000)
+			Targetpos.x = 25000;
+		if (Targetpos.z < 0)
 			Targetpos.z = 0;
+		else if (Targetpos.z > 25000)
+			Targetpos.z = 25000;
+
 		if (Targetpos == pos)
 		{
 			Targetpos.x = Targetpos.x - 1;
@@ -135,6 +191,7 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			
 		if (!m_bRotated)
 		{
+			if (Targetpos.x - pos.x != 0 && Targetpos.z - pos.z != 0)
 			dir = (Targetpos - pos).Normalize();
 			float m_fTempAngle = atan2(dir.x, dir.z);
 			if (Math::DegreeToRadian(m_fAngle) < m_fTempAngle)
@@ -176,7 +233,6 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 				}
 			}
 
-
 			if ((pos - prevpos).z != 0 || (pos - prevpos).x != 0)
 				dir = (pos - prevpos).Normalize();
 
@@ -198,16 +254,19 @@ void CEnemy::Update(double dt, std::vector<Vector3*> WorldObjectPositionList)
 			m_bAttacked = false;
 		break;
 	case CEnemy::ATTACKED: //4
-		//if killed, set spawned & active to false. and pop the Object.
+		//if killed, set spawned & active to false. 
 		m_fHP -= m_fPlayersDamage;
-		std::cout << m_fHP << std::endl;
 		if (m_fHP < 0)
 		{
 			m_fHP = 100;
 			m_bSpawned = false;
 			m_bActive = false;
+			if (type == GO_ZOMBIE)
+				CSoundEngine::GetInstance()->PlayASound3D("Zombie_Dying", pos);
+			else if (type == GO_WITCH)
+				CSoundEngine::GetInstance()->PlayASound3D("Witch_Dying", pos);
 		}
-
+		pos.y -= 5;
 		m_iCurrentBehaviour = 2;
 
 		break;
@@ -265,6 +324,7 @@ bool CEnemy::GetRotated()
 void CEnemy::SetBehaviour(int m_iCurrentBehaviour)
 {
 	this->m_iCurrentBehaviour = m_iCurrentBehaviour;
+	theCurrentBehaviour = (Enemy_Behaviour)(m_iCurrentBehaviour);
 }
 void CEnemy::SetPosition(Vector3 P)
 {

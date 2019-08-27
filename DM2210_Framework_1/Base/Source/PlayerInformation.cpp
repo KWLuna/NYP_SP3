@@ -4,6 +4,18 @@
 #include <iostream>
 PlayerInformation::PlayerInformation()
 {
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Walking_Fast", "Image//Walking_Fast.mp3");
+	CSoundEngine::GetInstance()->AddSound("Walking_Slow", "Image//Walking_Slow.mp3");
+	CSoundEngine::GetInstance()->AddSound("Swing_Action", "Image///Swing.mp3");
+
+	CSoundEngine::GetInstance()->AddSound("Open_Crafting", "Image///Open_Crafting.mp3");
+	CSoundEngine::GetInstance()->AddSound("Close_Crafting", "Image///Close_Crafting.mp3");
+
+	CSoundEngine::GetInstance()->AddSound("Pick_up", "Image///Pop.mp3");
+
+	CSoundEngine::GetInstance()->AddSound("Drop_Item", "Image///Drop_Item.mp3");
+
 	m_dHP = 100;
 	m_dMaxHP = 100;
 	m_dHunger = 100;
@@ -13,7 +25,7 @@ PlayerInformation::PlayerInformation()
 	ThirstyOrHungry = 5;
 	m_bCrafting = false;
 	m_iCurrentStance = STAND;
-
+	m_dDropTime = 0;
 	m_iInventorySlot = 0;
 	m_dConstrainY = 40;
 	m_iCraftingSlotOne = -1;
@@ -352,6 +364,18 @@ Item * PlayerInformation::craft(int firstItem, int secondItem)
 			return new Item(Item::ITEM_STICK, 2);
 	}
 
+	if (firstItem == Item::Item::ITEM_ICE_CUBE)
+	{
+		if (secondItem == Item::Item::ITEM_TORCH)
+			return new Item(Item::ITEM_WATER_BOTTLE, 1);
+	}
+	else if(firstItem == Item::Item::ITEM_TORCH)
+	{
+		if (secondItem == Item::Item::ITEM_ICE_CUBE)
+			return new Item(Item::ITEM_WATER_BOTTLE, 1);
+	}
+	
+
 	return new Item(-1, 0);
 }
 
@@ -362,8 +386,11 @@ bool PlayerInformation::GetFurnaceStatus()
 
 void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::vector<CEnemy*> enemylist, char tilearray[], std::vector<char> FurnaceX, std::vector<char> FurnaceZ)
 {
+
 	// Update bounce time.
 	m_dBounceTime -= 1 * dt;
+	m_dDropTime -= 1 * dt;
+
 	if (m_dHP <= 0)
 	{
 		if (Application::IsKeyPressed(VK_RETURN))
@@ -430,9 +457,14 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					m_iCraftingSlotOne = -1;
 					m_iCraftingSlotTwo = -1;
 					m_bCrafting = false;
+
+					CSoundEngine::GetInstance()->PlayASound2D("Close_Crafting");
 				}
 				else
+				{
+					CSoundEngine::GetInstance()->PlayASound2D("Open_Crafting");
 					m_bCrafting = true;
+				}
 
 				m_dBounceTime = 0.2;
 			}
@@ -585,6 +617,9 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				m_dHunger += 1.f;
 				m_dThirst += 0.2f;
 				break;
+			case Item::ITEM_WATER_BOTTLE:
+				m_dThirst += 0.2f;
+				break;
 			default:
 				break;
 			}
@@ -610,7 +645,11 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					{
 						if (addItem(result) == false)
 						{
-							// drop item , waiting for raycast
+							//if inventory full , drop item from crafting section
+							DroppedItemList.push_back(new DroppedItem(result->getID(), result->getQuantity(),
+														attachedCamera->position.x, attachedCamera->position.z));
+						
+							m_dDropTime = 1;
 						}
 						else
 						{
@@ -670,15 +709,38 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 				m_dBounceTime = 0.2;
 			}
 
+			// Prevent player from picking up the item if player just chucked the item.
+			
+			
+
 			if (Application::IsKeyPressed('Q') && m_dBounceTime <= 0)
 			{
 				if (ItemList[m_iInventorySlot]->getQuantity() > 0)
 				{
+					CSoundEngine::GetInstance()->PlayASound2D("Drop_Item");
+
 					DroppedItemList.push_back(new DroppedItem(ItemList[m_iInventorySlot]->getID(), ItemList[m_iInventorySlot]->getQuantity(),
 						attachedCamera->position.x, attachedCamera->position.z));
 					ItemList[m_iInventorySlot]->addQuantity(-1);
 				}
 				m_dBounceTime = 0.1;
+				m_dDropTime = 1;
+			}
+
+			if (m_dDropTime <= 0 && DroppedItemList.size() > 0)
+			{
+				for (int i = 0; i < DroppedItemList.size(); ++i)
+				{
+					float xPosSum = (attachedCamera->position.x - DroppedItemList[i]->getXPos());
+					float zPosSum = (attachedCamera->position.z - DroppedItemList[i]->getZPos());
+
+					if (sqrt((xPosSum * xPosSum) + (zPosSum * zPosSum)) <= 25)
+					{
+						CSoundEngine::GetInstance()->PlayASound2D("Pick_up");
+						addItem(new Item(DroppedItemList[i]->getID(), 1));
+						DroppedItemList.erase(DroppedItemList.begin() + i);
+					}
+				}
 			}
 
 			//Movement
@@ -687,23 +749,32 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			{
 				Vector3 viewVector = attachedCamera->target - attachedCamera->position;
 				Vector3 rightUV;
+
 				if (Application::IsKeyPressed('W'))
 				{
 					movedir = 'W';
 					if ((Application::IsKeyPressed('W')) && (Application::IsKeyPressed(VK_SHIFT) && m_iCurrentStance == STAND))
 					{
+						CSoundEngine::GetInstance()->PlayASound2D("Walking_Fast");
+
 						attachedCamera->position += viewVector.Normalized() * m_fSpeed * 3.0f * (float)dt;
 						action = SPRINTING;
 
 						int randVal = Math::RandIntMinMax(0, 200);
-						if (randVal < 2)
+						if (randVal < 1)
 							addItem(new Item(Item::ITEM_SEED, 1));
+						else if (randVal < 2)
+							addItem(new Item(Item::ITEM_CARROT, 1));
 					}
 					else
 					{
+						CSoundEngine::GetInstance()->PlayASound2D("Walking_Slow");
+
 						int randVal = Math::RandIntMinMax(0, 200);
 						if (randVal < 1)
 							addItem(new Item(Item::ITEM_SEED, 1));
+						else if (randVal < 2)
+							addItem(new Item(Item::ITEM_CARROT, 1));
 
 						action = WALKING;
 						attachedCamera->position = attachedCamera->position + viewVector.Normalized() * m_fSpeed * (float)dt;
@@ -741,6 +812,10 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			}
 
 			Constrain(tilearray, prevpos);
+			CSoundEngine::GetInstance()->setListenerPosition(attachedCamera->position, Vector3(-1, 0, 0), attachedCamera->up);
+
+			
+
 			UpdatePlayersStrength();
 
 			Vector3 dir = attachedCamera->target - attachedCamera->position;
@@ -771,6 +846,7 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 
 			if (!bLButtonState &&Application::IsMousePressed(0))
 			{
+				CSoundEngine::GetInstance()->PlayASound2D("Swing_Action");
 				bLButtonState = true;
 				curtool->SetLClick();
 				if (playerphysics.RayTraceDist(viewVector, attachedCamera->position, Vector3(12000, -500, 12000), Vector3(13000, 500, 13000)))
@@ -814,6 +890,13 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 					{
 						action = PlayerInformation::EATING;
 						getItem(getCurrentSlot())->addQuantity(-1);
+					}
+				}
+				if (m_dThirst < 100)
+				{
+					if (getItem(getCurrentSlot())->getID() == Item::ITEM_WATER_BOTTLE)
+					{
+						action = PlayerInformation::EATING;
 					}
 				}
 			}

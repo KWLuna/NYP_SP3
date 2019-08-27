@@ -312,12 +312,14 @@ void SP2::InitGround()
 
 void SP2::Init()
 {
-	CSoundEngine::GetInstance()->AddSound("awa", "poo");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Interaction", "Image//Interaction.mp3");
+	CSoundEngine::GetInstance()->AddSound("Tilling_Ground", "Image//Tilling_Ground.mp3");
+	
 	m_bMenu = true;
 	m_bContinue = false;
 	Math::InitRNG();
 	m_fNavigatorY = 0;
-//	LoadWorld();
 	
 	m_bRandLightning = true;
 
@@ -397,6 +399,18 @@ void SP2::Init()
 	m_parameters[U_LIGHT0_COSINNER] = glGetUniformLocation(m_programID, "lights[0].cosInner");
 	m_parameters[U_LIGHT0_EXPONENT] = glGetUniformLocation(m_programID, "lights[0].exponent");
 
+	m_parameters[U_LIGHT1_TYPE] = glGetUniformLocation(m_programID, "lights[1].type");
+	m_parameters[U_LIGHT1_POSITION] = glGetUniformLocation(m_programID, "lights[1].position_cameraspace");
+	m_parameters[U_LIGHT1_COLOR] = glGetUniformLocation(m_programID, "lights[1].color");
+	m_parameters[U_LIGHT1_POWER] = glGetUniformLocation(m_programID, "lights[1].power");
+	m_parameters[U_LIGHT1_KC] = glGetUniformLocation(m_programID, "lights[1].kC");
+	m_parameters[U_LIGHT1_KL] = glGetUniformLocation(m_programID, "lights[1].kL");
+	m_parameters[U_LIGHT1_KQ] = glGetUniformLocation(m_programID, "lights[1].kQ");
+	m_parameters[U_LIGHT1_SPOTDIRECTION] = glGetUniformLocation(m_programID, "lights[1].spotDirection");
+	m_parameters[U_LIGHT1_COSCUTOFF] = glGetUniformLocation(m_programID, "lights[1].cosCutoff");
+	m_parameters[U_LIGHT1_COSINNER] = glGetUniformLocation(m_programID, "lights[1].cosInner");
+	m_parameters[U_LIGHT1_EXPONENT] = glGetUniformLocation(m_programID, "lights[1].exponent");
+
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled[0]");
 	m_parameters[U_COLOR_TEXTURE] = glGetUniformLocation(m_programID, "colorTexture[0]");
@@ -432,7 +446,19 @@ void SP2::Init()
 	lights[0].exponent = 3.f;
 	lights[0].spotDirection.Set(0.f, 1.f, 0.f);
 
-	glUniform1i(m_parameters[U_NUMLIGHTS], 1);
+	lights[1].type = Light::LIGHT_POINT;
+	lights[1].position.Set(0 , 50, 0);
+	lights[1].color.Set(1, 1, 1);
+	lights[1].power = 500.f;
+	lights[1].kC = 1.f;
+	lights[1].kL = 0.01f;
+	lights[1].kQ = 0.001f;
+	lights[1].cosCutoff = cos(Math::DegreeToRadian(45));
+	lights[1].cosInner = cos(Math::DegreeToRadian(30));
+	lights[1].exponent = 3.f;
+	lights[1].spotDirection.Set(0.f, 1.f, 0.f);
+
+	glUniform1i(m_parameters[U_NUMLIGHTS], 2);
 	glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
 
 	glUniform1i(m_parameters[U_LIGHT0_TYPE], lights[0].type);
@@ -444,6 +470,16 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_LIGHT0_COSCUTOFF], lights[0].cosCutoff);
 	glUniform1f(m_parameters[U_LIGHT0_COSINNER], lights[0].cosInner);
 	glUniform1f(m_parameters[U_LIGHT0_EXPONENT], lights[0].exponent);
+
+	glUniform1i(m_parameters[U_LIGHT1_TYPE], lights[1].type);
+	glUniform3fv(m_parameters[U_LIGHT1_COLOR], 1, &lights[1].color.r);
+	glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+	glUniform1f(m_parameters[U_LIGHT1_KC], lights[1].kC);
+	glUniform1f(m_parameters[U_LIGHT1_KL], lights[1].kL);
+	glUniform1f(m_parameters[U_LIGHT1_KQ], lights[1].kQ);
+	glUniform1f(m_parameters[U_LIGHT1_COSCUTOFF], lights[1].cosCutoff);
+	glUniform1f(m_parameters[U_LIGHT1_COSINNER], lights[1].cosInner);
+	glUniform1f(m_parameters[U_LIGHT1_EXPONENT], lights[1].exponent);
 
 	m_lightDepthFBO.Init(2048, 2048);
 
@@ -459,6 +495,7 @@ void SP2::Init()
 	glUniform1f(m_parameters[U_FOG_ENABLED], 1);
 
 	camera.Init(Vector3(0, 50, 0), Vector3(0, 200, -10), Vector3(0, 1, 0));
+
 	player = new PlayerInformation();
 	player->AttachCamera(&camera);
 	
@@ -596,6 +633,12 @@ void SP2::Init()
 	meshList[GEO_COOKED_MEAT] = MeshBuilder::GenerateQuad("GEO_COOKED_MEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_COOKED_MEAT]->textureArray[0] = LoadTGA("Image//Cooked_Meat.tga");
 
+	meshList[GEO_ICE_CUBE] = MeshBuilder::GenerateQuad("GEO_ICE_CUBE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_ICE_CUBE]->textureArray[0] = LoadTGA("Image//Ice_Cube.tga");
+
+	meshList[GEO_WATER_BOTTLE] = MeshBuilder::GenerateQuad("GEO_WATER_BOTTLE", Color(1, 1, 1), 1.0f);
+	meshList[GEO_WATER_BOTTLE]->textureArray[0] = LoadTGA("Image//Water_Bottle.tga");
+
 	meshList[GEO_WHEAT] = MeshBuilder::GenerateQuad("GEO_WHEAT", Color(1, 1, 1), 1.0f);
 	meshList[GEO_WHEAT]->textureArray[0] = LoadTGA("Image//Wheat.tga");
 
@@ -685,7 +728,10 @@ void SP2::Init()
 
 	meshList[GEO_STONE_SWORD_MODEL] = MeshBuilder::GenerateOBJ("GEO_STONE_SWORD_MODEL", "OBJ//sword.obj");
 	meshList[GEO_STONE_SWORD_MODEL]->textureArray[0] = LoadTGA("Image//Stone_Sword.tga");
-	
+	//wORLD
+	meshList[GEO_CASTLE] = MeshBuilder::GenerateOBJ("GEO_CASTLE", "OBJ//Castle.obj");
+	meshList[GEO_CASTLE]->textureArray[0] = LoadTGA("Image//StoneBricks.tga");
+
 	//Lightning model
 	meshList[GEO_LIGHTNING] = MeshBuilder::GenerateQuad("GEO_LIGHTNING", Color(1, 1, 1), 1.0f);
 	
@@ -798,17 +844,9 @@ void SP2::Init()
 	{
 		ProjectileList.push_back(new ProjectileObject(PROJECTILE_TYPE::P_FIREBALL));
 	}
-	//Animals//Enemy
-	unsigned int NUMBEROFOBJECTS = 100;
 
-	for (unsigned int i = 0; i < NUMBEROFOBJECTS; ++i)
-	{
-		m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
-		m_EnemyList.push_back(new CEnemy(CEnemy::GO_ZOMBIE));
-	}
 	m_NumOfAnimal = 0;
 	m_NumOfEnemy = 0;
-	//LoadAnimalData();
 
 	//Season
 	SP2_Seasons = new Season;
@@ -828,11 +866,38 @@ void SP2::Init()
 
 	//instructions
 	instructionorder = 0;
-	instructiontimer = 0;
+	instructiontimer = 0.f;
 	//Projectile
 	MAX_PROJECTILE = 500;
 	m_iProjectileCount = 0;
 	m_swingcount = 0;
+
+	//Sound
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Pig_Resting", "Image//Pig_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Pig_Dying", "Image//Pig_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Chicken_Resting", "Image//Chicken_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Chicken_Dying", "Image//Chicken_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Cow_Resting", "Image//Cow_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Cow_Dying", "Image//Cow_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Zombie_Resting", "Image//Zombie_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Zombie_Dying", "Image//Zombie_Dying.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Witch_Resting", "Image//Witch_Resting.mp3");
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Witch_Dying", "Image//Villager_Dying.mp3");
+	//Background
+	CSoundEngine::GetInstance()->Init();
+	CSoundEngine::GetInstance()->AddSound("Spring", "Image//Spring.mp3");
+	CSoundEngine::GetInstance()->PlayASound2DLoop("Spring", true);
+
 }
 
 void SP2::RenderFurnace()
@@ -929,6 +994,7 @@ void SP2::Update(double dt)
 {
 	m_dBounceTime -= 1 * dt;
 	m_fConstantRotate += 20 * dt;
+
 	if (m_bMenu == true)
 	{
 		if (Application::IsKeyPressed(VK_DOWN) && m_dBounceTime <= 0)
@@ -967,10 +1033,17 @@ void SP2::Update(double dt)
 					{
 						player->LoadData();
 						LoadWorld();
+						LoadAnimalData();
+						LoadEnemyData();
 						m_bMenu = false;
 					}
 					else
 					{
+						for (unsigned int i = 0; i < 100; ++i)
+						{
+							m_AnimalList.push_back(new CAnimal(CAnimal::GO_PIG));
+							m_EnemyList.push_back(new CEnemy(CEnemy::GO_ZOMBIE));
+						}
 						m_bMenu = false;
 					}
 					m_dBounceTime = 0.2;
@@ -979,6 +1052,28 @@ void SP2::Update(double dt)
 	}
 	else if (m_bMenu == false)
 	{
+		if (Application::IsKeyPressed(VK_RETURN))
+		{
+			int x = camera.position.x / scale;
+			int z = camera.position.z / scale;
+		}
+		
+		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_TORCH)
+		{
+			std::cout << "x" << std::endl;
+			lights[1].position.x = camera.position.x;
+			lights[1].position.y = camera.position.y;
+			lights[1].position.z = camera.position.z;
+			lights[1].power = 10;
+			glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+		}
+		else
+		{
+			lights[1].power = 0;
+			glUniform1f(m_parameters[U_LIGHT1_POWER], lights[1].power);
+		}
+
+
 		// Duration of lightning strike = 0.12
 		if (m_fTimeTillLightning <= 0.2)
 		{
@@ -1030,11 +1125,12 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_SEED, 10));
 			player->addItem(new Item(Item::ITEM_STONE, 10));*/
 
-			player->addItem(new Item(Item::ITEM_COAL, 10));
-			player->addItem(new Item(Item::ITEM_MEAT, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 10));
-			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 10));
-			player->addItem(new Item(Item::ITEM_FURNACE, 1));
+		
+			player->addItem(new Item(Item::ITEM_ICE_CUBE, 1));
+			player->addItem(new Item(Item::ITEM_TORCH, 1));
+			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
+
+
 
 			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
@@ -1111,7 +1207,9 @@ void SP2::Update(double dt)
 
 		if (Application::IsKeyPressed('F') && m_dBounceTime <= 0)
 		{
-			FurnaceList[0]->SetStatus(true);
+			if (FurnaceList.size() > 0)
+				FurnaceList[0]->SetStatus(true);
+			
 			m_dBounceTime = 0.2;
 		}
 
@@ -1120,15 +1218,6 @@ void SP2::Update(double dt)
 	UpdateParticles(dt);
 	UpdateProjectile(dt);
 
-	//
-	/*CAnimal *go = AnimalFetchGO();
-	go->type = CAnimal::GO_COW;
-	go->SetActive(true);
-	go->SetPosition(Vector3(12550, 0, 12550));
-	go->SetAngle(40.0);
-	go->SetTargetPos(Vector3(Math::RandFloatMinMax(go->GetPosition().x - 400.f, go->GetPosition().x + 400.f), 0, Math::RandFloatMinMax(go->GetPosition().z - 400.f, go->GetPosition().z + 400.f)));
-	go->SetSpawned(true);*/
-	//
 	char PlayerTile[9];
 	float minx = camera.position.x - 100;
 	if (minx < 0)
@@ -1195,12 +1284,14 @@ void SP2::Update(double dt)
 	}
 	if (Application::IsMousePressed(1) && m_dBounceTime <= 0 && player->GetFurnaceStatus() == true)
 	{
+		CSoundEngine::GetInstance()->PlayASound2D("Interaction");
 		FurnaceList[m_currentfurnace]->SetStatus(false);
 		player->SetFurnaceStatus(false);
 		m_dBounceTime = 0.2;
 	}
 	if (player->GetPlaceDown())
 	{
+
 		if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_FURNACE)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
@@ -1208,6 +1299,8 @@ void SP2::Update(double dt)
 			world[x][y] = 'F';
 			player->getItem(player->getCurrentSlot())->addQuantity(-1);
 			FurnaceList.push_back(new Furnace(x, y));
+
+			CSoundEngine::GetInstance()->PlayASound2D("Interaction");
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_WOODEN_HOE ||
 			player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_STONE_HOE ||
@@ -1219,6 +1312,9 @@ void SP2::Update(double dt)
 			{
 				world[x][y] = 't';
 			}
+
+			CSoundEngine::GetInstance()->PlayASound2D("Tilling_Ground");
+
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_SEED)
 		{
@@ -1231,6 +1327,8 @@ void SP2::Update(double dt)
 				world[x][y] = 'w';
 				CropList.push_back(new Crops(1, x, y , 0));
 				player->getItem(player->getCurrentSlot())->addQuantity(-1);
+				CSoundEngine::GetInstance()->PlayASound2D("Tilling_Ground");
+
 			}
 		}
 		else if (player->getItem(player->getCurrentSlot())->getID() == Item::ITEM_CARROT)
@@ -1244,6 +1342,7 @@ void SP2::Update(double dt)
 				world[x][y] = 'c';
 				CropList.push_back(new Crops(0, x, y , 0));
 				player->getItem(player->getCurrentSlot())->addQuantity(-1);
+				CSoundEngine::GetInstance()->PlayASound2D("Tilling_Ground");
 			}
 		}
 	}
@@ -1257,7 +1356,8 @@ void SP2::Update(double dt)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int z = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-			
+			CSoundEngine::GetInstance()->PlayASound2D("Interaction");
+
 			if (world[x][z] == 'F') // Furnace
 			{
 				world[x][z] = 'G';
@@ -1282,6 +1382,11 @@ void SP2::Update(double dt)
 			{
 				world[x][z] = 'G';
 				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
+			}
+			else if (world[x][z] == 'W') // Ice Ore
+			{
+				if (SP2_Seasons->getSeason() == 3)
+					player->addItem(new Item(Item::ITEM_ICE_CUBE, 1));
 			}
 			else if (world[x][z] == 'C') // Coal
 			{
@@ -1379,6 +1484,9 @@ void SP2::Update(double dt)
 			instructiontimer = 0;
 		}
 	}
+
+	glUniform1f(m_parameters[U_FOG_ENABLED], 0);
+
 }
 void SP2::EnemyChecker(double dt)
 {
@@ -1410,59 +1518,69 @@ void SP2::EnemyChecker(double dt)
 			}
 			if (go->GetActive())
 			{
-				if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
+				if (go->GetCurrentBehaviour() != 4)
 				{
-					switch (go->type)
+					if ((go->GetPosition() - camera.position).Length() < m_cfMAXDISTANCE)
 					{
-					case CEnemy::ENEMY_TYPE::GO_ZOMBIE:
-						if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+						switch (go->type)
 						{
-							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
-							go->SetBehaviour(2);
-						}
-						else
-						{
-							go->SetBehaviour(3);
+						case CEnemy::ENEMY_TYPE::GO_ZOMBIE:
+							if ((go->GetPosition() - camera.position).Length() > m_cfMINDISTANCE)
+							{
+								go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+								if (go->GetAttackedPlayer())
+								{
+									player->SetHP(player->getHP() - go->GetStrength());
+									//Knockback
+									//camera.position.x += (camera.position.x - go->GetPosition().x);
+									//camera.position.z += (camera.position.z - go->GetPosition().z);
+								
+									//Vector3 viewVector = camera.target - camera.position;
+									//camera.target = camera.position - viewVector;
+								}
+							}
+							break;
+						case CEnemy::ENEMY_TYPE::GO_WITCH:
+							if ((go->GetPosition() - camera.position).Length() > 100)
+							{
+								go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
+								go->SetBehaviour(2);
+							}
+							else
+							{
+								go->SetBehaviour(3);
+								if (go->GetAttackedPlayer())
+								{
+									player->SetHP(player->getHP() - go->GetStrength());
+								}
+							}
 							if (go->GetAttackedPlayer())
 							{
-								player->SetHP(player->getHP() - go->GetStrength());
+								//shoot projectile at player
+								if (m_iProjectileCount < MAX_PROJECTILE)
+								{
+									ProjectileObject* Projectile = GetProjectile();
+									Projectile->SetType(PROJECTILE_TYPE::P_FIREBALL);
+									Projectile->SetScale(Vector3(4, 4, 4));
+									Projectile->SetVelocity(Vector3(1, 1, 1));
+									Projectile->SetRotationSpeed(Math::RandFloatMinMax(20.f, 40.f));
+									Projectile->SetPos(Vector3(go->GetPosition().x, 30, go->GetPosition().z));
+									Projectile->SetTargetPos(Vector3(camera.position.x - go->GetPosition().x, 0, camera.position.z - go->GetPosition().z));
+									Projectile->SetGotPlayersPos(true);
+									Projectile->SetActive(true);
+									Projectile->SetTimeTravelled(0.f);
+
+								}
 							}
+							break;
+						default:
+							break;
 						}
-						break;
-					case CEnemy::ENEMY_TYPE::GO_WITCH:
-						if ((go->GetPosition() - camera.position).Length() > 100)
-						{
-							go->SetTargetPos(Vector3(camera.position.x, 0, camera.position.z));
-							go->SetBehaviour(2);
-						}
-						else
-						{
-							go->SetBehaviour(3);
-							if (go->GetAttackedPlayer())
-							{
-								player->SetHP(player->getHP() - go->GetStrength());
-							}
-						}
-						if (go->GetAttackedPlayer())
-						{
-							//shoot projectile at player
-							if (m_iProjectileCount < MAX_PROJECTILE)
-							{
-								ProjectileObject* Projectile = GetProjectile();
-								Projectile->SetType(PROJECTILE_TYPE::P_FIREBALL);
-								Projectile->SetScale(Vector3(4, 4, 4));
-								Projectile->SetVelocity(Vector3(1, 1, 1));
-								Projectile->SetRotationSpeed(Math::RandFloatMinMax(20.f, 40.f));
-								Projectile->SetPos(Vector3(go->GetPosition().x, 30, go->GetPosition().z));
-								Projectile->SetTargetPos(Vector3(camera.position.x - go->GetPosition().x, camera.position.y - 5, camera.position.z - go->GetPosition().z ));
-								Projectile->SetGotPlayersPos(true);
-								Projectile->SetActive(true);
-								Projectile->SetTimeTravelled(0.f);
-							}
-						}
-						break;
-					default:
-						break;
 					}
 				}
 				go->Update(dt, WorldObjectPositionList);
@@ -1710,7 +1828,7 @@ void SP2::SpawningEnemy()
 				{
 					if (world[i][k] == 'd')
 					{
-						int choice = Math::RandIntMinMax(0, 5);
+						int choice = Math::RandIntMinMax(0, 20);
 						if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 						{
 							CEnemy *go = EnemyFetchGO();
@@ -1731,7 +1849,7 @@ void SP2::SpawningEnemy()
 					if (world[i][k] == 'd' || world[i][k] == 'G')
 					{
 						int choice = Math::RandIntMinMax(0, 20);
-						if (choice == 1 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
+						if (choice == 0 && (Vector3(0 + i * scale, 0, 0 + k * scale) - camera.position).Length() > 100) //spawn in if it is 1
 						{
 							CEnemy *go = EnemyFetchGO();
 							go->type = CEnemy::GO_ZOMBIE;
@@ -1812,6 +1930,7 @@ void SP2::SeasonChanger(double dt)
 			//Fog is thicker, longer
 			glUniform1f(m_parameters[U_FOG_DENSITY], 0.0001f);
 			m_bTexChange = true;
+		
 		}
 		else if (SP2_Seasons->getSeason() == Season::TYPE_SEASON::SUMMER)
 		{
@@ -1883,7 +2002,7 @@ void SP2::UpdateParticles(double dt)
 		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
 		{
 			CAnimal *go = (CAnimal *)*it;
-			if (go->GetFed() && !go->GetBreeded())
+			if (go->GetFed() && !go->GetBreeded() && go->GetActive())
 			{
 				ParticleObject* particle = GetParticle();
 				particle->type = ParticleObject_TYPE::P_HEART;
@@ -1957,15 +2076,6 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_PIG], true);
 		modelStack.PopMatrix();
-
-		//for testing collision boxes
-		/*modelStack.PushMatrix();
-		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 11, animal->GetPosition().z+4);
-		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
-		modelStack.Scale(14, 22, 29);
-		RenderMesh(meshList[GEO_CUBE], true);
-		modelStack.PopMatrix();*/
-		//
 		break;
 	case CAnimal::GO_COW:
 		modelStack.PushMatrix();
@@ -1974,42 +2084,6 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_COW], true);
 		modelStack.PopMatrix();
-
-		//for testing collision boxes
-		/*modelStack.PushMatrix();
-		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 14, animal->GetPosition().z+3);
-		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
-		modelStack.Scale(15, 24, 30);
-		RenderMesh(meshList[GEO_CUBE], true);
-		modelStack.PopMatrix();*/
-		//
-
-
-		/*temp1.Set(15 * -0.5f, 24 * -0.5f, 30 * -0.5f);
-		temptemp = temp1;
-		temp1.x = cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
-		temp1.z = sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
-		temp1 += animal->GetPosition();
-		temp1.y += 14;
-		temp1.z += 3;
-		modelStack.PushMatrix();
-		modelStack.Translate(temp1.x, temp1.y, temp1.z);
-		modelStack.Scale(2, 2, 2);
-		RenderMesh(meshList[GEO_SPHERE], true);
-		modelStack.PopMatrix();
-
-		temp2.Set(15 * 0.5f, 24 * 0.5f, 30 * 0.5f);
-		temptemp = temp2;
-		temp2.x = cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x - sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
-		temp2.z = sinf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.x + cosf(Math::DegreeToRadian(animal->GetAngle())) * temptemp.z;
-		temp2 += animal->GetPosition();
-		temp2.y += 14;
-		temp2.z += 3;
-		modelStack.PushMatrix();
-		modelStack.Translate(temp2.x, temp2.y, temp2.z);
-		modelStack.Scale(2, 2, 2);
-		RenderMesh(meshList[GEO_SPHERE], true);
-		modelStack.PopMatrix();*/
 		break;
 	case CAnimal::GO_CHICKEN:
 		modelStack.PushMatrix();
@@ -2018,15 +2092,6 @@ void SP2::RenderAnimal(CAnimal* animal)
 		modelStack.Scale(animal->GetScale().x, animal->GetScale().y, animal->GetScale().z);
 		RenderMesh(meshList[GEO_CHICKEN], true);
 		modelStack.PopMatrix();
-
-		//for testing collision boxes
-		/*modelStack.PushMatrix();
-		modelStack.Translate(animal->GetPosition().x, animal->GetPosition().y + 8, animal->GetPosition().z+2);
-		modelStack.Rotate(animal->GetAngle(), 0, 1, 0);
-		modelStack.Scale(10, 12, 14);
-		RenderMesh(meshList[GEO_CUBE], true);
-		modelStack.PopMatrix();*/
-		//
 		break;
 	default:
 		break;
@@ -2153,6 +2218,8 @@ void SP2::UpdateProjectile(double dt)
 				m_iProjectileCount--;
 				player->SetHP(player->getHP() - 5.f);
 				//add knockback
+				//camera.position.x += (camera.position.x - Projectile->GetPos().x);
+				//camera.position.z += (camera.position.z - Projectile->GetPos().z);
 			}
 			else if (Projectile->GetTimeTravelled() > 5)
 			{
@@ -2757,14 +2824,18 @@ void SP2::RenderPlayerInfo()
 }
 void SP2::RenderWorld()
 {
+	modelStack.PushMatrix();
+	modelStack.Translate(12500, 0, 12500);
+	modelStack.Scale(25150, 250, 25150);
+	RenderMesh(meshList[GEO_CASTLE], false);
+	modelStack.PopMatrix();
+
 	if (m_bMenu == false)
 	{
 		for (int i = 0; i < player->getTotalDropItems(); ++i)
 		{
 			modelStack.PushMatrix();
 			modelStack.Translate(player->getDroppedItem(i)->getXPos(), 10, player->getDroppedItem(i)->getZPos());
-			/*modelStack.Rotate(Math::RadianToDegree(atan2(camera.position.x - player->getDroppedItem(i)->getXPos()
-													, camera.position.z - player->getDroppedItem(i)->getZPos())), 0, 1, 0);*/
 			modelStack.Rotate(m_fConstantRotate, 0, 1, 0);
 			modelStack.Scale(10, 10, 10);
 			RenderMesh(meshList[GEO_ITEMS_START + player->getDroppedItem(i)->getID()], false);
@@ -2910,24 +2981,28 @@ void SP2::RenderPassMain()
 	);
 	modelStack.LoadIdentity();
 
-	if (lights[0].type == Light::LIGHT_DIRECTIONAL)
+	for (int i = 0; i < 2; ++i)
 	{
-		Vector3 lightDir(lights[0].position.x, lights[0].position.y, lights[0].position.z);
-		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
+		if (lights[i].type == Light::LIGHT_DIRECTIONAL)
+		{
+			Vector3 lightDir(lights[i].position.x, lights[i].position.y, lights[i].position.z);
+			Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+			glUniform3fv(m_parameters[U_LIGHT0_POSITION + i * 11], 1, &lightDirection_cameraspace.x);
+		}
+		else if (lights[1].type == Light::LIGHT_SPOT)
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[1].position;
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION + i * 11], 1, &lightPosition_cameraspace.x);
+			Vector3 spotDirection_cameraspace = viewStack.Top() * lights[1].spotDirection;
+			glUniform3fv(m_parameters[U_LIGHT1_SPOTDIRECTION + i * 11], 1, &spotDirection_cameraspace.x);
+		}
+		else
+		{
+			Position lightPosition_cameraspace = viewStack.Top() * lights[1].position;
+			glUniform3fv(m_parameters[U_LIGHT1_POSITION + i * 11], 1, &lightPosition_cameraspace.x);
+		}
 	}
-	else if (lights[0].type == Light::LIGHT_SPOT)
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-		Vector3 spotDirection_cameraspace = viewStack.Top() * lights[0].spotDirection;
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-	}
-	else
-	{
-		Position lightPosition_cameraspace = viewStack.Top() * lights[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-	}
+	
 	if (m_bMenu == true)
 	{
 		if (m_bContinue == false)
@@ -3049,93 +3124,136 @@ void SP2::SaveAnimalData()
 {
 	std::ofstream saveFile("AnimalSaveFile.txt");
 
-		if (saveFile.is_open())
+	if (saveFile.is_open())
+	{
+		for (int i = 0; i < m_AnimalList.size(); ++i)
 		{
-			for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+			if (m_AnimalList[i]->GetActive())
 			{
-				CAnimal *animal = (CAnimal *)*it;
-					saveFile << animal->type << std::endl;
-					saveFile << animal->GetPosition().x << std::endl;
-					saveFile << animal->GetPosition().y << std::endl;
-					saveFile << animal->GetPosition().z << std::endl;
-					saveFile << animal->GetScale().x << std::endl;
-					saveFile << animal->GetScale().y << std::endl;
-					saveFile << animal->GetScale().z << std::endl;
-					saveFile << animal->GetActive() << std::endl;
-					saveFile << animal->GetSpawned() << std::endl;
-					saveFile << animal->GetIsABaby() << std::endl;
-					saveFile << animal->GetGrowUpTimer() << std::endl;
+				saveFile << m_AnimalList[i]->m_iAnimalType << std::endl;
 
-				animal = NULL;
-				delete animal;
-				m_AnimalList.pop_back();
-				if (it == m_AnimalList.end())
-				{
-					saveFile.close();
-				}
+				saveFile << m_AnimalList[i]->GetPosition().x << std::endl;
+				saveFile << m_AnimalList[i]->GetPosition().y << std::endl;
+				saveFile << m_AnimalList[i]->GetPosition().z << std::endl;
+
+				saveFile << m_AnimalList[i]->GetScale().x << std::endl;
+				saveFile << m_AnimalList[i]->GetScale().y << std::endl;
+				saveFile << m_AnimalList[i]->GetScale().z << std::endl;
+
+				saveFile << m_AnimalList[i]->GetSpawned() << std::endl;
+				saveFile << m_AnimalList[i]->GetIsABaby() << std::endl;
+				saveFile << m_AnimalList[i]->GetGrowUpTimer() << std::endl;
 			}
 		}
-		else
-		{
-			std::cout << " cant save !" << std::endl;
-		}
-	
-	
+		saveFile.close();
+	}
+	else
+	{
+		std::cout << " cant save !" << std::endl;
+	}
 }
 void SP2::LoadAnimalData()
 {
 	std::ifstream saveFile("AnimalSaveFile.txt"); //Open text file to read
-	int tempx;
-	int tempy;
-	int tempz;
+	int animalType;
+	
+	float posX;
+	float posY;
+	float posZ;
+
+	float scaleX;
+	float scaleY;
+	float scaleZ;
+
+	bool spawned;
+	bool baby;
+	double timer;
+
 	if (saveFile.is_open())
 	{
-		for (std::vector<CAnimal *>::iterator it = m_AnimalList.begin(); it != m_AnimalList.end(); ++it)
+		while (!saveFile.eof())
 		{
-			CAnimal *animal = (CAnimal *)*it;
+			saveFile >> animalType;
 
-			saveFile >> animal->m_iAnimalType;
-			saveFile >> tempx;
-			saveFile >> tempy;
-			saveFile >> tempz;
-			animal->SetPosition(Vector3(tempx, tempy, tempz));
-			saveFile >> tempx;
-			saveFile >> tempy;
-			saveFile >> tempz;
-			animal->SetPosition(Vector3(tempx, tempy, tempz));
-			saveFile >> tempx;
-			if (tempx == 0)
-				animal->SetActive(false);
-			else
-				animal->SetActive(true);
-			saveFile >> tempx;
-			if (tempx == 0)
-				animal->SetSpawned(false);
-			else
-				animal->SetSpawned(true);
-			saveFile >> tempx;
-			if (tempx == 0)
-				animal->SetIsBaby(false);
-			else
-				animal->SetIsBaby(true);
-			saveFile >> tempx;
-			animal->SetGrowUpTimer(tempx);
+			saveFile >> posX;
+			saveFile >> posY;
+			saveFile >> posZ;
 
-			m_AnimalList.push_back(animal);
-			if (it == m_AnimalList.end())
+			saveFile >> scaleX;
+			saveFile >> scaleY;
+			saveFile >> scaleZ;
+
+			saveFile >> spawned;
+			saveFile >> baby;
+			saveFile >> timer;
+			m_AnimalList.push_back(new CAnimal(animalType, Vector3(posX, posY, posZ), Vector3(scaleX, scaleY, scaleZ), spawned, baby, timer));
+		}
+		saveFile.close();
+	}
+	else
+		std::cout << "Impossible to open save file!" << std::endl;
+}
+
+
+void SP2::SaveEnemyData()
+{
+	std::ofstream saveFile("EnemySaveFile.txt");
+
+	if (saveFile.is_open())
+	{
+		for (int i = 0; i < m_EnemyList.size(); ++i)
+		{
+			if (m_EnemyList[i]->GetActive())
 			{
-				saveFile.close();
+				saveFile << m_EnemyList[i]->type << std::endl;
+				saveFile << m_EnemyList[i]->GetPosition().x << std::endl;
+				saveFile << m_EnemyList[i]->GetPosition().y << std::endl;
+				saveFile << m_EnemyList[i]->GetPosition().z << std::endl;
+				saveFile << m_EnemyList[i]->GetHP() << std::endl;
+				saveFile << m_EnemyList[i]->GetStrength() << std::endl;
+				saveFile << m_EnemyList[i]->GetSpawned() << std::endl;
 			}
 		}
+		saveFile.close();
+	}
+	else
+	{
+		std::cout << " cant save !" << std::endl;
+	}
+}
+void SP2::LoadEnemyData()
+{
+	std::ifstream saveFile("EnemySaveFile.txt"); //Open text file to read
+	int enemyType;
+	float posX;
+	float posY;
+	float posZ;
+	float HP;
+	float Strength;
+	bool spawned;
 
-		
+	if (saveFile.is_open())
+	{
+		while (!saveFile.eof())
+		{
+			saveFile >> enemyType;
+			saveFile >> posX;
+			saveFile >> posY;
+			saveFile >> posZ;
+			saveFile >> HP;
+			saveFile >> Strength;
+			saveFile >> spawned;
+			m_EnemyList.push_back(new CEnemy(enemyType, Vector3(posX, posY, posZ), HP, Strength, spawned));
+		}
+		saveFile.close();
 	}
 	else
 		std::cout << "Impossible to open save file!" << std::endl;
 }
 void SP2::Exit()
 {
-	//SaveAnimalData();
+	SaveAnimalData();
+	SaveEnemyData();
 
 	// Cleanup VBO
 	for (int i = 0; i < NUM_GEOMETRY; ++i)

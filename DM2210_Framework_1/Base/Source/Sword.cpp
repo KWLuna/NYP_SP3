@@ -35,6 +35,11 @@ void Sword::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::vect
 	Weapons::UpdateAnimal(dt, dir, origin, animalist, m_fPlayersDamage);
 	Response();
 }
+void Sword::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vector<CEnemy*> enemylist, float m_fPlayersDamage)
+{
+	Weapons::UpdateEnemy(dt, dir, origin, enemylist, m_fPlayersDamage);
+	Response();
+}
 
 void Sword::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[])
 {

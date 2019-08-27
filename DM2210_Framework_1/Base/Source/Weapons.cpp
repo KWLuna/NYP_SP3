@@ -111,6 +111,7 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 						if (!rclick)
 						{
 							animalist[i]->SetBehaviour(4);
+							animalist[i]->SetPosition(Vector3(animalist[i]->GetPosition().x + dir.x, animalist[i]->GetPosition().y + 5, animalist[i]->GetPosition().z + dir.z));
 							animalist[i]->SetPlayersDamage(m_fPlayersDamage);
 						}
 						else
@@ -192,10 +193,10 @@ void Weapons::UpdateAnimal(const double dt, Vector3 dir, Vector3 origin, std::ve
 					}
 					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 					{
-						std::cout << "dank";
 						if (!rclick)
 						{
 							animalist[i]->SetBehaviour(4);
+							animalist[i]->SetPosition(Vector3(animalist[i]->GetPosition().x + dir.x, animalist[i]->GetPosition().y + 5, animalist[i]->GetPosition().z + dir.z));
 							animalist[i]->SetPlayersDamage(m_fPlayersDamage);
 						}
 					}
@@ -274,6 +275,7 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 						if (!rclick)
 						{
 							enemylist[i]->SetBehaviour(4);
+							enemylist[i]->SetPosition(Vector3(enemylist[i]->GetPosition().x + dir.x, enemylist[i]->GetPosition().y + 5, enemylist[i]->GetPosition().z + dir.z));
 							enemylist[i]->SetPlayersDamage(m_fPlayersDamage);
 						}
 					}
@@ -333,10 +335,10 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 					}
 					if (weaponphysics.RayTraceDist(dir, origin, temp1, temp2))
 					{
-						std::cout << "dank";
 						if (!rclick)
 						{
-							enemylist[i]->SetBehaviour(4);
+							enemylist[i]->SetBehaviour(enemylist[i]->ATTACKED);
+							enemylist[i]->SetPosition(Vector3(enemylist[i]->GetPosition().x + dir.x, enemylist[i]->GetPosition().y + 5, enemylist[i]->GetPosition().z + dir.z));
 							enemylist[i]->SetPlayersDamage(m_fPlayersDamage);
 						}
 					}
