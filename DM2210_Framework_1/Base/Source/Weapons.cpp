@@ -19,6 +19,8 @@ Weapons::Weapons()
 	, maxswings(5)
 	, berryclick(false)
 	, waterclick(false)
+	, tileonce(false)
+	, dungeonritual(false)
 {
 }
 
@@ -336,6 +338,7 @@ void Weapons::UpdateEnemy(const double dt, Vector3 dir, Vector3 origin, std::vec
 }
 void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tilearray[])
 {
+	tileonce = true;
 	Vector3 smallestvertex;
 	Vector3 biggestvertex;
 	if (type == MELEE)
@@ -470,6 +473,21 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 					smallestvertex.y = 0;
 					biggestvertex.y = 100;
 				}
+				else if (tiletype == 'c')
+				{
+					smallestvertex.y = -5;
+					biggestvertex.y = 0;
+				}
+				else if (tiletype == 'w')
+				{
+					smallestvertex.y = -5;
+					biggestvertex.y = 0;
+				}
+				else if (tiletype == 'L')
+				{
+					smallestvertex.y = 0;
+					biggestvertex.y = 100;
+				}
 				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
 				{
 					std::cout << "tile collide";
@@ -487,147 +505,151 @@ void Weapons::UpdateTile(const double dt, Vector3 dir, Vector3 origin, char tile
 						{
 							waterclick = true;
 						}
+						if (tiletype == 'L')
+						{
+							dungeonritual = true;
+						}
 					}
 				}
 			}
-			else
-			{
-				Vector3 facingtile;
-				facingtile = origin + dir * 100;
-				facingtile.x += 50;
-				facingtile.z += 50;
-				if (facingtile.x > ((int)(origin.x + 50) / 100) * 100 && facingtile.x < ((int)(origin.x + 50) / 100 + 1) * 100)
-				{
-					smallestvertex.x = ((int)(origin.x + 50) / 100) * 100;
-					biggestvertex.x = ((int)(origin.x + 50) / 100 + 1) * 100;
-					blockset.x = origin.x;
-					if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
-					{
-						tiletype = tilearray[0];
-						standingonem = true;
-						smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
-						blockset.z = origin.z;
-					}
-					if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
-					{
-						tiletype = tilearray[4];
-						smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
-						blockset.z = origin.z - 100;
-					}
-					if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
-					{
-						tiletype = tilearray[5];
-						smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
-						blockset.z = origin.z + 100;
-					}
-				}
-				else if (facingtile.x < ((int)(origin.x + 50) / 100) * 100)
-				{
-					smallestvertex.x = ((int)(origin.x + 50) / 100 - 1) * 100;
-					biggestvertex.x = ((int)(origin.x + 50) / 100) * 100;
-					blockset.x = origin.x - 100;
-					if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
-					{
-						tiletype = tilearray[1];
-						smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
-						blockset.z = origin.z - 100;
-					}
-					if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
-					{
-						tiletype = tilearray[3];
-						smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
-						blockset.z = origin.z + 100;
-					}
-					if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
-					{
-						tiletype = tilearray[2];
-						smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
-						blockset.z = origin.z;
-					}
-				}
-				else if (facingtile.x > ((int)(origin.x + 50) / 100 + 1) * 100)
-				{
-					smallestvertex.x = ((int)(origin.x + 50) / 100 + 1) * 100;
-					biggestvertex.x = ((int)(origin.x + 50) / 100 + 2) * 100;
-					blockset.x = origin.x + 100;
-					if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
-					{
-						tiletype = tilearray[6];
-						smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
-						blockset.z = origin.z - 100;
-					}
-					if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
-					{
-						tiletype = tilearray[8];
-						smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
-						blockset.z = origin.z + 100;
-					}
-					if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
-					{
-						tiletype = tilearray[7];
-						smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
-						biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
-						blockset.z = origin.z;
-					}
-				}
-				if (tiletype == 'G')
-				{
-					smallestvertex.y = -5;
-					biggestvertex.y = 0;
-				}
-				else if (tiletype == 'C')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-				}
-				else if (tiletype == 'W')
-				{
-					smallestvertex.y = -5;
-					biggestvertex.y = 0;
-				}
-				else if (tiletype == 'B')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-				}
-				else if (tiletype == 'T')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-				}
-				else if (tiletype == 'O')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-				}
-				else if (tiletype == 'C')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-				}
-				else if (tiletype == 'F')
-				{
-					smallestvertex.y = 0;
-					biggestvertex.y = 100;
-					/*if (activateonce)
-					{
-						furnaceclick = true;
-						activateonce = false;
-					}*/
-				}
-				if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
-				{
-					std::cout << "tile collide";
-				}
-			}
+			//else
+			//{
+			//	Vector3 facingtile;
+			//	facingtile = origin + dir * 100;
+			//	facingtile.x += 50;
+			//	facingtile.z += 50;
+			//	if (facingtile.x > ((int)(origin.x + 50) / 100) * 100 && facingtile.x < ((int)(origin.x + 50) / 100 + 1) * 100)
+			//	{
+			//		smallestvertex.x = ((int)(origin.x + 50) / 100) * 100;
+			//		biggestvertex.x = ((int)(origin.x + 50) / 100 + 1) * 100;
+			//		blockset.x = origin.x;
+			//		if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
+			//		{
+			//			tiletype = tilearray[0];
+			//			standingonem = true;
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+			//			blockset.z = origin.z;
+			//		}
+			//		if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
+			//		{
+			//			tiletype = tilearray[4];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+			//			blockset.z = origin.z - 100;
+			//		}
+			//		if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
+			//		{
+			//			tiletype = tilearray[5];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
+			//			blockset.z = origin.z + 100;
+			//		}
+			//	}
+			//	else if (facingtile.x < ((int)(origin.x + 50) / 100) * 100)
+			//	{
+			//		smallestvertex.x = ((int)(origin.x + 50) / 100 - 1) * 100;
+			//		biggestvertex.x = ((int)(origin.x + 50) / 100) * 100;
+			//		blockset.x = origin.x - 100;
+			//		if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
+			//		{
+			//			tiletype = tilearray[1];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+			//			blockset.z = origin.z - 100;
+			//		}
+			//		if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
+			//		{
+			//			tiletype = tilearray[3];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
+			//			blockset.z = origin.z + 100;
+			//		}
+			//		if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
+			//		{
+			//			tiletype = tilearray[2];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+			//			blockset.z = origin.z;
+			//		}
+			//	}
+			//	else if (facingtile.x > ((int)(origin.x + 50) / 100 + 1) * 100)
+			//	{
+			//		smallestvertex.x = ((int)(origin.x + 50) / 100 + 1) * 100;
+			//		biggestvertex.x = ((int)(origin.x + 50) / 100 + 2) * 100;
+			//		blockset.x = origin.x + 100;
+			//		if (facingtile.z < ((int)(origin.z + 50) / 100) * 100)
+			//		{
+			//			tiletype = tilearray[6];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100 - 1) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+			//			blockset.z = origin.z - 100;
+			//		}
+			//		if (facingtile.z > ((int)(origin.z + 50) / 100 + 1) * 100)
+			//		{
+			//			tiletype = tilearray[8];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100 + 2) * 100;
+			//			blockset.z = origin.z + 100;
+			//		}
+			//		if (facingtile.z > ((int)(origin.z + 50) / 100) * 100 && facingtile.z < ((int)(origin.z + 50) / 100 + 1) * 100)
+			//		{
+			//			tiletype = tilearray[7];
+			//			smallestvertex.z = ((int)(origin.z + 50) / 100) * 100;
+			//			biggestvertex.z = ((int)(origin.z + 50) / 100 + 1) * 100;
+			//			blockset.z = origin.z;
+			//		}
+			//	}
+			//	if (tiletype == 'G')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 0;
+			//	}
+			//	else if (tiletype == 'C')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 100;
+			//	}
+			//	else if (tiletype == 'W')
+			//	{
+			//		smallestvertex.y = -5;
+			//		biggestvertex.y = 0;
+			//	}
+			//	else if (tiletype == 'B')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 100;
+			//	}
+			//	else if (tiletype == 'T')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 100;
+			//	}
+			//	else if (tiletype == 'O')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 100;
+			//	}
+			//	else if (tiletype == 'C')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 100;
+			//	}
+			//	else if (tiletype == 'F')
+			//	{
+			//		smallestvertex.y = 0;
+			//		biggestvertex.y = 100;
+			//		/*if (activateonce)
+			//		{
+			//			furnaceclick = true;
+			//			activateonce = false;
+			//		}*/
+			//	}
+			//	if (weaponphysics.RayTraceDist(dir, origin, smallestvertex, biggestvertex))
+			//	{
+			//		std::cout << "tile collide";
+			//	}
+			//}
 		}
 	}
 	else if (type == RANGE)
@@ -742,6 +764,7 @@ void Weapons::SetCurSwing()
 	{
 		curswing = true;
 		side = true;
+		tileonce = false;
 	}
 }
 
@@ -888,6 +911,21 @@ bool Weapons::GetWaterClick()
 void Weapons::SetWaterClick(bool set)
 {
 	waterclick = set;
+}
+
+bool Weapons::GetDungeonRitual()
+{
+	return dungeonritual;
+}
+
+void Weapons::SetDungeonRitual(bool set)
+{
+	dungeonritual = set;
+}
+
+bool Weapons::GetTileOnce()
+{
+	return tileonce;
 }
 
 int Weapons::GetIntMaxSwings()

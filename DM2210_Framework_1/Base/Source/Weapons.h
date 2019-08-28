@@ -61,6 +61,10 @@ protected:
 	int animalID;
 	int foodheld;
 
+	bool dungeonritual;
+
+	bool tileonce;
+
 	Physics weaponphysics;
 
 public:
@@ -132,6 +136,11 @@ public:
 
 	bool GetWaterClick();
 	void SetWaterClick(bool set);
+
+	bool GetDungeonRitual();
+	void SetDungeonRitual(bool set);
+
+	bool GetTileOnce();
 
 	int GetIntMaxSwings();
 };

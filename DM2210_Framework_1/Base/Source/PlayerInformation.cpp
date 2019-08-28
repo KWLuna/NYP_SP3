@@ -158,7 +158,7 @@ void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 	
 	int checksides[4];
 	//Anchor player to the ground
-	if (PlayerTile[2] == 'F')
+	if (PlayerTile[2] == 'F' || PlayerTile[2] == 'T' || PlayerTile[2] == 'O' || PlayerTile[2] == 'W' || PlayerTile[2] == 'C' || PlayerTile[2] == 'B' || PlayerTile[2] == 'b')
 	{
 		checksides[0] = ((int)((prevpos.x + 50) / 100) * 100 - 50);
 	}
@@ -166,7 +166,7 @@ void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 	{
 		checksides[0] = -100;
 	}
-	if (PlayerTile[7] == 'F')
+	if (PlayerTile[7] == 'F' || PlayerTile[7] == 'T' || PlayerTile[7] == 'O' || PlayerTile[7] == 'W' || PlayerTile[7] == 'C' || PlayerTile[7] == 'B' || PlayerTile[7] == 'b')
 	{
 		checksides[1] = ((int)((prevpos.x + 150) / 100) * 100 - 50);
 	}
@@ -174,7 +174,7 @@ void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 	{
 		checksides[1] = -100;
 	}
-	if (PlayerTile[4] == 'F')
+	if (PlayerTile[4] == 'F' || PlayerTile[4] == 'T' || PlayerTile[4] == 'O' || PlayerTile[4] == 'W' || PlayerTile[4] == 'C' || PlayerTile[4] == 'B' || PlayerTile[4] == 'b')
 	{
 		checksides[2] = ((int)((prevpos.z + 50) / 100) * 100 - 50);
 	}
@@ -182,7 +182,7 @@ void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 	{
 		checksides[2] = -100;
 	}
-	if (PlayerTile[5] == 'F')
+	if (PlayerTile[5] == 'F' || PlayerTile[5] == 'T' || PlayerTile[5] == 'O' || PlayerTile[5] == 'W' || PlayerTile[5] == 'C' || PlayerTile[5] == 'B' || PlayerTile[5] == 'b')
 	{
 		checksides[3] = ((int)((prevpos.z + 150) / 100) * 100 - 50);
 	}
@@ -199,7 +199,7 @@ void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 	}
 	if (checksides[1] != -100)
 	{
-		if (attachedCamera->position.x >= checksides[1])
+		if (attachedCamera->position.x > checksides[1])
 		{
 			attachedCamera->position.x = checksides[1];
 		}
@@ -213,7 +213,7 @@ void PlayerInformation::Constrain(char PlayerTile[], Vector3 prevpos)
 	}
 	if (checksides[3] != -100)
 	{
-		if (attachedCamera->position.z >= checksides[3])
+		if (attachedCamera->position.z > checksides[3])
 		{
 			attachedCamera->position.z = checksides[3];
 		}
@@ -847,7 +847,11 @@ void PlayerInformation::update(double dt, std::vector<CAnimal*> animalist, std::
 			curtool->SetFurnaceClick(false);
 			curtool->SetBerryClick(false);
 			curtool->SetWaterClick(false);
-			curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
+			curtool->SetDungeonRitual(false);
+			if (!curtool->GetTileOnce())
+			{
+				curtool->UpdateTile(dt, dir, attachedCamera->position, tilearray);
+			}
 			if (curtool->GetFurnaceClick())
 			{
 				curtool->UpdateFurnace(FurnaceX, FurnaceZ);
@@ -935,7 +939,7 @@ void PlayerInformation::PlaceBlock()
 		}
 		else if (!curtool->GetClick())
 		{
-			if (curtool->GetTileType() == 'F' || curtool->GetTileType() == 'O' || curtool->GetTileType() == 'C')
+			if (curtool->GetTileType() == 'F' || curtool->GetTileType() == 'O' || curtool->GetTileType() == 'C' || curtool->GetTileType() == 'T' || curtool->GetTileType() == 'c' || curtool->GetTileType() == 'w' || curtool->GetTileType() == 'B')
 			{
 				breakblock = true;
 			}

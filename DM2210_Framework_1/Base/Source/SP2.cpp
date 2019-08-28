@@ -1129,8 +1129,9 @@ void SP2::Update(double dt)
 			player->addItem(new Item(Item::ITEM_ICE_CUBE, 1));
 			player->addItem(new Item(Item::ITEM_TORCH, 1));
 			player->addItem(new Item(Item::ITEM_WOODEN_PICKAXE, 1));
-
-
+			player->addItem(new Item(Item::ITEM_WOODEN_AXE, 1));
+			player->addItem(new Item(Item::ITEM_WOODEN_HOE, 1));
+			player->addItem(new Item(Item::ITEM_FURNACE, 1));
 
 			//world[int((camera.position.x + scale / 2) / scale)][int((camera.position.z + scale / 2) / scale)] = 'F';
 
@@ -1282,10 +1283,19 @@ void SP2::Update(double dt)
 		int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
 		player->SetThirst(player->getThirst() + 10);
 	}
+	if (player->getcurtool()->GetDungeonRitual())
+	{
+		int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
+		int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
+		player->SetMaxHP(110);
+	}
 	if (player->getcurtool()->GetAnimalID() >= 0)
 	{
-		m_AnimalList[player->getcurtool()->GetAnimalID()]->SetFed(true);
-		player->getItem(player->getCurrentSlot())->addQuantity(-1);
+		if (!m_AnimalList[player->getcurtool()->GetAnimalID()]->GetFed())
+		{
+			m_AnimalList[player->getcurtool()->GetAnimalID()]->SetFed(true);
+			player->getItem(player->getCurrentSlot())->addQuantity(-1);
+		}
 	}
 	if (Application::IsMousePressed(1) && m_dBounceTime <= 0 && player->GetFurnaceStatus() == true)
 	{
@@ -1312,7 +1322,7 @@ void SP2::Update(double dt)
 		{
 			int x = (player->getcurtool()->GetBlockPlacement().x + scale / 2) / scale;
 			int y = (player->getcurtool()->GetBlockPlacement().z + scale / 2) / scale;
-			if (world[x][y] != 'F')
+			if (world[x][y] == 'G')
 			{
 				world[x][y] = 't';
 			}
@@ -1364,21 +1374,25 @@ void SP2::Update(double dt)
 
 			if (world[x][z] == 'F') // Furnace
 			{
-				world[x][z] = 'G';
-				player->addItem(new Item(Item::ITEM_FURNACE, 1));
-
-				for (int i = 0; i < FurnaceList.size(); ++i)
+				++m_swingcount;
+				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
 				{
-					if (FurnaceList[i]->GetXTile() == x && FurnaceList[i]->GetZTile() == z)
-					{
-						//Add items to player inventory 
-						player->addItem(new Item(FurnaceList[i]->GetFuelID(), FurnaceList[i]->GetFuelTotal()));
-						player->addItem(new Item(FurnaceList[i]->GetResultID(), FurnaceList[i]->GetResultTotal()));
-						player->addItem(new Item(FurnaceList[i]->GetSmeltingID(), FurnaceList[i]->GetSmeltingTotal()));
+					world[x][z] = 'G';
+					player->addItem(new Item(Item::ITEM_FURNACE, 1));
+					//for (int i = 0; i < FurnaceList.size(); ++i)
+					//{
+					//	if (FurnaceList[i]->GetXTile() == x && FurnaceList[i]->GetZTile() == z)
+					//	{
+					//		//Add items to player inventory 
+					//		player->addItem(new Item(FurnaceList[i]->GetFuelID(), FurnaceList[i]->GetFuelTotal()));
+					//		player->addItem(new Item(FurnaceList[i]->GetResultID(), FurnaceList[i]->GetResultTotal()));
+					//		player->addItem(new Item(FurnaceList[i]->GetSmeltingID(), FurnaceList[i]->GetSmeltingTotal()));
 
-						delete FurnaceList[i];
-						break;
-					}
+					//		delete FurnaceList[i];
+					//		break;
+					//	}
+					//}
+					m_swingcount = 0;
 				}
 
 			}
@@ -1412,6 +1426,7 @@ void SP2::Update(double dt)
 
 			if (world[x][y] == 'T') // Tree
 			{
+				++m_swingcount;
 				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
 				{
 					// Tile to transform
@@ -1420,24 +1435,16 @@ void SP2::Update(double dt)
 					player->addItem(new Item(Item::ITEM_FURNACE, 1));
 					m_swingcount = 0;
 				}
-				m_swingcount++;
-			}
-			else if (world[x][y] == 'O') // Gold Ore
-			{
-				world[x][y] = 'G';
-				player->addItem(new Item(Item::ITEM_GOLD_NUGGET, 1));
-			}
-			else if (world[x][y] == 'C') // Coal
-			{
-				world[x][y] = 'G';
-				int randVal = Math::RandIntMinMax(1, 3);
-				player->addItem(new Item(Item::ITEM_COAL, randVal));
-				player->addItem(new Item(Item::ITEM_WOOD, 1));
 			}
 			else if (world[x][y] == 'B')
 			{
-				world[x][y] = 'G';
-				player->addItem(new Item(Item::ITEM_BERRY, 3));
+				++m_swingcount;
+				if (m_swingcount > player->getcurtool()->GetIntMaxSwings())
+				{
+					world[x][y] = 'G';
+					player->addItem(new Item(Item::ITEM_BERRY, 3));
+					m_swingcount = 0;
+				}
 			}
 		}
 	}
@@ -1459,7 +1466,7 @@ void SP2::Update(double dt)
 			{
 				//If so , set the tile back to a BERRY obj and delete the dead bush from the list.
 				world[HarvestedBushList[i]->GetXTile()][HarvestedBushList[i]->GetZTile()] = 'B';
-				delete HarvestedBushList[i];
+				HarvestedBushList.erase(HarvestedBushList.begin() + i);
 			}
 		}
 
