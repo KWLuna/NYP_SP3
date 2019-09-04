@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/DM2210_Framework_1/.vs/DM2210_Framework/v15/Browse.VC.opendb
+*.ipdb

@@ -1,0 +1,5 @@
+﻿  main.cpp
+  Networking.cpp
+  Generating code
+d:\best_new_checkpoint\serversp3\serversp3\networking.cpp : fatal error C1301: error accessing program database D:\BEST_NEW_CHECKPOINT\ServerSP3\Release\ServerSP3.ipdb, invalid format, please delete and rebuild
+LINK : fatal error LNK1257: code generation failed

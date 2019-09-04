@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="SoundEngine">
+      <UniqueIdentifier>{91015baa-47be-490a-ad4e-5a958f290b41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2">
+      <UniqueIdentifier>{a90bb4aa-4d9a-44f7-99ac-0b9faa372c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Entity">
+      <UniqueIdentifier>{426006d2-7fa0-4933-b8b6-3da5d6dbf267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\GameObjects">
+      <UniqueIdentifier>{9e6c3b9c-adb6-4a76-8477-c57748dc59a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Physics">
+      <UniqueIdentifier>{e7f9a2f3-ccf2-4402-af40-1e7abbf878b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\PlayerInformation">
+      <UniqueIdentifier>{b77eebc2-7f6b-414b-82a7-81a73b44857c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\PlayerInformation\Smelting">
+      <UniqueIdentifier>{41d8fc86-493e-487a-b9e8-ff63cb57661d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\AnimalAI">
+      <UniqueIdentifier>{2c4343b8-f0ec-433e-8c68-35f6dc4b17a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Weapons">
+      <UniqueIdentifier>{a6a35f04-c66d-4ebc-ab88-adebb97756b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Season">
+      <UniqueIdentifier>{a883bd4f-9405-4ae2-9f51-c76fd96e56a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Crops">
+      <UniqueIdentifier>{91659d46-2011-4aac-89c1-c8499b97885f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\TextFiles">
+      <UniqueIdentifier>{5a5f5a96-3dcb-42fd-b726-114ba31b63ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\EnemyAI">
+      <UniqueIdentifier>{fd51c071-0d41-403a-9aa5-9b7a721c263b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Bush">
+      <UniqueIdentifier>{4fc52c1b-621b-4872-b3fe-e4c5800679fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\PlayerInformation\Items">
+      <UniqueIdentifier>{8fbda144-fd7c-4a00-aeb7-156f9cbbdaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Weapons\Sword">
+      <UniqueIdentifier>{171cb2a7-05fb-412e-898d-3afe7b0fc0b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Weapons\Axe">
+      <UniqueIdentifier>{909ace5d-379f-472d-a93a-de32ed5ddfe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Weapons\Pickaxe">
+      <UniqueIdentifier>{c59ae395-8a42-45fe-8b0c-72ada3ead65c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SP2\Weapons\Hoe">
+      <UniqueIdentifier>{2310680c-7c6f-4741-9e34-e35ee6f16b88}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MeshBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LoadTGA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LoadOBJ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LoadHmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SpriteAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DepthFBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SP2.cpp">
+      <Filter>SP2</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PlayerInformation.cpp">
+      <Filter>SP2\PlayerInformation</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SoundEngine.cpp">
+      <Filter>SoundEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CAnimal.cpp">
+      <Filter>SP2\AnimalAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics.cpp">
+      <Filter>SP2\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Weapons.cpp">
+      <Filter>SP2\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Entity.cpp">
+      <Filter>SP2\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Furnace.cpp">
+      <Filter>SP2\PlayerInformation\Smelting</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Season.cpp">
+      <Filter>SP2\Season</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Crops.cpp">
+      <Filter>SP2\Crops</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CEnemy.cpp">
+      <Filter>SP2\EnemyAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Projectile.cpp">
+      <Filter>SP2\EnemyAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Bush.cpp">
+      <Filter>SP2\Bush</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Item.cpp">
+      <Filter>SP2\PlayerInformation\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DroppedItem.cpp">
+      <Filter>SP2\PlayerInformation\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GoldSword.cpp">
+      <Filter>SP2\Weapons\Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StoneSword.cpp">
+      <Filter>SP2\Weapons\Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WoodenSword.cpp">
+      <Filter>SP2\Weapons\Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GoldAxe.cpp">
+      <Filter>SP2\Weapons\Axe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StoneAxe.cpp">
+      <Filter>SP2\Weapons\Axe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WoodenAxe.cpp">
+      <Filter>SP2\Weapons\Axe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GoldPickaxe.cpp">
+      <Filter>SP2\Weapons\Pickaxe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StonePickaxe.cpp">
+      <Filter>SP2\Weapons\Pickaxe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WoodenPickaxe.cpp">
+      <Filter>SP2\Weapons\Pickaxe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GoldHoe.cpp">
+      <Filter>SP2\Weapons\Hoe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StoneHoe.cpp">
+      <Filter>SP2\Weapons\Hoe</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WoodenHoe.cpp">
+      <Filter>SP2\Weapons\Hoe</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Vertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MeshBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LoadTGA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LoadOBJ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LoadHmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SpriteAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DepthFBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SP2.h">
+      <Filter>SP2</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PlayerInformation.h">
+      <Filter>SP2\PlayerInformation</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SoundEngine.h">
+      <Filter>SoundEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CAnimal.h">
+      <Filter>SP2\AnimalAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics.h">
+      <Filter>SP2\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Weapons.h">
+      <Filter>SP2\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Entity.h">
+      <Filter>SP2\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Furnace.h">
+      <Filter>SP2\PlayerInformation\Smelting</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Season.h">
+      <Filter>SP2\Season</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Crops.h">
+      <Filter>SP2\Crops</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CEnemy.h">
+      <Filter>SP2\EnemyAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Projectile.h">
+      <Filter>SP2\EnemyAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Bush.h">
+      <Filter>SP2\Bush</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Item.h">
+      <Filter>SP2\PlayerInformation\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DroppedItem.h">
+      <Filter>SP2\PlayerInformation\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GoldSword.h">
+      <Filter>SP2\Weapons\Sword</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StoneSword.h">
+      <Filter>SP2\Weapons\Sword</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WoodenSword.h">
+      <Filter>SP2\Weapons\Sword</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GoldAxe.h">
+      <Filter>SP2\Weapons\Axe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StoneAxe.h">
+      <Filter>SP2\Weapons\Axe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WoodenAxe.h">
+      <Filter>SP2\Weapons\Axe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GoldPickaxe.h">
+      <Filter>SP2\Weapons\Pickaxe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StonePickaxe.h">
+      <Filter>SP2\Weapons\Pickaxe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WoodenPickaxe.h">
+      <Filter>SP2\Weapons\Pickaxe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GoldHoe.h">
+      <Filter>SP2\Weapons\Hoe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StoneHoe.h">
+      <Filter>SP2\Weapons\Hoe</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WoodenHoe.h">
+      <Filter>SP2\Weapons\Hoe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\GPass.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\GPass.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Shadow.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Shadow.vert">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="PlayerSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="WorldSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="AnimalSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="CropSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="FurnaceSaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+    <Text Include="EnemySaveFile.txt">
+      <Filter>SP2\TextFiles</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

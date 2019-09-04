@@ -1,0 +1,5 @@
+Player Send a packet over to the server with their last few ip address and then i will decrept it and then send to all the other ip address and not it slef
+
+
+Client 1 send : # $ 10 50 20
+		
